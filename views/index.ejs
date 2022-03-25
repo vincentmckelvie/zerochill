@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title></title>
+
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+		<link rel="stylesheet" href="/scripts/styles.css">
+	</head>
+	<body>
+	
+		<% if(user){ %>
+		
+		<nav class="nav">
+			<div class="user-display">
+				<div class="top-right-info" id="debug-user">
+					<%= user.name || user.username || user.email %>
+						
+				</div>
+				<div class="top-right-info"> - </div>
+				<div class="top-right-info" id="debug"></div>
+			</div>
+		</nav>
+		
+		<section class="modal" id="user">
+			<div class="modal-center">
+				<h2 class="user-header">
+					Hello <%= user.name || user.username || user.email %>
+				</h2>
+				<form action="/logout" method="post">
+					<button class="user-btn" type="submit">Sign out</button>
+				</form>
+				
+				<div id="close-login-btn" class="close-btn">Close</div>
+			</div>
+		</section>
+
+		<% } %>
+		<% if(!user){ %>
+		<nav class="nav">
+			<div class="user-display">
+				<div class="top-right-info" id="debug"></div>
+			</div>
+		</nav>
+		<% if( error.loginerror || error.signuperror){ %>
+		<section class="modal" id="user" style="display: block;">
+		<% }else{ %>
+		<section class="modal" id="user">
+		<% } %>
+			<div class="modal-center">
+				
+				<% if(!error.loginerror && error.signuperror){ %>
+					<div id="login" style="display:none">
+				<% } else{ %>
+					<div id="login">
+				<% } %>
+					<h2 class="user-header">Login</h2>
+					
+					<% if(error.loginerror){ %>
+					<div class="login-error"> <%= error.loginerror %>  </div>
+					<% } %>
+					<form action="/login" method="post">
+					    <section class="user-form-holder">
+					        <label for="username">Username</label>
+					        <input id="username" name="username" type="text" autocomplete="username" required autofocus>
+					    </section>
+					    <section class="user-form-holder">
+					        <label for="current-password">Password</label>
+					        <input id="current-password" name="password" type="password" autocomplete="current-password" required>
+					    </section>
+
+					    <button class='user-btn' type="submit">Sign in</button>
+					</form>
+					<hr>
+					<p class="help">
+						Don't have an account? <a class="user-bottom" onclick="toggleSignUp(true)" id="sign-up-btn">Sign up</a>
+					</p>
+				</div>
+				<% if(error.signuperror && !error.loginerror){ %>
+					<div id="sign-up" style="display:block">
+				<% }else{ %>
+					<div id="sign-up">
+				<% } %>
+					<h2 class="user-header">Signup</h2>
+					<% if(error.signuperror){ %>
+					<div class="login-error"> <%= error.signuperror %> </div>
+					<% } %>
+					<form action="/signup" method="post">
+					    <section class="user-form-holder">	
+					        <label for="username">Username</label>
+					        <input id="username" name="username" type="text" autocomplete="username" required>
+					    </section>
+					    <section class="user-form-holder">
+					        <label for="new-password">Password</label>
+					        <input id="new-password" name="password" type="password" autocomplete="new-password" required>
+					    </section>
+					    <button class='user-btn' type="submit">Sign up</button>
+					</form>
+					<hr>
+					<p class="help">
+						Already have an account? <a class="user-bottom" onclick="toggleSignUp(false)">Sign in</a>
+					</p>
+					
+				</div>
+				<div id="close-login-btn" class="close-btn">Close</div>
+			</div>
+		</section>
+		<!--
+		<section class="modal" id="sign-up">
+			<div class="modal-center">
+				
+			</div>
+		</section>
+		-->
+		<script type="text/javascript">
+			function toggleSignUp(showSignUp){
+				if(showSignUp){
+					document.getElementById("login").style.display="none";
+					document.getElementById("sign-up").style.display="block";
+				}else{
+					document.getElementById("login").style.display="block";
+					document.getElementById("sign-up").style.display="none";
+				}
+			}
+		</script>
+		<% } %>
+
+		<%- include("game.ejs") %>
+	
+	</body>
+</html>
