@@ -96,7 +96,13 @@ body{
 
 
 
-
+#title{
+	width: 500px;
+	height: 250px;
+	display: inline-block;
+	background-size: 500px 250px;
+	background-image: url("../assets/ui/title.png");
+}
 
 
 #timer{
