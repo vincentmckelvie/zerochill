@@ -24,6 +24,8 @@ import { AbilityDoubleJump } from './AbilityDoubleJump.js';
 import { AbilityBlink } from './AbilityBlink.js';
 import { RemoteController } from './RemoteController.js';
 import { PlayerSelectScene } from './PlayerSelectScene.js';
+import { TitleScene } from './TitleScene.js';
+
 import { Settings } from './Settings.js';
 import { Servers } from './Servers.js';
 import { GamePad } from './GamePad.js';
@@ -628,10 +630,12 @@ const appGlobal = {
 		{name:"launcher",     		model:null, loaded:false, url:"fps-launcher.glb"  },
 		{name:"sticky",       		model:null, loaded:false, url:"fps-sticky.glb"  },
 		{name:"submachine",   		model:null, loaded:false, url:"fps-sub.glb"  },
-		{name:"assault",      		model:null, loaded:false, url:"fps-assault.glb"  }
+		{name:"assault",      		model:null, loaded:false, url:"fps-assault.glb"  },
+		{name:"title",      		model:null, loaded:false, url:"zerochill.glb"  }
 	],
 	initedThree:false,
 	playerSelectScene:null,
+	titleScene:null,
 	user:"",
 	settingsParams:settings,
 	settings:null,
@@ -714,6 +718,7 @@ function initThree(){
 	appGlobal.itemHandler = new ItemHandler();
 	appGlobal.soundHandler = new GlobalSoundHandler();
 	appGlobal.playerSelectScene = new PlayerSelectScene();
+	appGlobal.titleScene = new TitleScene();
 	appGlobal.scene.reset();
 	
 	const container = document.getElementById( 'container' );
@@ -869,6 +874,12 @@ document.body.addEventListener( 'mousemove', ( event ) => {
 	if ( document.pointerLockElement === document.body ) {
 		if(appGlobal.globalHelperFunctions.checkPlaying()){
 			appGlobal.localPlayer.updateMouseMove(event);
+			
+		}
+	}else{
+		if(!appGlobal.playing){
+			if(appGlobal.titleScene!=null)
+				appGlobal.titleScene.updateMouseMove(event);
 		}
 	}
 } );
@@ -883,6 +894,7 @@ function animate() {
 	
 	if(!appGlobal.playing){
 		appGlobal.playerSelectScene.update();
+		appGlobal.titleScene.update();
 	}
 
 	appGlobal.gamePad.update();

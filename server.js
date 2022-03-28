@@ -11,21 +11,46 @@ const bcrypt = require('bcrypt');
 //console.log(process.env.MONGOPW);
 //console.log(process.env.CONNECTSECRET);
 
-mongoose.connect("mongodb+srv://"+process.env.MONGOUSER+":"+process.env.MONGOPW+"@cluster0.fvw04.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+mongoose.connect("mongodb+srv://"+process.env.MONGOUSER+":"+process.env.MONGOPW+"@cluster0.j6v3g.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
 {
 	useNewUrlParser:true,
 	useUnifiedTopology:true,
+
 });
 
 
 const userSchema = new mongoose.Schema({
-	username:{
+	email:{
+		type:String,
+		required:true,
+	},
+	tag:{
 		type:String,
 		required:true,
 	},
 	password:{
 		type:String,
 		required:true,
+	},
+	inapppurchases:{
+		type:Object,
+		required:true,
+	},
+	friends:{
+		type:Object,
+		required:true,
+	},
+	stats:{
+		type:Object,
+		required:true,
+	},
+	xp:{
+		type:Number,
+		required:true
+	},
+	level:{
+		type:Number,
+		required:true
 	}
 })
 
@@ -59,10 +84,10 @@ passport.deserializeUser(function (id, done) {
 	});
 });
 
-passport.use(new localStrategy(function (username, password, done) {
-	user.findOne({ username: username }, function (err, user) {
+passport.use(new localStrategy(function (email, password, done) {
+	user.findOne({ email: email }, function (err, user) {
 		if (err) return done(err);
-		if (!user) return done(null, false, { message: 'Incorrect username.' });
+		if (!user) return done(null, false, { message: 'Incorrect email.' });
 
 		bcrypt.compare(password, user.password, function (err, res) {
 			if (err) return done(err);
@@ -88,16 +113,16 @@ app.get('/signup', function(req, res, next) {
 	res.redirect('/')
 });
 
-
 app.post('/signup', async function(req, res, next) {
 	//signUpHelper(req,res,next);
-	const usr = req.body.username;
+	const email = req.body.email;
+	const user = req.body.username;
 	const pw = req.body.password;
 
-	const exists = await user.exists({ username: usr });
+	const exists = await user.exists({ email: email });
 
 	if (exists) {
-		res.render('index.ejs',{user:null, error:{signuperror:"user already exists."}});		
+		res.render('index.ejs',{user:null, error:{signuperror:"Email already exists."}});		
 		return;
 	};
 
@@ -107,11 +132,17 @@ app.post('/signup', async function(req, res, next) {
 		bcrypt.hash(pw, salt, function (err, hash) {
 			if (err) return next(err);
 			
-			const newAdmin = new user({
-				username: usr,
-				password: hash
+			const newUser = new user({
+				email: email,
+				tag:user,
+				password: hash,
+				inapppurchases:{},
+				friends:{},
+				stats:{},
+				xp:0,
+				level:0
 			});
-			newAdmin.save();
+			newUser.save();
 			//res.redirect('/');
 			res.render('index.ejs',{user:null, error:{loginerror:"Please sign in."}})
 		});
@@ -123,7 +154,7 @@ app.get('/', function(req, res, next) {
   if (!req.user) {
   	let error = null;
   	if(req.query.error){
-  		error = "incorrect username or password.";
+  		error = "incorrect email or password.";
   	}
   	return res.render('index.ejs',{user:null, error:{loginerror:error} }); 
   }
@@ -132,7 +163,6 @@ app.get('/', function(req, res, next) {
   res.locals.filter = null;
   res.render('index.ejs', { user: req.user });
 });
-
 
 // app.get('/setup', async (req, res) => {
 // 	const exists = await user.exists({ username: "admin" });
@@ -154,7 +184,5 @@ app.get('/', function(req, res, next) {
 // 		});
 // 	});
 // });
-
-
 
 app.listen(3005, ()=>{console.log("listening on 3005")});

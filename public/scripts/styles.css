@@ -1,7 +1,10 @@
 body{
 	margin: 0px;
 	padding: 0px;
+	/*
 	font-family: 'Nunito', sans-serif;
+	*/
+	font-family: 'Bebas Neue', sans-serif;
 	background: #000;
 }
 
@@ -40,6 +43,7 @@ body{
 }
 
 .user-btn{
+	font-family: 'Bebas Neue', sans-serif;
 	cursor: pointer;
 	display: inline-block;
 	padding: 10px 20px;
@@ -86,22 +90,23 @@ body{
 }
 
 .user-form-holder{
+	/*
 	font-family: 'Nunito', sans-serif;
+	*/
+	font-family: 'Bebas Neue', sans-serif;
 	font-size: 18px;
 	margin-top: 20px;
 	
 }
 
-
-
-
-
 #title{
 	width: 500px;
-	height: 250px;
+	height: 200px;
 	display: inline-block;
+	/*
 	background-size: 500px 250px;
 	background-image: url("../assets/ui/title.png");
+	*/
 }
 
 
@@ -431,7 +436,7 @@ h2{
 
 #player-select-character{
 	width: 500px;
-	height: 300px;
+	height: 250px;
 	float: right;
 }
 .class-btn, .class-btn-active{

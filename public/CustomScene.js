@@ -45,8 +45,8 @@ class CustomScene {
 		this.scene = new Scene();
 		//this.scene.background = new Color( 0x88ccff );
 		
-		this.renderer = new WebGLRenderer( { antialias: true } );
-		this.renderer.setPixelRatio( window.devicePixelRatio );
+		this.renderer = new WebGLRenderer( { antialias: false } );
+		//this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
 		this.renderer.shadowMap.enabled = true;
 		this.renderer.shadowMap.type = VSMShadowMap;

@@ -17,10 +17,13 @@ import {
 	FogExp2,
 	PerspectiveCamera,
 	Object3D,
+	PMREMGenerator
 } from 'three';
 import { OrbitControls } from './scripts/jsm/controls/OrbitControls.js';
 import { clone } from "./scripts/jsm/utils/SkeletonUtils.js"
 import { CharacterAnimationHandler } from './CharacterAnimationHandler.js';
+//import { RoomEnvironment } from './scripts/jsm/environments/RoomEnvironment.js';
+
 
 class PlayerSelectScene {
 
@@ -29,16 +32,16 @@ class PlayerSelectScene {
 		const self = this;
 		this.scene = new Scene();
 		//this.scene.background = new Color( 0x88ccff );
-		this.w = 500;
-		this.h = 300;
-		this.renderer = new WebGLRenderer( { antialias: true, alpha:true } );
-		this.renderer.setPixelRatio( window.devicePixelRatio );
+		this.w = 350;
+		this.h = 250;
+		this.renderer = new WebGLRenderer( { antialias: false, alpha:true } );
+		//this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( this.w, this.h );
-		this.renderer.shadowMap.enabled = true;
-		this.renderer.shadowMap.type = VSMShadowMap;
+		// this.renderer.shadowMap.enabled = true;
+		// this.renderer.shadowMap.type = VSMShadowMap;
 
 		this.camera = new PerspectiveCamera( 26, this.w / this.h, 0.1, 1000 );
-		this.camera.position.z = 3;
+		this.camera.position.z = 2.8;
 		
 		const container = document.getElementById( 'player-select-character' );
 		container.appendChild( this.renderer.domElement );
@@ -79,7 +82,7 @@ class PlayerSelectScene {
 		//automatic.position.y = projectile.position.y = hitscan.position.y = -.5;
 		
 		//this.weapon.position.y = -.5;
-		this.holder.position.y = -.5;
+		this.holder.position.y = -.55;
 		this.characters = [];
 		
 		const cahAssault =  new CharacterAnimationHandler({meshes:[assault],      animations:appGlobal.loadObjs[0].model.animations, name:"assault"})
@@ -111,6 +114,15 @@ class PlayerSelectScene {
 		
 		this.scene.add(this.holder);
 		this.holder.add(assault, submachine, sticky, launcher, sniper, sixgun);
+
+		// const pmremGenerator = new PMREMGenerator( this.renderer );
+		// this.scene.environment = pmremGenerator.fromScene( new RoomEnvironment(), 0.01 ).texture;
+
+		// this.holder.traverse( function ( obj ) {
+		// 	if(obj.isMesh){
+		// 		obj.material.environmentMap = self.scene.environment;
+		// 	}
+		// });
 		
 		const ambientlight = new AmbientLight( 0x6688cc );
 		this.scene.add( ambientlight );
@@ -125,17 +137,17 @@ class PlayerSelectScene {
 
 		const directionalLight = new DirectionalLight( 0xffffc7, 1.2 );
 		directionalLight.position.set( - 5, 25, - 1 );
-		directionalLight.castShadow = true;
-		directionalLight.shadow.camera.near = 0.01;
-		directionalLight.shadow.camera.far = 500;
-		directionalLight.shadow.camera.right = 30;
-		directionalLight.shadow.camera.left = - 30;
-		directionalLight.shadow.camera.top	= 30;
-		directionalLight.shadow.camera.bottom = - 30;
-		directionalLight.shadow.mapSize.width = 1024;
-		directionalLight.shadow.mapSize.height = 1024;
-		directionalLight.shadow.radius = 4;
-		directionalLight.shadow.bias = - 0.00006;
+		// directionalLight.castShadow = true;
+		// directionalLight.shadow.camera.near = 0.01;
+		// directionalLight.shadow.camera.far = 500;
+		// directionalLight.shadow.camera.right = 30;
+		// directionalLight.shadow.camera.left = - 30;
+		// directionalLight.shadow.camera.top	= 30;
+		// directionalLight.shadow.camera.bottom = - 30;
+		// directionalLight.shadow.mapSize.width = 1024;
+		// directionalLight.shadow.mapSize.height = 1024;
+		// directionalLight.shadow.radius = 4;
+		// directionalLight.shadow.bias = - 0.00006;
 		this.scene.add( directionalLight );
 
 
