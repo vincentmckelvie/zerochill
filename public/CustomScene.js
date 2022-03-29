@@ -226,28 +226,7 @@ class CustomScene {
 	
 	kill(){
 		
-		// this.scene.remove(this.particles);
-		// const self = this;
-
-		// this.scene.traverse( function ( obj ) {
-		   	
-  //           if(obj.geometry){
-  //               obj.geometry.dispose();
-  //           }
-  //           if(obj.material){
-  //           	console.log("mesh")
-  //               obj.material.dispose();
-  //           }
-  //           if(obj.mesh){
-  //           	console.log("mesh")
-  //               obj.mesh.dispose();
-  //           }
-  //           if(obj.texture){
-  //           	console.log("texture")
-  //               obj.texture.dispose();
-  //           }
-  //           //self.scene.remove(obj);
-		// });
+	
 		appGlobal.characterOutlineMeshes = [];
 		appGlobal.globalHelperFunctions.tearDownObject(this.scene);
 		

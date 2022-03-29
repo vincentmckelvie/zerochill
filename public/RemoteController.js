@@ -29,7 +29,7 @@ class RemoteController {
 	}
 
 	initRemotePlayer(OBJ){
-		this.remotePlayer = new RemotePlayer({id:this.id, meshName:OBJ.meshName}); 
+		this.remotePlayer = new RemotePlayer({id:this.id, meshName:OBJ.meshName, movement:OBJ.movement}); 
 		this.playing = true;
 	}
 	killRemotePlayer(){

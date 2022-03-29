@@ -25,6 +25,7 @@ import { AbilityBlink } from './AbilityBlink.js';
 import { RemoteController } from './RemoteController.js';
 import { PlayerSelectScene } from './PlayerSelectScene.js';
 import { TitleScene } from './TitleScene.js';
+import { ParallaxGUI } from './ParallaxGUI.js';
 
 import { Settings } from './Settings.js';
 import { Servers } from './Servers.js';
@@ -151,19 +152,19 @@ const particles = {
 	},
 	boost:{
 		burst:false,
-		amount:30,
+		amount:10,
 	    killTimeout:600, 
 	    mesh:"box", 
-	    col: new THREE.Color().setHSL(.4,1,.7), 
+	    col: new THREE.Color().setHSL(.1,1,.7), 
 	    pos:new THREE.Vector3(), 
-	    rndPos:3, 
+	    rndPos:.1, 
 	    rot:new THREE.Vector3(), 
 	    rndRot:Math.random()*(Math.PI*2), 
 	    rndScl:0, 
-	    scl:.3,
+	    scl:.17,
 	    velPosScale:2,
 		velRot:0,
-		velScl:-5, 
+		velScl:-8, 
 		velPosRnd: 1,
 		lookAt:false,
 		lookAtLength:0,
@@ -518,7 +519,8 @@ const globalHelperFunctions = {
 			socket.emit('startPlaying', {
 				id:socket.id,
 				meshName:currMeshName,
-				name:appGlobal.user
+				name:appGlobal.user,
+				movement:currMovementName
 			});
 
 			appGlobal.serverInfoTimeout = window.setInterval(()=> {
@@ -546,7 +548,6 @@ const globalHelperFunctions = {
 				if(obj.isMesh || obj.isSkinnedMesh){
 					
 					if(obj.materials !=null ){
-						console.log("multiple materials")
 						for(let i = 0; i<obj.materials.length; i++){
 							if(obj.materials[i].map!=null){
 								obj.materials[i].map.dispose();
@@ -618,7 +619,7 @@ const appGlobal = {
 	soundHandler:null,
 	hue:0,
 	loadObjs:[
-		{name:"anis",    	    	model:null, loaded:false, url:"character-anis-2.glb"},
+		{name:"anis",    	    	model:null, loaded:false, url:"character-anis-3.glb"},
 		{name:"body-launcher",  	model:null, loaded:false, url:"launcher.glb"         },
 		{name:"body-sticky",    	model:null, loaded:false, url:"sticky.glb"         },
 		{name:"body-assault",   	model:null, loaded:false, url:"assault.glb"         },
@@ -631,7 +632,31 @@ const appGlobal = {
 		{name:"sticky",       		model:null, loaded:false, url:"fps-sticky.glb"  },
 		{name:"submachine",   		model:null, loaded:false, url:"fps-sub.glb"  },
 		{name:"assault",      		model:null, loaded:false, url:"fps-assault.glb"  },
-		{name:"title",      		model:null, loaded:false, url:"zerochill.glb"  }
+		{name:"title",      		model:null, loaded:false, url:"zerochill.glb"  },
+		
+		{name:"assault-boost",      model:null, loaded:false, url:"attach/assault/boost.glb"  },
+		{name:"assault-directional",model:null, loaded:false, url:"attach/assault/directional.glb"  },
+		{name:"assault-teleport",   model:null, loaded:false, url:"attach/assault/teleport.glb"  },
+		
+		{name:"submachine-boost",      model:null, loaded:false, url:"attach/submachine/boost.glb"  },
+		{name:"submachine-directional",model:null, loaded:false, url:"attach/submachine/directional.glb"  },
+		{name:"submachine-teleport",   model:null, loaded:false, url:"attach/submachine/teleport.glb"  },
+		
+		{name:"sticky-boost",      model:null, loaded:false, url:"attach/sticky/boost.glb"  },
+		{name:"sticky-directional",model:null, loaded:false, url:"attach/sticky/directional.glb"  },
+		{name:"sticky-teleport",   model:null, loaded:false, url:"attach/sticky/teleport.glb"  },
+		
+		{name:"launcher-boost",      model:null, loaded:false, url:"attach/launcher/boost.glb"  },
+		{name:"launcher-directional",model:null, loaded:false, url:"attach/launcher/directional.glb"  },
+		{name:"launcher-teleport",   model:null, loaded:false, url:"attach/launcher/teleport.glb"  },
+
+		{name:"sixgun-boost",      model:null, loaded:false, url:"attach/sixgun/boost.glb"  },
+		{name:"sixgun-directional",model:null, loaded:false, url:"attach/sixgun/directional.glb"  },
+		{name:"sixgun-teleport",   model:null, loaded:false, url:"attach/sixgun/teleport.glb"  },
+
+		{name:"sniper-boost",      model:null, loaded:false, url:"attach/sniper/boost.glb"  },
+		{name:"sniper-directional",model:null, loaded:false, url:"attach/sniper/directional.glb"  },
+		{name:"sniper-teleport",   model:null, loaded:false, url:"attach/sniper/teleport.glb"  },
 	],
 	initedThree:false,
 	playerSelectScene:null,
@@ -645,7 +670,8 @@ const appGlobal = {
 	gamePad:new GamePad(),
 	remotePlayers:[],
 	worldOctree:new Octree(),
-	worldsHolder:null
+	worldsHolder:null,
+	parallax:new ParallaxGUI()
 };
 
 window.appGlobal = appGlobal;
@@ -653,11 +679,13 @@ window.appGlobal = appGlobal;
 let currentSelectWeapon = appGlobal.weapons.automatic;
 let currentMovement = abilities.planetSwitch;
 let currMeshName = "assault";
+let currMovementName = "boost"
 let joinedFirstRoom = false;
 let initedServers = false;
 let playerIndex = "";
 let playerAmount = 0;
 let maxPlayers = 0;
+let currLoad = 0;
 //let remotePlayers = [];//window.remotePlayers = {};
 let stats;
 const SERVERFPS = 20;
@@ -689,9 +717,14 @@ function initLoading(){
 
 
 function handleLoad(index, gltf){
+	currLoad++;
 	appGlobal.loadObjs[index].loaded = true;
-	appGlobal.loadObjs[index].model = gltf; 
+	appGlobal.loadObjs[index].model = gltf;
+	document.getElementById("loaded").innerHTML = currLoad;
+	document.getElementById("loading-total").innerHTML = appGlobal.loadObjs.length;
 	if(checkLoaded()){
+		document.getElementById('loading').style.display = "none";
+		document.getElementById('overlay').style.display = "block";
 		initThree();
 	}
 }
@@ -719,6 +752,7 @@ function initThree(){
 	appGlobal.soundHandler = new GlobalSoundHandler();
 	appGlobal.playerSelectScene = new PlayerSelectScene();
 	appGlobal.titleScene = new TitleScene();
+	//appGlobal.parallax = new ParallaxGUI();
 	appGlobal.scene.reset();
 	
 	const container = document.getElementById( 'container' );
@@ -880,6 +914,7 @@ document.body.addEventListener( 'mousemove', ( event ) => {
 		if(!appGlobal.playing){
 			if(appGlobal.titleScene!=null)
 				appGlobal.titleScene.updateMouseMove(event);
+				appGlobal.parallax.updateMouseMove(event);
 		}
 	}
 } );
@@ -895,6 +930,7 @@ function animate() {
 	if(!appGlobal.playing){
 		appGlobal.playerSelectScene.update();
 		appGlobal.titleScene.update();
+		appGlobal.parallax.update();
 	}
 
 	appGlobal.gamePad.update();
@@ -968,16 +1004,19 @@ document.getElementById("class-button-sixgun").addEventListener("click", functio
 
 document.getElementById("movement-button-planet").addEventListener("click", function (){
 	//handleInitPlaying(appGlobal.weapons.sixgun);
+	currMovementName = "boost";
 	currentMovement = abilities.planetSwitch;
 	handleSwitchClass(document.getElementById("movement-button-planet"), "movement-btn-active", "movement-btn",  {type:"movement", name:"planet switch"});
 });
 document.getElementById("movement-button-directional").addEventListener("click", function (){
 	//handleInitPlaying(appGlobal.weapons.sixgun);
+	currMovementName = "directional";
 	currentMovement = abilities.directionalBoost;
 	handleSwitchClass(document.getElementById("movement-button-directional"), "movement-btn-active", "movement-btn", {type:"movement", name:"directional"});
 });
 document.getElementById("movement-button-teleport").addEventListener("click", function (){
 	//handleInitPlaying(appGlobal.weapons.sixgun);
+	currMovementName = "teleport";
 	currentMovement = abilities.teleport;
 	handleSwitchClass(document.getElementById("movement-button-teleport"), "movement-btn-active", "movement-btn", {type:"movement", name:"teleport"});
 });
@@ -1002,7 +1041,9 @@ function handleSwitchClass(elem, activeName, nonActiveName, OBJ){
 	}
 	elem.className = activeName;
 	if(OBJ.type == "class")
-		appGlobal.playerSelectScene.handleCharacterSwitch( {class:OBJ.class} );
+		appGlobal.playerSelectScene.handleCharacterSwitch( {class:OBJ.class, movement:currMovementName} );
+	else if(OBJ.type=="movement")
+		appGlobal.playerSelectScene.handleMovementSwitch( {movement:currMovementName, class:currMeshName} );
 }
 
 // function handleInitPlaying(){
@@ -1119,7 +1160,7 @@ socket.on('connect', () => {
 					}else{
 						if(data.players[i].playing){
 							if(!player.controller.playing){
-						    	player.controller.initRemotePlayer({meshName:data.players[i].meshName});
+						    	player.controller.initRemotePlayer({meshName:data.players[i].meshName, movement:data.players[i].movement});
 						    }else{
 
 						    	player.controller.updateRemote({

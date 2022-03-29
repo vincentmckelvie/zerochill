@@ -7,9 +7,12 @@ import {
 	Quaternion,
 	Scene,
 	TextureLoader,
-	Color
-	
+	Color,
+	RepeatWrapping,
+	ClampToEdgeWrapping,
+	LinearFilter
 } from 'three';
+
 import { ParticleEmitter } from './ParticleEmitter.js';
 import { CharacterAnimationHandler } from './CharacterAnimationHandler.js';
 import { clone } from "./scripts/jsm/utils/SkeletonUtils.js"
@@ -19,8 +22,8 @@ class RemotePlayer {
 	//{scene:scene, worldScale:worldScale};
 	constructor(OBJ) {
 		const self = this;
-		const geo = new BoxGeometry( 2, 2.25, 1.5 );
-		const headGeo = new BoxGeometry(1.4,1.4,1.4);
+		const geo = new BoxGeometry( 2, 2.5, 1.5 );
+		const headGeo = new BoxGeometry(1.4,1.6,1.4);
 		
 		const mat = new MeshStandardMaterial({    color:0x00ff00, visible:false});
 		const headMat = new MeshStandardMaterial({color:0xff0000, visible:false});
@@ -28,26 +31,46 @@ class RemotePlayer {
 		this.crouch = new Object3D();
 		this.characterHolder = new Object3D();
 		
-		this.character = clone( self.getModelByName(OBJ.meshName).scene );
+		this.character = clone( self.getModelByName("body-"+OBJ.meshName).scene );
+		this.movement  = clone( self.getModelByName(OBJ.meshName+"-"+OBJ.movement).scene );
+		this.boostTip;
+		this.boostTexture = new TextureLoader().load( './assets/textures/boost.png' );
+		this.boostTexture.wrapS = RepeatWrapping;
+		this.boostTexture.wrapT =  ClampToEdgeWrapping;
+		this.boostTexture.magFilter = LinearFilter; 
+
+		this.movement.traverse( function ( obj ) {
+			if(obj.name.includes("boost-part")){
+				obj.material.transparent = true;
+				obj.material.map = self.boostTexture;
+				obj.material.emissiveMap = self.boostTexture;
+				obj.material.color = new Color(0x000000);
+				obj.material.emissive = new Color(0xffbf80);
+				self.boostTip = obj;
+			}
+		});
 		const s = 3.25;
-		this.character.position.z = -.2;
+		this.character.position.z = this.movement.position.z = -.2;
 		this.character.scale.set(s,s,s);
-		console.log(this.character)
+		this.movement.scale.set(s,s,s);
+		
 		appGlobal.characterOutlineMeshes.push(this.character);
+		appGlobal.characterOutlineMeshes.push(this.movement);
+		
 		appGlobal.scene.characterOutlinePass.selectedObjects = appGlobal.characterOutlineMeshes;
 		
-		this.character.position.y = -.5;
+		this.character.position.y = this.movement.position.y = -1.25;
 		this.characterHolder.rotation.y += Math.PI;
-		
+
 		this.mesh = new Mesh(geo,mat);
-		this.mesh.position.y = .75;
+		this.mesh.position.y = -.25;
 		this.head = new Mesh(headGeo, headMat);
-		this.head.position.y = 2.5;
+		this.head.position.y = 1.75;
 		
 		
 		this.offset.add(this.crouch);
 		this.crouch.add(this.mesh, this.head, this.characterHolder);
-		this.characterHolder.add(this.character);
+		this.characterHolder.add(this.character, this.movement);
 		this.hitScanArrayIndex = appGlobal.hitScanArray.length;
 		
 		appGlobal.hitScanArray.push(this.mesh, this.head);
@@ -59,7 +82,7 @@ class RemotePlayer {
 		this.killed = false;
 		this.start = new Object3D();
 		this.end = new Object3D();
-		this.end.position.y = 2.5;
+		this.end.position.y = 1.75;
 		this.endWorldPosition = new Vector3();
 		this.offset.add(this.start);
 		this.offset.add(this.end);
@@ -74,11 +97,11 @@ class RemotePlayer {
 		this.shouldDoBoostParticle = false;
 		
 		this.boostParticle = new ParticleEmitter(appGlobal.particles.boost);
-		const arr = [this.character];
+		const arr = [this.character, this.movement];
 		this.cah = new CharacterAnimationHandler({meshes:arr, animations:appGlobal.loadObjs[0].model.animations, name:OBJ.meshName});
 		this.cah.initAnimation();
 		this.remoteAbilites = new RemoteAbilities({remotePlayer:this});
-		this.spines = [this.character.getObjectByName( 'spine_01' )] 
+		this.spines = [this.character.getObjectByName( 'spine_01' ), this.movement.getObjectByName( 'spine_01' )] 
 		let name = "tip-" + OBJ.meshName;
 		this.tipObject = this.character.getObjectByName(name);
 		this.tipObject.visible = false;
@@ -97,18 +120,28 @@ class RemotePlayer {
 		this.playerMovingForWalkSound = false;
 		this.canDoWalkSound = true;
 		this.currStep = 0;
+		this.rotMod = 0;
+		this.boostTipWorldPosition = new Vector3();
+				
 		
 	}
 
 	getModelByName(NAME){
 		for(let i = 0; i<appGlobal.loadObjs.length;i++){
-			if(appGlobal.loadObjs[i].name=="body-"+NAME)
+			if(appGlobal.loadObjs[i].name==NAME)
 				return appGlobal.loadObjs[i].model;	
 		}
 	}
 
 	update(){
 		if(!this.killed){
+
+			this.rotMod += (appGlobal.deltaTime*400);
+			if(Math.floor(this.rotMod%10) == 0){
+				this.boostTexture.offset.x += .2+Math.random()*.5;
+			}
+
+			this.boostTip.visible = this.shouldDoBoostParticle;
 
 			this.tipObject.getWorldPosition(this.tipPos);
 			
@@ -120,11 +153,14 @@ class RemotePlayer {
 
 			this.end.getWorldPosition(this.endWorldPosition);
 			for(let i = 0; i<this.spines.length; i++){
-				this.spines[i].rotation.z += (this.spineRotTarg-this.spines[i].rotation.z)*(160*appGlobal.deltaTime); 
+				this.spines[i].rotation.z += ((this.spineRotTarg+.5)-this.spines[i].rotation.z)*(160*appGlobal.deltaTime); 
 			}
 			
 			if(this.shouldDoBoostParticle){
-				this.boostParticle.obj.pos.copy(this.offset.position);
+
+				//this.boostParticle.obj.pos.copy(this.offset.position);
+				this.boostTip.getWorldPosition(this.boostTipWorldPosition);
+				this.boostParticle.obj.pos.copy(this.boostTipWorldPosition);
 				this.boostParticle.emit();
 			}
 

@@ -110,6 +110,21 @@ body{
 }
 
 
+#loading-centered{
+	color: #fff;
+	text-align: center;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	width: 300px;
+
+	margin-left: -150px;
+	height: 100px;
+	margin-top: -50px;
+	font-size: 20px;
+}
+
+
 #timer{
 	position: fixed;
 	top: 20px;
@@ -393,6 +408,7 @@ body{
 }
 
 #overlay{
+	display: none;
 	position: fixed;
 	top: 0px;
 	left: 0px;

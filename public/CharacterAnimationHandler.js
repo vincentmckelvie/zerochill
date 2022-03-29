@@ -56,7 +56,7 @@ class CharacterAnimationHandler{
 	
 	initAnimation(){
 
-		const idleAni = this.getAniByName(this.animations,"idle");
+		const idleAni = this.getAniByName(this.animations,"idle-2");
 		//idleAni.timeScale = 20;
 		const runFAni = this.getAniByName(this.animations,"run_f");
 		const runRAni = this.getAniByName(this.animations,"run_r");
@@ -99,7 +99,7 @@ class CharacterAnimationHandler{
 		this.parseAnimation(adsAniSniper,      false);
 
 		this.idle = this.mixer.clipAction(     idleAni);  
-		this.idle.timeScale = 3;
+		this.idle.timeScale = 1.4;
 		this.right = this.mixer.clipAction(    runRAni);
 		this.left = this.mixer.clipAction(     runLAni);
 		this.forward = this.mixer.clipAction(  runFAni);

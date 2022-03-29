@@ -6,6 +6,8 @@ class ParallaxGUI {
 		const self = this;
 		this.targX = 0;
 		this.targY = 0;
+		this.x = 0; 
+		this.y = 0;
 		
 	}
 	updateMouseMove(event){
@@ -14,11 +16,15 @@ class ParallaxGUI {
 	}
 
 	update(){
-		this.parallaxIt("title", 60);
-		this.parallaxIt("instructions", 120);
-		this.parallaxIt("all-classes", 60);
-		this.parallaxIt("player-select-character", 60);
-		this.parallaxIt("movement-select-holder", 60);
+		this.x += (this.targX-this.x)*.05;
+		this.y += (this.targY-this.y)*.05;
+		this.parallaxIt("title", 160);
+		this.parallaxIt("planet-switching-select-title", 160);
+		this.parallaxIt("class-select-title", 100);
+		this.parallaxIt("instructions", 60);
+		this.parallaxIt("all-classes", 160);
+		this.parallaxIt("player-select-character", 160);
+		this.parallaxIt("movement-select-holder", 120);
 		this.parallaxIt("play-holder", 60);
 	}
 
@@ -28,8 +34,7 @@ class ParallaxGUI {
 
 
 	parallaxIt(target, movement) {
-		
-		
+		document.getElementById(target).style.transform = "translate("+this.x*movement+"px, "+this.y*movement+"px)";		
 	}
 	
 };
