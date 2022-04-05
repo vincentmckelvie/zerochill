@@ -76,7 +76,7 @@ class WeaponEmissiveHandler {
 		}
 		this.texture.offset.x = -this.move;
 		
-		this.blastTexture = new TextureLoader().load( './assets/textures/shoot.png' );
+		this.blastTexture = new TextureLoader().load( './assets/textures/shoot-2.png' );
 		this.blast = OBJ.blast;
 		//this.blast.opacityMap = this.blastTexture;
 		this.blast.transparent = true;

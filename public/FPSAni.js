@@ -18,7 +18,7 @@ class FPSAni {
 	constructor(OBJ) {
 
 		const self = this;
-		const model = self.getModelByName(OBJ.model)
+		const model = self.getModelByName("fps-"+OBJ.model)
 		this.weaponName = OBJ.name;
 		this.mesh = clone( model.scene );
 		

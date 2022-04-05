@@ -21,16 +21,147 @@ body{
 	pointer-events: none;
 }
 
-
-.top-right-info{
-	display: inline;
-}
 .user-header{
 	color: #000;
 	margin-bottom: 20px;
 	font-size: 30px;
 }
 
+#add-friend-btn{
+	position: absolute;
+	display: inline-block;
+	margin-left: 10px;
+	margin-top: 4px;
+	cursor: pointer;
+}
+
+#add-friend-label{
+	margin-right: 10px;
+}
+#add-friend-user-name{
+	height: 26px;
+}
+#add-friend-label{
+	display:inline;
+	position:relative;
+	top:5px;
+}
+#friends-list{
+	margin-top: 20px;
+	max-height: 60vh;
+	overflow-y: auto;
+}
+.friends-holder{
+	display: inline-block;
+	margin: 10px auto;
+	padding: 15px;
+	outline: solid black thin;
+	margin-bottom: 10px;
+	width: 300px;
+}
+.friends-name{
+	float: left;
+}
+
+.friends-right{
+	float: right;
+}
+.friends-right div{
+	display: inline-block;
+	margin-right: 10px;
+}
+.friend-remove{
+	cursor: pointer;
+}
+
+.friend-request-holder{
+	margin: 10px auto;
+	padding: 15px;
+	display: inline-block;
+	outline: solid black thin;
+	margin-bottom: 10px;
+	width: 300px;
+}
+
+.friend-request-left{
+	float: left;
+}
+.friend-request-right{
+	float: right;
+}
+
+.friend-request-right div{
+	float: left;
+	margin-left: 16px;
+	cursor: pointer;
+}
+
+
+.top-right-info{
+	display: inline;
+}
+
+#user-greeting{
+	color: #000;
+}
+#user-modal{
+	width: 600px;
+}
+
+#user-stats-holder{
+	font-size: 20px;
+	margin-top: 10px;
+}
+
+.items-holder{
+	max-height: 60vh;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+#add-friend-success, #add-friend-error{
+	font-size: 16px;
+	color: #555;
+}
+
+.items-individual-holder{
+	display: inline-block;
+	margin-left: 25px;
+	padding: 20px;
+	height: auto;
+	border: solid black thin;
+	text-align: left;
+	width: 500px;
+}
+.items-img{
+	width: 50px;
+}
+.items-left{
+	text-align: left;
+	float: left;
+}
+.items-right{
+	float: right;
+}
+
+
+
+.items-individual-desc{
+	font-size: 16px;
+	color: #555;
+}
+.items-individual-name{
+	font-size: 22px;
+
+}
+
+.items-buy-overlay{
+
+}
+
+.items-individual-icon{
+
+}
 
 .logout{
 	cursor: pointer;
@@ -99,6 +230,10 @@ body{
 	
 }
 
+#xp-bar{
+
+}
+
 #title{
 	width: 500px;
 	height: 200px;
@@ -109,7 +244,53 @@ body{
 	*/
 }
 
+#xp-bar{
+	margin: 10px auto;
+	width: 600px;
+	height: 40px;
+	background: #fff;
+}
 
+#game-over-stats{
+	font-size: 13px;
+	text-align: center;
+
+}
+
+.user-section-holders{
+	display: none;
+	font-size: 25px;
+	margin-top: 20px;
+	margin-bottom: 20px;
+
+}
+#user-header-buttons-holder{
+
+}
+.user-header-buttons, .user-header-buttons-active{
+	display: inline-block;
+	margin: 5px 20px;
+	font-size: 28px;
+	cursor: pointer;
+	text-decoration: none;
+
+}	
+.user-header-buttons : hover{
+	text-decoration: underline;
+}
+
+.user-header-buttons-active{
+	text-decoration: underline;
+}
+
+#game-over-stats div{
+	display: inline-block;
+	margin: 5px 10px;
+}	
+
+#loading{
+	display: block;
+}
 #loading-centered{
 	color: #fff;
 	text-align: center;
@@ -419,9 +600,15 @@ body{
 }
 
 #center{
-	width: 650px;
+	width: 680px;
 	margin: 0px auto;
 	text-align: center;
+	max-height:100%; 
+	overflow-y:auto; 
+	overflow-x:auto;
+	padding-left: 50px;
+	padding-right: 50px;
+	padding-bottom: 50px;
 }
 h1{
 	font-size: 70px;
@@ -609,15 +796,15 @@ h2{
 }
 
 #servers-btn{
-	background: url("/assets/ui/server.png") ;
+	background: url("/assets/nongameui/server.svg") ;
 	background-size: 40px 40px;
 }
 #settings-btn{
-	background: url("/assets/ui/settings.png") ;
+	background: url("/assets/nongameui/settings.svg") ;
 	background-size: 40px 40px;
 }
 #user-btn{
-	background: url("/assets/ui/login.png") ;
+	background: url("/assets/nongameui/user-white.svg") ;
 	background-size: 40px 40px;
 }
 

@@ -44,6 +44,7 @@ class Player {
 		this.vector3 = new Vector3();
 		this.playerDirection = new Vector3();
 		this.playerOnFloor = false;
+		this.animationOnFloor = false;
 		
 		this.boostMeter = 1;
 		this.boosting = false;
@@ -63,8 +64,6 @@ class Player {
 
 		this.playerVelocity = new Vector3();
 		this.playerDirection = new Vector3();
-
-		this.playerOnFloor = false;
 		
 		this.tpsAni;
 		this.didTpsAni = false;
@@ -193,11 +192,11 @@ class Player {
 		this.animationObject = {
 			yAxis:this.axisY, 
 			xAxis:this.axisX,
-			jump:!this.playerOnFloor,
+			jump:!this.animationOnFloor,
 			boost:this.boosting,
 			adsing:this.adsing
 		}
-
+		
 		switch(this.state){
 			case "alive":
 				//this.updateOutline();
@@ -686,28 +685,28 @@ class Player {
 	playerWorldCollision(world) {
 		//this.playerCollisions();
 
-		/*
+		
 		const center = this.vector1.addVectors( this.playerCollider.start, this.playerCollider.end ).multiplyScalar( 0.5 );
 
 		const sphere_center = appGlobal.world.collider.center;
 
 		const r = this.playerCollider.radius + appGlobal.world.collider.radius;
 		const r2 = r * r;
-		this.playerOnFloor = false;
+		this.animationOnFloor = false;
 		for ( const point of [ this.playerCollider.start, this.playerCollider.end, center ] ) {
 		//for ( const point of [ this.playerCollider.start ] ) {
 			const d2 = point.distanceToSquared( sphere_center );
 			if ( d2 < r2 ) {
 				const normal = this.vector1.subVectors( point, sphere_center ).normalize();
-				this.playerOnFloor = true;
-				this.playerVelocity.addScaledVector( normal, -normal.dot( this.playerVelocity ) );
+				this.animationOnFloor = true;
+				//this.playerVelocity.addScaledVector( normal, -normal.dot( this.playerVelocity ) );
 				//this.playerCollider.translate( deltaPosition.add(this.blinkTarg) );
 		
 				//playerCollider.translate( normal.multiplyScalar( 1 ) );
 			}	
 		}
 
-		*/
+		
 	}	
 
 	getClosestWorld(){
@@ -890,7 +889,7 @@ class Player {
 		const deltaPosition = this.playerVelocity.clone().multiplyScalar( appGlobal.deltaTime );
 		this.playerCollider.translate( deltaPosition.add(this.blinkTarg) );
 		
-		//this.playerWorldCollision();
+		this.playerWorldCollision();
 		this.playerCollisions();
 		
 		this.lookAt.position.copy( this.playerCollider.end );

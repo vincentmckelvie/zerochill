@@ -620,43 +620,44 @@ const appGlobal = {
 	hue:0,
 	loadObjs:[
 		{name:"anis",    	    	model:null, loaded:false, url:"character-anis-3.glb"},
-		{name:"body-launcher",  	model:null, loaded:false, url:"launcher.glb"         },
-		{name:"body-sticky",    	model:null, loaded:false, url:"sticky.glb"         },
-		{name:"body-assault",   	model:null, loaded:false, url:"assault.glb"         },
-		{name:"body-submachine",   	model:null, loaded:false, url:"submachine.glb"         },
-		{name:"body-sixgun",    	model:null, loaded:false, url:"sixgun.glb"         },
-		{name:"body-sniper",    	model:null, loaded:false, url:"sniper.glb"         },
-		{name:"sniper",       		model:null, loaded:false, url:"fps-sniper.glb"    },
-		{name:"sixgun",       		model:null, loaded:false, url:"fps-sixgun.glb"    },
-		{name:"launcher",     		model:null, loaded:false, url:"fps-launcher.glb"  },
-		{name:"sticky",       		model:null, loaded:false, url:"fps-sticky.glb"  },
-		{name:"submachine",   		model:null, loaded:false, url:"fps-sub.glb"  },
-		{name:"assault",      		model:null, loaded:false, url:"fps-assault.glb"  },
+		{name:"body-launcher",  	model:null, loaded:false, url:"models/launcher/default/body.glb"         },
+		{name:"body-sticky",    	model:null, loaded:false, url:"models/sticky/default/body.glb"         },
+		{name:"body-assault",   	model:null, loaded:false, url:"models/assault/default/body.glb"         },
+		{name:"body-submachine",   	model:null, loaded:false, url:"models/submachine/default/body.glb"         },
+		{name:"body-sixgun",    	model:null, loaded:false, url:"models/sixgun/default/body.glb"         },
+		{name:"body-sniper",    	model:null, loaded:false, url:"models/sniper/default/body.glb"         },
+		{name:"fps-sniper",       	model:null, loaded:false, url:"models/sniper/default/fps.glb"    },
+		{name:"fps-sixgun",       	model:null, loaded:false, url:"models/sixgun/default/fps.glb"    },
+		{name:"fps-launcher",     	model:null, loaded:false, url:"models/launcher/default/fps.glb"  },
+		{name:"fps-sticky",       	model:null, loaded:false, url:"models/sticky/default/fps.glb"  },
+		{name:"fps-submachine",   	model:null, loaded:false, url:"models/submachine/default/fps.glb"  },
+		{name:"fps-assault",      	model:null, loaded:false, url:"models/assault/default/fps.glb"  },
+		
 		{name:"title",      		model:null, loaded:false, url:"zerochill.glb"  },
 		
-		{name:"assault-boost",      model:null, loaded:false, url:"attach/assault/boost.glb"  },
-		{name:"assault-directional",model:null, loaded:false, url:"attach/assault/directional.glb"  },
-		{name:"assault-teleport",   model:null, loaded:false, url:"attach/assault/teleport.glb"  },
+		{name:"assault-boost",      model:null, loaded:false, url:"models/assault/default/boost.glb"  },
+		{name:"assault-directional",model:null, loaded:false, url:"models/assault/default/directional.glb"  },
+		{name:"assault-teleport",   model:null, loaded:false, url:"models/assault/default/teleport.glb"  },
 		
-		{name:"submachine-boost",      model:null, loaded:false, url:"attach/submachine/boost.glb"  },
-		{name:"submachine-directional",model:null, loaded:false, url:"attach/submachine/directional.glb"  },
-		{name:"submachine-teleport",   model:null, loaded:false, url:"attach/submachine/teleport.glb"  },
+		{name:"submachine-boost",      model:null, loaded:false, url:"models/submachine/default/boost.glb"  },
+		{name:"submachine-directional",model:null, loaded:false, url:"models/submachine/default/directional.glb"  },
+		{name:"submachine-teleport",   model:null, loaded:false, url:"models/submachine/default/teleport.glb"  },
 		
-		{name:"sticky-boost",      model:null, loaded:false, url:"attach/sticky/boost.glb"  },
-		{name:"sticky-directional",model:null, loaded:false, url:"attach/sticky/directional.glb"  },
-		{name:"sticky-teleport",   model:null, loaded:false, url:"attach/sticky/teleport.glb"  },
+		{name:"sticky-boost",      model:null, loaded:false, url:"models/sticky/default/boost.glb"  },
+		{name:"sticky-directional",model:null, loaded:false, url:"models/sticky/default/directional.glb"  },
+		{name:"sticky-teleport",   model:null, loaded:false, url:"models/sticky/default/teleport.glb"  },
 		
-		{name:"launcher-boost",      model:null, loaded:false, url:"attach/launcher/boost.glb"  },
-		{name:"launcher-directional",model:null, loaded:false, url:"attach/launcher/directional.glb"  },
-		{name:"launcher-teleport",   model:null, loaded:false, url:"attach/launcher/teleport.glb"  },
+		{name:"launcher-boost",      model:null, loaded:false, url:"models/launcher/default/boost.glb"  },
+		{name:"launcher-directional",model:null, loaded:false, url:"models/launcher/default/directional.glb"  },
+		{name:"launcher-teleport",   model:null, loaded:false, url:"models/launcher/default/teleport.glb"  },
 
-		{name:"sixgun-boost",      model:null, loaded:false, url:"attach/sixgun/boost.glb"  },
-		{name:"sixgun-directional",model:null, loaded:false, url:"attach/sixgun/directional.glb"  },
-		{name:"sixgun-teleport",   model:null, loaded:false, url:"attach/sixgun/teleport.glb"  },
+		{name:"sixgun-boost",      model:null, loaded:false, url:"models/sixgun/default/boost.glb"  },
+		{name:"sixgun-directional",model:null, loaded:false, url:"models/sixgun/default/directional.glb"  },
+		{name:"sixgun-teleport",   model:null, loaded:false, url:"models/sixgun/default/teleport.glb"  },
 
-		{name:"sniper-boost",      model:null, loaded:false, url:"attach/sniper/boost.glb"  },
-		{name:"sniper-directional",model:null, loaded:false, url:"attach/sniper/directional.glb"  },
-		{name:"sniper-teleport",   model:null, loaded:false, url:"attach/sniper/teleport.glb"  },
+		{name:"sniper-boost",      model:null, loaded:false, url:"models/sniper/default/boost.glb"  },
+		{name:"sniper-directional",model:null, loaded:false, url:"models/sniper/default/directional.glb"  },
+		{name:"sniper-teleport",   model:null, loaded:false, url:"models/sniper/default/teleport.glb"  },
 	],
 	initedThree:false,
 	playerSelectScene:null,
@@ -1088,6 +1089,7 @@ socket.on('connect', () => {
  	socket.on('serverInitialPing', (data)=>{
  		
  		if(data.id==socket.id && !initedServers){
+ 			
  			appGlobal.servers = new Servers({info:data.info});
 	 		const q = getQuery();
 	 		if(q != null){
@@ -1210,17 +1212,54 @@ socket.on('connect', () => {
 	});
   
 	socket.on('endGame', (data) => {
+		
 		document.getElementById("debug").innerHTML = data.state;
 		appGlobal.gameState = data.state;
 
 		if(checkIfWinnerId(socket.id, data.winners)){
-			document.getElementById("game-over-text").innerHTML = "VICTORY!"
+			document.getElementById("game-over-text").innerHTML = "VICTORY!";
 		}else{
-			document.getElementById("game-over-text").innerHTML = "DEFEAT"
+			document.getElementById("game-over-text").innerHTML = "DEFEAT";
 		}
+
+		if(window.logged.in){
+			for(let i = 0;i<data.endGamePackage.length; i++){
+				if(socket.id == data.endGamePackage[i].id){
+					const xpAdd =       data.endGamePackage[i].xpAdd;
+					const deathCount =  data.endGamePackage[i].deathCount;
+					const killCount =   data.endGamePackage[i].killCount;
+					
+					$.get("/endgame?xpAdd="+xpAdd+"&deathCount="+deathCount+"&killCount="+killCount, function(OBJ) {
+						//if(OBJ.xpAdd && OBJ.xpTotal )
+						console.log(OBJ)
+						document.getElementById("xp-bar").style.display = "inline-block";
+						document.getElementById("game-over-stats").style.display = "block";
+						
+						document.getElementById("xp-add").innerHTML =   parseInt(OBJ.xpAdd);
+						document.getElementById("xp-total").innerHTML = parseInt(OBJ.xpTotal);
+						let kdMatch = 0;
+						if(parseInt(OBJ.deathAdd) != 0){
+							kdMatch = parseInt(OBJ.killAdd) / parseInt(OBJ.deathAdd);
+						}
+						
+						document.getElementById("kd-match").innerHTML =   ( kdMatch ).toFixed(2);
+						
+						let kdTotal = 0;
+						if(parseInt(OBJ.deathTotal) != 0){
+							kdTotal = parseInt(OBJ.killTotal) / parseInt(OBJ.deathTotal);
+						}
+						document.getElementById("kd-total").innerHTML = (kdTotal).toFixed(2);
+
+					})		
+				}
+			}
+		}else{
+			document.getElementById("xp-bar").style.display = "none";
+			document.getElementById("game-over-stats").style.display = "none";
+		}
+
 		appGlobal.globalHelperFunctions.playerReset(socket.id, false);
 		document.exitPointerLock();
-
 		overlayChildDisplayHelper();
 		
 	});
@@ -1315,6 +1354,10 @@ function checkIsInArr(arr,id){
 	return false;
 }
 
+
+function nullHelper(){
+
+}
 
 function updateURL(){
 	const params = new URLSearchParams(location.search);

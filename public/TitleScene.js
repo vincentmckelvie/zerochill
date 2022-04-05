@@ -103,8 +103,8 @@ class TitleScene {
 	}
 
 	update(){
-		this.title.rotation.y += (this.targX-this.title.rotation.y)*.09;
-		this.title.rotation.x += (this.targY-this.title.rotation.x)*.09;
+		this.title.rotation.y += (this.targX-this.title.rotation.y)*(appGlobal.deltaTime*30);
+		this.title.rotation.x += (this.targY-this.title.rotation.x)*(appGlobal.deltaTime*30);
 		this.renderer.render( this.scene, this.camera );
 	}
 

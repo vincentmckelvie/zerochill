@@ -27,6 +27,8 @@ import {
 import { OrbitControls } from './scripts/jsm/controls/OrbitControls.js';
 import { clone } from "./scripts/jsm/utils/SkeletonUtils.js"
 import { CharacterAnimationHandler } from './CharacterAnimationHandler.js';
+import { Skins } from './Skins.js';
+
 //import { RoomEnvironment } from './scripts/jsm/environments/RoomEnvironment.js';
 
 
@@ -65,12 +67,18 @@ class PlayerSelectScene {
 		this.controls.maxPolarAngle = Math.PI/2; // radians
 		//this.controls.minDistance = 0;
 		//this.controls.maxDistance = 700;
-
 		const assault = clone( self.getModelByName("body-assault").scene );
 		const assaultBoost = clone( self.getModelByName("assault-boost").scene );
 		const assaultTeleport = clone( self.getModelByName("assault-teleport").scene );
 		const assaultDirectional = clone( self.getModelByName("assault-directional").scene );
+		this.assaultSkin = new Skins({
+			isSwatch:true, 
+			body:[assault, assaultBoost, assaultTeleport, assaultDirectional],
+			character:"assault",
+			swatchName:"Shoot Man Kawaii"
+		});
 		
+
 		const submachine = clone( self.getModelByName("body-submachine").scene );
 		const submachineBoost = clone( self.getModelByName("submachine-boost").scene );
 		const submachineTeleport = clone( self.getModelByName("submachine-teleport").scene );
@@ -208,7 +216,7 @@ class PlayerSelectScene {
 						//self.boostObjs.push(obj);
 					}
 				});
-				
+
 				//sentence.includes(word)	
 			}
 			
@@ -257,9 +265,10 @@ class PlayerSelectScene {
 		OBJ.cah.idle.weight = 1;
 		OBJ.cah.forward.weight = 0;
 		OBJ.cah.right.weight = 0;
+		OBJ.cah.back.weight = 0;
 		OBJ.cah.left.weight = 0;
 		OBJ.cah.jump.weight = 0;
-		OBJ.cah.idle.stop();
+		OBJ.cah.idleTarg = 1;
 		OBJ.cah.idle.play();
 		OBJ.cah.forward.stop();
 		OBJ.cah.right.stop();
@@ -280,18 +289,12 @@ class PlayerSelectScene {
 	update(){
 		this.renderer.render( this.scene, this.camera );
 		this.controls.update();
-		this.rotMod += (appGlobal.deltaTime*400);
 		
-		// for(let k = 0; k<this.boostObjs.length; k++){
-		// 	if(Math.floor(this.rotMod%10) == 0){
-		// 		//this.boostObjs[k].rotation.z+=Math.random()*Math.PI
-		// 	}
-		// }
+		this.rotMod += (appGlobal.deltaTime*400);
 		if(Math.floor(this.rotMod%10) == 0){
 			this.boostTexture.offset.x += .2+Math.random()*.5;
 		}
 				
-
 		for(let i = 0; i<this.characters.length; i++){
 			this.characters[i].cah.update();
 		}		

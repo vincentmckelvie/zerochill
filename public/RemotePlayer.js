@@ -32,6 +32,31 @@ class RemotePlayer {
 		this.characterHolder = new Object3D();
 		
 		this.character = clone( self.getModelByName("body-"+OBJ.meshName).scene );
+
+
+      	this.character.traverse( function ( obj ) {
+
+	        if(obj.isMesh || obj.isSkinnedMesh){
+	          if(obj.materials !=null ){
+	            for(let i = 0; i<obj.materials.length; i++){
+	              console.log("name = "+obj.materials[i].name);
+	              console.log("color =");
+	              console.log( obj.materials[i].color.getHexString() );
+	              console.log("emissive =");
+	              console.log( obj.materials[i].emissive.getHexString () );
+	            }
+	          }
+	          if(obj.material !=null ){
+	            console.log("name = "+obj.material.name);
+	            console.log("color =");
+	            console.log( obj.material.color.getHexString () );
+	            console.log("emissive =");
+	            console.log( obj.material.emissive.getHexString () );
+	          }
+	        }
+
+      	});
+
 		this.movement  = clone( self.getModelByName(OBJ.meshName+"-"+OBJ.movement).scene );
 		this.boostTip;
 		this.boostTexture = new TextureLoader().load( './assets/textures/boost.png' );
@@ -110,7 +135,7 @@ class RemotePlayer {
 		this.spineRotTarg = 0;
 		this.shootTimeout;
 
-		this.blastTexture = new TextureLoader().load( './assets/textures/shoot.png' );
+		this.blastTexture = new TextureLoader().load( './assets/textures/shoot-2.png' );
 		this.tipObject.material.transparent = true;
 		this.tipObject.material.opacity = 1;
 		this.tipObject.material.emissive = new Color(0xffad2b);
@@ -138,7 +163,7 @@ class RemotePlayer {
 
 			this.rotMod += (appGlobal.deltaTime*400);
 			if(Math.floor(this.rotMod%10) == 0){
-				this.boostTexture.offset.x += .2+Math.random()*.5;
+				this.boostTexture.offset.x += .2+Math.random()*.35;
 			}
 
 			this.boostTip.visible = this.shouldDoBoostParticle;

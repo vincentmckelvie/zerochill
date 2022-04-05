@@ -29,19 +29,123 @@
 		</nav>
 		
 		<section class="modal" id="user">
-			<div class="modal-center">
-				<h2 class="user-header">
-					Hello <%= user.username  %>
-				</h2>
-				<form action="/logout" method="post">
-					<button class="user-btn" type="submit">Sign out</button>
-				</form>
+			<div class="modal-center" id="user-modal">
+				
+				<div id="user-header-buttons-holder">
+					<div class="user-header-buttons-active" id="user-button"><%= user.username %></div>
+					<div class="user-header-buttons" id="user-items">Items</div>
+					<div class="user-header-buttons" id="user-friends">Friends</div>
+					<div class="user-header-buttons" id="user-requests">Requests</div>
+				</div>
+				<div id="user-section">
+					<div class="user-section-holders" id="user-holder-user" style="display:block">
+						<div><h2 id="user-greeting" >Hello <%= user.username %></h2></div>
+						<div id="user-stats-holder">your current k/d is = <%= (user.stats.killCount / user.stats.deathCount) %></div>
+						<form action="/logout" method="post">
+							<button class="user-btn" type="submit">Sign out</button>
+						</form>
+					</div>
+					<div class="user-section-holders" id="user-holder-items">
+						<div class="items-holder">
+						    <% for(var i=0; i<user.inapppurchases.length; i++) { %>
+						    	
+							    <div class="items-individual-holder">
+						    		<div class="items-left">
+								        <div class="items-individual-name">
+								            <%= user.inapppurchases[i].name %>
+								        </div>	
+								        <div class="items-individual-desc">
+								            <%= user.inapppurchases[i].description %>
+								        </div>
+							    	</div>
+							    	<div class="items-right">
+							    		<% if(user.inapppurchases[i].purchased){ %>	
+								        	<div class="items-buy-overlay" data-item="user.inapppurchases[i].skew"></div>
+								        <% } %>	
+								        
+								        <div class="items-individual-icon">
+								            <img class="items-img" src="./assets/appicons/<%= user.inapppurchases[i].icon %>.png">
+								        </div>
+							    	</div>
+						    	</div>
+
+						    <% } %>
+						</div>
+					</div>
+					<div class="user-section-holders" id="user-holder-friends">
+
+				        <label for="username" id="add-friend-label">Add Friend</label>
+				        <input id="add-friend-user-name" name="username" type="text" autocomplete="username" minlength="8" maxlength="15" required autofocus placeholder="usr2#3448" >
+					    <span id="add-friend-btn" ><img src="./assets/nongameui/plus-square.svg" width="30"></span>
+				
+						<div id="add-friend-error"></div>
+						<div id="add-friend-success" style="display:none;">friend request sent.</div>
+						    
+						<div id="friends-list">
+							<% if(user.friends.length<=0) { %>
+								No maidens?
+						    <% }else{ %>
+						    
+								<% for(var i=0; i<user.friends.length; i++) { %>
+									<div class="friends-holder">
+								        <div class="friends-name" style="display: inline;">
+								            <%= user.friends[i].username %>
+								        </div>
+								        <div class="friends-right">
+									        <div class="friends-status">
+									        	<% if(user.friends[i].online){ %>
+									            	<img src="./assets/nongameui/check-green.svg">
+									        	<% }else{ %>
+									        		<img src="./assets/nongameui/x-red.svg">
+									        	<% } %>
+									        	
+									        </div>
+									        <% if(user.friends[i].online && user.friends[i].game != ""){ %>
+									        <div class="friends-status" style="display: inline;">
+									           <a href="/g=<%= user.friends[i].game %>"> <%= user.friends[i].game %> </a>
+									        </div>
+									    	<%}%>
+									        <div class="friend-remove" data-user="<%= user.friends[i].username %>">
+									            <img src="./assets/nongameui/user-x.svg"></a>
+									        </div>
+								    	</div>
+							        </div>
+							    <% } %>
+						
+						    <% } %>
+						</div>
+
+					</div>
+					<div class="user-section-holders" id="user-holder-requests">
+					
+							<% if(user.friendrequests.length<=0) { %>
+								No friend requests currently.
+					    	<% }else{ %>
+							<% for(var i=0; i<user.friendrequests.length; i++) { %>
+						     	<div class="friend-request-holder">
+						     		<div class="friend-request-left">
+							       		<div class="friend-requests-user" style="display:inline">
+							            	<%= user.friendrequests[i].username %>
+							        	</div>
+						        	</div>
+						        	<div class="friend-request-right">
+						                <div class="friend-requests-deny" data-user="<%= user.friendrequests[i].username %>" ><img src="./assets/nongameui/user-minus.svg"></div>
+										<div class="friend-requests-accept" data-user="<%= user.friendrequests[i].username %>" ><img src="./assets/nongameui/user-plus.svg"></div>
+									</div>
+						      	</div>
+						    <% } %>
+						    <% } %>
+						
+					</div>
+				</div>
+				
 				<div id="close-login-btn" class="close-btn">Close</div>
 			</div>
 		</section>
-
+		
 		<% } %>
 		<% if(!user){ %>
+		
 		<nav class="nav">
 			<div class="user-display">
 				<div class="top-right-info" id="debug"></div>
@@ -67,19 +171,19 @@
 					<form action="/login" method="post">
 					    <section class="user-form-holder">
 					        <label for="email">Email</label>
-					        <input id="email" name="email" type="text" autocomplete="email" required autofocus >
+					        <input id="email" name="username" type="text" autocomplete="email" required autofocus >
 					    </section>
 					    
 					    <section class="user-form-holder">
-					        <label for="current-password">Password</label>
-					        <input id="current-password" name="password" type="password" autocomplete="current-password" required>
+					        <label for="password">Password</label>
+					        <input id="password" name="password" type="password" autocomplete="password" required>
 					    </section>
 
 					    <button class='user-btn' type="submit">Sign in</button>
 					</form>
 					<hr>
 					<p class="help">
-						Don't have an account? <a class="user-bottom" onclick="toggleSignUp(true)" id="sign-up-btn">Sign up</a>
+						Don't have an account? <a class="user-bottom"  id="show-sign-up">Sign up</a>
 					</p>
 				</div>
 				<% if(error.signuperror && !error.loginerror){ %>
@@ -94,21 +198,21 @@
 					<form action="/signup" method="post">
 						<section class="user-form-holder">
 					        <label for="email">Email</label>
-					        <input id="email" name="email" type="text" autocomplete="email" required autofocus placeholder=" unique email per user">
+					        <input id="email" name="email" type="email" autocomplete="email" required autofocus placeholder="unique email per user">
 					    </section>
 					    <section class="user-form-holder">
-					        <label for="username">tag</label>
-					        <input id="username" name="username" type="text" autocomplete="username" required placeholder="in game display, repeats are allowed">
+					        <label for="username">Tag</label>
+					        <input id="username" name="username" type="text" autocomplete="username" required placeholder="repeats are allowed" minlength="3" maxlength="10">
 					    </section>
-					    <section class="user-form-holder">
-					        <label for="new-password">Password</label>
-					        <input id="new-password" name="password" type="password" autocomplete="new-password" required>
+ 					    <section class="user-form-holder">
+					        <label for="password">Password</label>
+					        <input id="password" name="password" type="password" autocomplete="password" required>
 					    </section>
 					    <button class='user-btn' type="submit">Sign up</button>
 					</form>
 					<hr>
 					<p class="help">
-						Already have an account? <a class="user-bottom" onclick="toggleSignUp(false)">Sign in</a>
+						Already have an account? <a class="user-bottom" id="show-sign-in">Sign in</a>
 					</p>
 					
 				</div>
@@ -122,20 +226,16 @@
 			</div>
 		</section>
 		-->
-		<script type="text/javascript">
-			function toggleSignUp(showSignUp){
-				if(showSignUp){
-					document.getElementById("login").style.display="none";
-					document.getElementById("sign-up").style.display="block";
-				}else{
-					document.getElementById("login").style.display="block";
-					document.getElementById("sign-up").style.display="none";
-				}
-			}
-		</script>
+		
+		
 		<% } %>
 
 		<%- include("game.ejs") %>
-	
+		<% if(user){ %>
+		<script type="module" src="./logged.in.js" src=""></script>
+		<% }else{ %>
+		<script type="module" src="./logged.out.js" src=""></script>
+		<% } %>
+		
 	</body>
 </html>

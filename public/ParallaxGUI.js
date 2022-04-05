@@ -16,8 +16,8 @@ class ParallaxGUI {
 	}
 
 	update(){
-		this.x += (this.targX-this.x)*.05;
-		this.y += (this.targY-this.y)*.05;
+		this.x += (this.targX-this.x)*(appGlobal.deltaTime*30);
+		this.y += (this.targY-this.y)*(appGlobal.deltaTime*30);
 		this.parallaxIt("title", 160);
 		this.parallaxIt("planet-switching-select-title", 160);
 		this.parallaxIt("class-select-title", 100);

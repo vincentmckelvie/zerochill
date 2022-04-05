@@ -47,8 +47,17 @@ class CharacterAnimationHandler{
 
 		this.adsTarg = 1;
 		this.gunTarg = 0;
-		this.gunAnis = [];
+		
+		this.idleTarg = 1;
+		this.leftTarg = 0;
+		this.rightTarg = 0;
+		this.forwardTarg = 0;
+		this.backTarg = 0;
+		this.jumpTarg = 0;
+		
+		
 
+		this.gunAnis = [];
 		this.modelName = OBJ.name;
 
 	}
@@ -192,41 +201,44 @@ class CharacterAnimationHandler{
 	//this.aniInfo = null;// this.cah.getServerInfo();
 	handleAnimationEasing (TIME, OBJ){
 		
-		let idle = 0;
-		let forward = 0;
-		let left = 0;
-		let right = 0;
-		let back = 0;
-		let jump = 0;
-	
+		this.idleTarg = 0;
+		this.leftTarg = 0;
+		this.rightTarg = 0;
+		this.forwardTarg = 0;
+		this.jumpTarg = 0;
+		this.backTarg = 0;
 		if( OBJ.jump ){
-			jump = 1;
+			this.jumpTarg = 1;
 		}else{
 			if(!Math.abs(OBJ.xAxis) > 0 && !Math.abs(OBJ.yAxis) > 0 ){
-				idle = 1;
+				this.idleTarg = 1;
 			}else{
 				if( Math.abs(OBJ.yAxis) > 0){
 					if(OBJ.yAxis>0){
-						forward = 1;
+						this.forwardTarg = 1;
 					}else {
-						back = 1;
+						this.backTarg = 1;
 					}
 				}else if( Math.abs(OBJ.xAxis) > 0){
 					if(OBJ.xAxis>0){
-						right = 1;
+						this.rightTarg = 1;
 					}else {
-						left = 1;
+						this.leftTarg = 1;
 					}
 				}
 			}
 		}
 
-		gsap.to(this.idle,   {duration:TIME, weight:idle}); 
-    gsap.to(this.forward,{duration:TIME, weight:forward});
-    gsap.to(this.left,   {duration:TIME, weight:left});
-    gsap.to(this.right,  {duration:TIME, weight:right}); 
-    gsap.to(this.back,   {duration:TIME, weight:back}); 
-    gsap.to(this.jump,   {duration:TIME, weight:jump}); 
+		// if(Math.random() > 0.98){
+		// 	console.log(this.rightTarg)
+		// }
+
+		// gsap.to(this.idle,   {duration:TIME, weight:idle}); 
+  //   gsap.to(this.forward,{duration:TIME, weight:forward});
+  //   gsap.to(this.left,   {duration:TIME, weight:left});
+  //   gsap.to(this.right,  {duration:TIME, weight:right}); 
+  //   gsap.to(this.back,   {duration:TIME, weight:back}); 
+  //   gsap.to(this.jump,   {duration:TIME, weight:jump}); 
     
     this.deltaMult = 4;
     
@@ -249,6 +261,22 @@ class CharacterAnimationHandler{
 
 			this.adsIdle.weight += (this.adsTarg-this.adsIdle.weight)*(appGlobal.deltaTime*90)
 			this.gunIdle.weight += (this.gunTarg-this.gunIdle.weight)*(appGlobal.deltaTime*90)
+			
+		
+			this.idle.weight    +=  (this.idleTarg-this.idle.weight)      *(appGlobal.deltaTime*150)
+			this.forward.weight +=  (this.forwardTarg-this.forward.weight)*(appGlobal.deltaTime*150)
+			this.left.weight    +=  (this.leftTarg   -this.left.weight)   *(appGlobal.deltaTime*150)
+			this.right.weight   +=  (this.rightTarg-this.right.weight)    *(appGlobal.deltaTime*150)
+			this.back.weight    +=  (this.backTarg-this.back.weight)      *(appGlobal.deltaTime*150)
+			this.jump.weight    +=  (this.jumpTarg-this.jump.weight)      *(appGlobal.deltaTime*150)
+
+
+			// this.idle.weight    =  this.idleTarg
+			// this.forward.weight =  this.forwardTarg
+			// this.left.weight    =  this.leftTarg
+			// this.right.weight   =  this.rightTarg
+			// this.back.weight    =  this.backTarg
+			// this.jump.weight    =  this.jumpTarg
 			
 		}
 	}

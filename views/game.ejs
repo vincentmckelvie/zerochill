@@ -35,7 +35,7 @@
 
 </div>
 
-<div id="loading" class="modal">
+<div id="loading" class="modal">	
 	<div id="loading-centered">
 		loaded <span id="loaded">0</span> out of <span id="loading-total">32</span>
 	</div> 
@@ -56,30 +56,26 @@
 					<li>This app is in BETA, please be nice</li>
 				</ul>
 			</span>
-			<!--
-			<div id="user-name-holder">
-				<input type="text" id="user-name" placeholder="username"/>
-			</div>
-			-->
+			
 			<h2 id="class-select-title">Class Select</h2>
 			<div id="all-classes">
 				<div class="class-btn" id="class-button-automatic">
-					Automatic
+					Shoot Man
 				</div>
 				<div class="class-btn" id="class-button-sticky">
-					Sticky Bombs
+					Fatty
 				</div>
 				<div class="class-btn" id="class-button-sub" >
-					Submachine Gun
+					Nitro 
 				</div>
 				<div class="class-btn" id="class-button-sniper">
-					Sniper
+					Starfish
 				</div>
 				<div class="class-btn" id="class-button-launcher" >
-					Rocket Launcher
+					Thrust
 				</div>
 				<div class="class-btn" id="class-button-sixgun">
-					Six Gun
+					Bug
 				</div>
 			</div>
 			<div id="player-select-character"></div>
@@ -102,7 +98,14 @@
 		</div>
 		
 		<div id="game-over">
-			<span id="game-over-text">Game Over</span> 
+			<span id="game-over-text">Game Over</span>
+			<div id="xp-bar"></div>
+			<div id="game-over-stats">
+				<div>total xp: <span id="xp-total"></span></div>
+				<div>match xp: <span id="xp-add"></span></div>
+				<div>K/D match: <span id="kd-match"></span></div>
+				<div>K/D total: <span id="kd-total"></span></div>
+			</div> 
 		</div>
 		<div id="player-list">
 			
@@ -192,5 +195,6 @@
 		}
 	}
 </script>
-<script type="text/javascript" src="scripts/gsap.js"></script>
-<script type="module" src="main.js"></script>
+<script type="text/javascript" src="./scripts/gsap.js"></script>
+<script type="text/javascript" src="./scripts/jquery-3.6.0.min.js"></script>		
+<script type="module" src="./main.js"></script>
