@@ -11,11 +11,18 @@
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<!--<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">-->
 		<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
-
 		<link rel="stylesheet" href="/scripts/styles.css">
+
+		<% if(stripePublicKey){ %>
+			<script src="https://checkout.stripe.com/checkout.js" defer></script>
+			<script type="text/javascript">
+				window.stripePublicKey = '<%= stripePublicKey %>';
+			</script>
+		<% } %>
+
 	</head>
 	<body>
-	
+		
 		<% if(user){ %>
 		
 		<nav class="nav">
@@ -36,6 +43,7 @@
 					<div class="user-header-buttons" id="user-items">Items</div>
 					<div class="user-header-buttons" id="user-friends">Friends</div>
 					<div class="user-header-buttons" id="user-requests">Requests</div>
+					<div class="user-header-buttons" id="user-bux">Hype</div>
 				</div>
 				<div id="user-section">
 					<div class="user-section-holders" id="user-holder-user" style="display:block">
@@ -48,22 +56,27 @@
 					<div class="user-section-holders" id="user-holder-items">
 						<div class="items-holder">
 						    <% for(var i=0; i<user.inapppurchases.length; i++) { %>
-						    	
-							    <div class="items-individual-holder">
+						    	<% if(!user.inapppurchases[i].purchased){ %>
+						    		<div class="items-individual-holder" data-item="<%= user.inapppurchases[i].skew %>" >
+						    	<% }else{ %>	
+							    	<div class="items-individual-holder">
+							    <% } %>
 						    		<div class="items-left">
 								        <div class="items-individual-name">
 								            <%= user.inapppurchases[i].name %>
-								        </div>	
+								        </div>
+								        <% if(!user.inapppurchases[i].purchased){ %>
+								        <div class="items-individual-price">
+								            <%= user.inapppurchases[i].price %> HC	
+								        </div>
+								        <% } %>	
 								        <div class="items-individual-desc">
 								            <%= user.inapppurchases[i].description %>
 								        </div>
+								        
 							    	</div>
 							    	<div class="items-right">
-							    		<% if(user.inapppurchases[i].purchased){ %>	
-								        	<div class="items-buy-overlay" data-item="user.inapppurchases[i].skew"></div>
-								        <% } %>	
-								        
-								        <div class="items-individual-icon">
+							    		<div class="items-individual-icon">
 								            <img class="items-img" src="./assets/appicons/<%= user.inapppurchases[i].icon %>.png">
 								        </div>
 							    	</div>
@@ -100,11 +113,11 @@
 									        	<% } %>
 									        	
 									        </div>
-									        <% if(user.friends[i].online && user.friends[i].game != ""){ %>
+									        <% if(user.friends[i].online && user.friends[i].game != "none"){ %>
 									        <div class="friends-status" style="display: inline;">
 									           <a href="/g=<%= user.friends[i].game %>"> <%= user.friends[i].game %> </a>
 									        </div>
-									    	<%}%>
+									    	<% } %>
 									        <div class="friend-remove" data-user="<%= user.friends[i].username %>">
 									            <img src="./assets/nongameui/user-x.svg"></a>
 									        </div>
@@ -121,6 +134,7 @@
 							<% if(user.friendrequests.length<=0) { %>
 								No friend requests currently.
 					    	<% }else{ %>
+					    	<div id="request-error"></div>
 							<% for(var i=0; i<user.friendrequests.length; i++) { %>
 						     	<div class="friend-request-holder">
 						     		<div class="friend-request-left">
@@ -136,6 +150,84 @@
 						    <% } %>
 						    <% } %>
 						
+					</div>
+					<div class="user-section-holders" id="user-holder-bux" >
+						<div id="user-current-hype"><%= user.bux %> HC</div>
+						<div id="user-hype-message" style="display:none;"></div>
+						<div id="bux-holder">
+							<div class="bux-buy" data-item="1" data-price="100">
+					    		<div class="bux-left">
+							        <div class="bux-individual-name">
+							            Baby Hype
+							        </div>
+							        <div class="bux-individual-price">
+							        	$1.00
+							        </div>
+							        <div class="bux-individual-desc">
+							            100 HC
+							        </div>
+						    	</div>
+						    	<div class="bux-right">
+						    		<div class="bux-individual-icon">
+							            <img class="bux-img" src="./assets/bux/bux.svg">
+							        </div>
+						    	</div>
+					    	</div>
+					    	<div class="bux-buy" data-item="2" data-price="500">
+					    		<div class="bux-left">
+							        <div class="bux-individual-name">
+							            Toddler Hype
+							        </div>
+							        <div class="bux-individual-price">
+							        	$5.00
+							        </div>
+							        <div class="bux-individual-desc">
+							            700 HC
+							        </div>
+						    	</div>
+						    	<div class="bux-right">
+						    		<div class="bux-individual-icon">
+							            <img class="bux-img" src="./assets/bux/bux.svg">
+							        </div>
+						    	</div>
+					    	</div>
+					    	<div class="bux-buy" data-item="3" data-price="1000">
+					    		<div class="bux-left">
+							        <div class="bux-individual-name">
+							            Daddy Hype
+							        </div>
+							        <div class="bux-individual-price">
+							        	$10.00
+							        </div>
+							        <div class="bux-individual-desc">
+							            1,200 HC
+							        </div>
+						    	</div>
+						    	<div class="bux-right">
+						    		<div class="bux-individual-icon">
+							            <img class="bux-img" src="./assets/bux/bux.svg">
+							        </div>
+						    	</div>
+					    	</div>
+					    	<div class="bux-buy" data-item="4" data-price="10000">
+					    		<div class="bux-left">
+							        <div class="bux-individual-name">
+							            Giga Hype
+							        </div>
+							        <div class="bux-individual-price">
+							        	$100.00
+							        </div>
+							        <div class="bux-individual-desc">
+							            20,000 HC
+							        </div>
+						    	</div>
+						    	<div class="bux-right">
+						    		<div class="bux-individual-icon">
+							            <img class="bux-img" src="./assets/bux/bux.svg">
+							        </div>
+						    	</div>
+					    	</div>
+				    	</div>  
 					</div>
 				</div>
 				
@@ -229,13 +321,25 @@
 		
 		
 		<% } %>
+		
+		<script type="importmap">
+		{
+			"imports": {
+				"three": "./build/three.module.js"
+			}
+		}
+		</script>
 
-		<%- include("game.ejs") %>
 		<% if(user){ %>
 		<script type="module" src="./logged.in.js" src=""></script>
 		<% }else{ %>
 		<script type="module" src="./logged.out.js" src=""></script>
 		<% } %>
+
+		
+		<%- include("game.ejs") %>
+		
+		
 		
 	</body>
 </html>

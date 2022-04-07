@@ -27,7 +27,7 @@ import {
 import { OrbitControls } from './scripts/jsm/controls/OrbitControls.js';
 import { clone } from "./scripts/jsm/utils/SkeletonUtils.js"
 import { CharacterAnimationHandler } from './CharacterAnimationHandler.js';
-import { Skins } from './Skins.js';
+import { CharacterSkin } from './CharacterSkin.js';
 
 //import { RoomEnvironment } from './scripts/jsm/environments/RoomEnvironment.js';
 
@@ -39,7 +39,7 @@ class PlayerSelectScene {
 		const self = this;
 		this.scene = new Scene();
 		//this.scene.background = new Color( 0x88ccff );
-		this.w = 350;
+		this.w = 400;
 		this.h = 250;
 		this.renderer = new WebGLRenderer( { antialias: false, alpha:true } );
 		//this.renderer.setPixelRatio( window.devicePixelRatio );
@@ -71,40 +71,66 @@ class PlayerSelectScene {
 		const assaultBoost = clone( self.getModelByName("assault-boost").scene );
 		const assaultTeleport = clone( self.getModelByName("assault-teleport").scene );
 		const assaultDirectional = clone( self.getModelByName("assault-directional").scene );
-		this.assaultSkin = new Skins({
-			isSwatch:true, 
-			body:[assault, assaultBoost, assaultTeleport, assaultDirectional],
-			character:"assault",
-			swatchName:"Shoot Man Kawaii"
-		});
-		
+		// this.assaultSkin = new CharacterSkin({
+		// 	isSwatch:true, 
+		// 	body:[assault, assaultBoost, assaultTeleport, assaultDirectional],
+		// 	character:"assault",
+		// 	name:"Shoot Man Dark"
+		// });
+		appGlobal.skinsHandler.addMeshes({
+			name:"assault", 
+			meshes:[assault, assaultBoost, assaultTeleport, assaultDirectional]
+		})
 
 		const submachine = clone( self.getModelByName("body-submachine").scene );
 		const submachineBoost = clone( self.getModelByName("submachine-boost").scene );
 		const submachineTeleport = clone( self.getModelByName("submachine-teleport").scene );
 		const submachineDirectional = clone( self.getModelByName("submachine-directional").scene );
 		
+		appGlobal.skinsHandler.addMeshes({
+			name:"submachine", 
+			meshes:[submachine, submachineBoost, submachineTeleport, submachineDirectional]
+		})
 
 		const sticky = clone( self.getModelByName("body-sticky").scene );
 		const stickyBoost = clone( self.getModelByName("sticky-boost").scene );
 		const stickyTeleport = clone( self.getModelByName("sticky-teleport").scene );
 		const stickyDirectional = clone( self.getModelByName("sticky-directional").scene );
 		
+		appGlobal.skinsHandler.addMeshes({
+			name:"sticky", 
+			meshes:[sticky, stickyBoost, stickyTeleport, stickyDirectional]
+		})
+
 		const launcher = clone(  self.getModelByName("body-launcher").scene );
 		const launcherBoost = clone(  self.getModelByName("launcher-boost").scene );
 		const launcherTeleport = clone(  self.getModelByName("launcher-teleport").scene );
 		const launcherDirectional = clone(  self.getModelByName("launcher-directional").scene );
 		
+		appGlobal.skinsHandler.addMeshes({
+			name:"launcher", 
+			meshes:[launcher, launcherBoost, launcherTeleport, launcherDirectional]
+		})
+
 		const sixgun = clone( self.getModelByName("body-sixgun").scene );
 		const sixgunBoost = clone( self.getModelByName("sixgun-boost").scene );
 		const sixgunTeleport = clone( self.getModelByName("sixgun-teleport").scene );
 		const sixgunDirectional = clone( self.getModelByName("sixgun-directional").scene );
 		
+		appGlobal.skinsHandler.addMeshes({
+			name:"sixgun", 
+			meshes:[sixgun, sixgunBoost, sixgunTeleport, sixgunDirectional]
+		})
+
 		const sniper = clone(  self.getModelByName("body-sniper").scene );
 		const sniperBoost = clone(  self.getModelByName("sniper-boost").scene );
 		const sniperTeleport = clone(  self.getModelByName("sniper-teleport").scene );
 		const sniperDirectional = clone(  self.getModelByName("sniper-directional").scene );
 		
+		appGlobal.skinsHandler.addMeshes({
+			name:"sniper", 
+			meshes:[sniper, sniperBoost, sniperTeleport, sniperDirectional]
+		})
 		// this.auto = clone(         self.getModelByName("weapon").scene );
 		// this.sub =  clone(         self.getModelByName("weapon").scene );
 		// this.sniper = clone(       self.getModelByName("weapon").scene );
@@ -227,13 +253,12 @@ class PlayerSelectScene {
 		this.characters[0].object.visible = true;
 		this.characters[0].attach[0].obj.visible = true;
 
-
-		
 	}
 
 	handleCharacterSwitch(OBJ){
 		let obj;
 		let mov;
+		appGlobal.skinsHandler.playerSelectSwitchCharacter(OBJ);
 		for(let i = 0; i < this.characters.length; i++){
 			for(let k = 0; k<this.characters[i].attach.length; k++){
 				this.characters[i].attach[k].obj.visible = false;
@@ -244,6 +269,7 @@ class PlayerSelectScene {
 				}	
 			}
 		}
+
 		mov.visible = true;
 		obj.visible = true;
 	}

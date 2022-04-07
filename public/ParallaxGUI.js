@@ -26,6 +26,7 @@ class ParallaxGUI {
 		this.parallaxIt("player-select-character", 160);
 		this.parallaxIt("movement-select-holder", 120);
 		this.parallaxIt("play-holder", 60);
+		this.parallaxIt("player-skins", 60);
 	}
 
 	kill(){

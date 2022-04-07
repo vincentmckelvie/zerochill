@@ -28,6 +28,8 @@ import { TitleScene } from './TitleScene.js';
 import { ParallaxGUI } from './ParallaxGUI.js';
 
 import { Settings } from './Settings.js';
+import { SkinsHandler } from './SkinsHandler.js';
+
 import { Servers } from './Servers.js';
 import { GamePad } from './GamePad.js';
 import { io } from "https://cdn.socket.io/4.4.1/socket.io.esm.min.js";
@@ -672,7 +674,8 @@ const appGlobal = {
 	remotePlayers:[],
 	worldOctree:new Octree(),
 	worldsHolder:null,
-	parallax:new ParallaxGUI()
+	parallax:new ParallaxGUI(),
+	skinsHandler:new SkinsHandler(),
 };
 
 window.appGlobal = appGlobal;
@@ -1225,30 +1228,94 @@ socket.on('connect', () => {
 		if(window.logged.in){
 			for(let i = 0;i<data.endGamePackage.length; i++){
 				if(socket.id == data.endGamePackage[i].id){
+					
 					const xpAdd =       data.endGamePackage[i].xpAdd;
 					const deathCount =  data.endGamePackage[i].deathCount;
 					const killCount =   data.endGamePackage[i].killCount;
 					
-					$.get("/endgame?xpAdd="+xpAdd+"&deathCount="+deathCount+"&killCount="+killCount, function(OBJ) {
-						//if(OBJ.xpAdd && OBJ.xpTotal )
-						console.log(OBJ)
-						document.getElementById("xp-bar").style.display = "inline-block";
-						document.getElementById("game-over-stats").style.display = "block";
+					// $.get("/endgame?xpAdd="+xpAdd+"&deathCount="+deathCount+"&killCount="+killCount, function(OBJ) {
+					// 	//if(OBJ.xpAdd && OBJ.xpTotal )
+					// 	//console.log(OBJ)
+					// 	document.getElementById("xp-bar").style.display = "inline-block";
+					// 	document.getElementById("game-over-stats").style.display = "block";
 						
-						document.getElementById("xp-add").innerHTML =   parseInt(OBJ.xpAdd);
-						document.getElementById("xp-total").innerHTML = parseInt(OBJ.xpTotal);
-						let kdMatch = 0;
-						if(parseInt(OBJ.deathAdd) != 0){
-							kdMatch = parseInt(OBJ.killAdd) / parseInt(OBJ.deathAdd);
+					// 	document.getElementById("xp-add").innerHTML =   parseInt(OBJ.xpAdd);
+					// 	document.getElementById("xp-total").innerHTML = parseInt(OBJ.xpTotal);
+					// 	let kdMatch = 0;
+					// 	if(parseInt(OBJ.deathAdd) != 0){
+					// 		kdMatch = parseInt(OBJ.killAdd) / parseInt(OBJ.deathAdd);
+					// 	}
+						
+					// 	document.getElementById("kd-match").innerHTML =   ( kdMatch ).toFixed(2);
+						
+					// 	let kdTotal = 0;
+					// 	if(parseInt(OBJ.deathTotal) != 0){
+					// 		kdTotal = parseInt(OBJ.killTotal) / parseInt(OBJ.deathTotal);
+					// 	}
+					// 	document.getElementById("kd-total").innerHTML = (kdTotal).toFixed(2);
+
+					// })
+					document.getElementById("xp-bar").style.display = "none";
+					document.getElementById("game-over-stats").style.display = "none";
+					document.getElementById("xp-error").style.display = "none";
+						
+					fetch("/endgame",{
+						method:"POST",
+						headers:{
+							"Content-Type":"application/json",
+							"Accept":"application/json"
+						},
+						body:JSON.stringify({
+							xpAdd:xpAdd,
+							deathCount:deathCount,
+							killCount:killCount
+						})
+					}).then( res => {
+						if(res.ok) {
+							return res.json()
+						}else{
+							return res.json().then(json => Promise.reject(json))
+						}
+					}).then( data => {
+						if(data.error!=null){
+							document.getElementById("xp-bar").style.display = "none";
+							document.getElementById("game-over-stats").style.display = "none";
+							document.getElementById("xp-error").style.display="block";
+							document.getElementById("xp-error").innerHTML = data.error;
+						}else{
+				
+							document.getElementById("xp-bar").style.display = "inline-block";
+							document.getElementById("game-over-stats").style.display = "block";
+							document.getElementById("xp-error").style.display="none";
+							
+							document.getElementById("xp-add").innerHTML =   parseInt(data.xpAdd);
+							document.getElementById("xp-total").innerHTML = parseInt(data.xpTotal);
+							
+							let kdMatch = 0;
+							if(parseInt(data.deathAdd) != 0){
+								kdMatch = parseInt(data.killAdd) / parseInt(data.deathAdd);
+							}
+							
+							document.getElementById("kd-match").innerHTML =   ( kdMatch ).toFixed(2);
+							
+							let kdTotal = 0;
+							if(parseInt(data.deathTotal) != 0){
+								kdTotal = parseInt(data.killTotal) / parseInt(data.deathTotal);
+							}
+
+							document.getElementById("kd-total").innerHTML = (kdTotal).toFixed(2);
+
+							document.getElementById("hc-total").innerHTML = parseInt(data.bux);
+							document.getElementById("hc-match").innerHTML = parseInt(data.buxAdd);
 						}
 						
-						document.getElementById("kd-match").innerHTML =   ( kdMatch ).toFixed(2);
+
+					}).catch(e => {
 						
-						let kdTotal = 0;
-						if(parseInt(OBJ.deathTotal) != 0){
-							kdTotal = parseInt(OBJ.killTotal) / parseInt(OBJ.deathTotal);
-						}
-						document.getElementById("kd-total").innerHTML = (kdTotal).toFixed(2);
+						document.getElementById("xp-bar").style.display = "none";
+						document.getElementById("game-over-stats").style.display = "none";
+						document.getElementById("xp-error").style.display="block";
+						document.getElementById("xp-error").innerHTML = "there was an error retrieving your data ;/";
 
 					})		
 				}

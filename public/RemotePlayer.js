@@ -33,25 +33,19 @@ class RemotePlayer {
 		
 		this.character = clone( self.getModelByName("body-"+OBJ.meshName).scene );
 
-
+		const ar = [];
       	this.character.traverse( function ( obj ) {
 
 	        if(obj.isMesh || obj.isSkinnedMesh){
-	          if(obj.materials !=null ){
-	            for(let i = 0; i<obj.materials.length; i++){
-	              console.log("name = "+obj.materials[i].name);
-	              console.log("color =");
-	              console.log( obj.materials[i].color.getHexString() );
-	              console.log("emissive =");
-	              console.log( obj.materials[i].emissive.getHexString () );
-	            }
-	          }
 	          if(obj.material !=null ){
-	            console.log("name = "+obj.material.name);
-	            console.log("color =");
-	            console.log( obj.material.color.getHexString () );
-	            console.log("emissive =");
-	            console.log( obj.material.emissive.getHexString () );
+	          	if(!self.checkIsInArr(ar, obj.material.name)){
+	          		ar.push(obj.material.name);
+					console.log("{");
+					console.log("name:'"+obj.material.name+"',");
+					console.log("color:'"+obj.material.color.getHexString()+"',");
+					console.log("emissive:'"+obj.material.emissive.getHexString ()+"'");
+					console.log("}");
+	            }
 	          }
 	        }
 
@@ -149,6 +143,15 @@ class RemotePlayer {
 		this.boostTipWorldPosition = new Vector3();
 				
 		
+	}
+
+	checkIsInArr(arr,s){
+		for(let i = 0; i<arr.length; i++){
+			if(arr[i]==s){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	getModelByName(NAME){
