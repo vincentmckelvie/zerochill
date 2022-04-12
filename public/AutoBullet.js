@@ -102,18 +102,24 @@ class AutoBullet {
 	}
 
 	playerSphereCollision() {
-		const id = appGlobal.globalHelperFunctions.playerSphereCollision(this.collider, this.id)
+		
+		const id = appGlobal.globalHelperFunctions.playerSphereCollision(this.collider, this.id);
+
 		if(id != null){
 			if(this.isLocal){
 				const self = this;
 				this.isBulletDoingDamage = true;
-				socket.emit('doDamage', {
-				  id: id.id,
-				  damage:self.damage,
-				  position:this.startPos,
-				  headShot:id.headShot,
-				  fromDamageId:socket.id
-				});
+				if(window.socket != null){
+					socket.emit('doDamage', {
+					  id: id.id,
+					  damage:self.damage,
+					  position:this.startPos,
+					  headShot:id.headShot,
+					  fromDamageId:socket.id
+					});
+				}else{
+					appGlobal.remotePlayers[id.id].receiveDamage({position:this.startPos, health:this.damage})
+				}
 				appGlobal.globalHelperFunctions.playerDoDamage();
 			}
 			this.kill();

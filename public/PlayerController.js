@@ -56,6 +56,7 @@ class PlayerController {
 
 	initPlayer(OBJ){
 		this.name = OBJ.name;
+		OBJ.id = this.id;
 		this.player = new Player(OBJ); 
 	}
 	

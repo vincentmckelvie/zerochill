@@ -2,7 +2,8 @@ import {
 	MeshStandardMaterial,
 	TextureLoader,
 	RepeatWrapping,
-	Color
+	Color,
+	AdditiveBlending,
 } from 'three';
 
 
@@ -80,7 +81,10 @@ class WeaponEmissiveHandler {
 		this.blast = OBJ.blast;
 		//this.blast.opacityMap = this.blastTexture;
 		this.blast.transparent = true;
-		this.blast.opacity = 1;
+		this.blast.blendMode = AdditiveBlending;
+		this.blast.alphaTest = 0.5;
+		this.blast.premultipliedAlpha = true;
+		this.blast.opacity = 1;	
 		this.blast.visible = false;
 		this.blast.emissive = new Color(0xffad2b);
 		this.blast.map = this.blastTexture;

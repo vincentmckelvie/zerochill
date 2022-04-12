@@ -106,21 +106,27 @@ class StickyBullet {
 			
 			if(this.isLocal){
 				this.knockParams.pos = this.mesh.position;
-				appGlobal.globalHelperFunctions.knockPlayer(this.knockParams);
+				
 
 				const arr = appGlobal.globalHelperFunctions.splashDamage(this.knockParams);
 				if(arr.length>0){
 					for(let i = 0; i<arr.length; i++){
 						const self = this;
-						socket.emit('doDamage', {
-					  		id: arr[i].id,
-					  		damage:self.damage*arr[i].damageMult,
-					  		position:appGlobal.localPlayer.playerCollider.start,
-					  		headShot:false,
-					  		fromDamageId:socket.id
-						});
+						if(window.socket){
+							socket.emit('doDamage', {
+						  		id: arr[i].id,
+						  		damage:self.damage*arr[i].damageMult,
+						  		position:appGlobal.localPlayer.playerCollider.start,
+						  		headShot:false,
+						  		fromDamageId:socket.id
+							});
+						}else{
+							appGlobal.remotePlayers[arr[i].id].receiveDamage({position:this.mesh.position, health:this.damage})
+						}
 
 					}			
+				}else{
+					appGlobal.globalHelperFunctions.knockPlayer(this.knockParams);
 				}
 			}
 			

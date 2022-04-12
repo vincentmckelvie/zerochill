@@ -1,4 +1,5 @@
 import {
+	BufferGeometry,
 	BoxGeometry,
 	MeshNormalMaterial,
 	Mesh,
@@ -22,7 +23,10 @@ import {
 	RepeatWrapping,
 	NearestFilter,
 	LinearFilter,
-	ClampToEdgeWrapping
+	ClampToEdgeWrapping,
+	Group,
+	MeshStandardMaterial,
+	SkinnedMesh
 } from 'three';
 import { OrbitControls } from './scripts/jsm/controls/OrbitControls.js';
 import { clone } from "./scripts/jsm/utils/SkeletonUtils.js"
@@ -64,19 +68,15 @@ class PlayerSelectScene {
 		this.controls.screenSpacePanning = true;
 		this.controls.autoRotate = false;		
 		this.controls.minPolarAngle = Math.PI/2; // radians
-		this.controls.maxPolarAngle = Math.PI/2; // radians
+		this.controls.maxPolarAngle = Math.PI/2; // radians 
 		//this.controls.minDistance = 0;
 		//this.controls.maxDistance = 700;
+		
 		const assault = clone( self.getModelByName("body-assault").scene );
 		const assaultBoost = clone( self.getModelByName("assault-boost").scene );
 		const assaultTeleport = clone( self.getModelByName("assault-teleport").scene );
 		const assaultDirectional = clone( self.getModelByName("assault-directional").scene );
-		// this.assaultSkin = new CharacterSkin({
-		// 	isSwatch:true, 
-		// 	body:[assault, assaultBoost, assaultTeleport, assaultDirectional],
-		// 	character:"assault",
-		// 	name:"Shoot Man Dark"
-		// });
+	
 		appGlobal.skinsHandler.addMeshes({
 			name:"assault", 
 			meshes:[assault, assaultBoost, assaultTeleport, assaultDirectional]
@@ -225,6 +225,7 @@ class PlayerSelectScene {
 		this.rotMod = 0;
 		for(let i = 0; i<this.characters.length; i++){
 			let name = "tip-"+this.characters[i].name;
+			//console.log(this.characters[i].object);
 			const tipObject = this.characters[i].object.getObjectByName(name);
 			tipObject.visible = false;
 			
@@ -252,6 +253,27 @@ class PlayerSelectScene {
 		
 		this.characters[0].object.visible = true;
 		this.characters[0].attach[0].obj.visible = true;
+
+	}
+
+	tryCopy(object,parent){
+		object.traverse( function ( obj ) {
+			
+			// if( obj.isMesh ){	
+			// 	//const c = new Mesh(obj.geometry.copy(),obj.material.copy());
+			// 	//parent.add(c);
+			// 	console.log(obj)
+			// }
+			// if( obj.isSkinnedMesh ){
+			// 	const geo = new BufferGeometry();
+			// 	obj.geometry.copy(geo);
+			// 	const mat = new MeshStandardMaterial();
+			// 	obj.material.copy(mat);
+			// 	const c = new SkinnedMesh(geo,mat);
+			// 	parent.add(c);
+			// }
+
+		});
 
 	}
 

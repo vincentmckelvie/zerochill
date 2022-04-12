@@ -8,6 +8,38 @@ body{
 	background: #000;
 }
 
+#ad-holder-horizontal{
+	width: 728px;
+	height: 90px;
+	background: #f00;
+	position: absolute;
+	margin-top: 80px;
+	margin-left: -40px;
+	overflow: hidden;
+}
+
+#ad-holder-right{
+	width: 300px;
+	height: 250px;
+	background: #f00;
+	display:inline-block; position:absolute; margin-left:600px;
+	margin-top: 320px;
+	overflow: hidden;
+}
+
+#ad-holder-left{
+	display:inline-block; position:absolute; margin-left:-500px;
+	width: 300px;
+	height: 250px;
+	background: #0f0;
+	margin-top: 320px;
+	overflow: hidden;
+	/*
+	position: relative;
+	display: inline-block;
+	margin-left: -600px;
+	*/
+}
 
 .nav{
 	color: white;
@@ -653,7 +685,7 @@ body{
 	text-align: center;
 	max-height:100%; 
 	overflow-y:auto; 
-	overflow-x:auto;
+	overflow-x:visible;
 	padding-left: 50px;
 	padding-right: 50px;
 	padding-bottom: 50px;
@@ -703,13 +735,16 @@ h2{
 .swatch-btn, .swatch-btn-active{
 	width: 60px;
 	height: 60px;
+	margin-left: 2px;
+	margin-top: 2px;
 	border: none;
 	border-radius: 30px;
-	margin-bottom: 10px;
-	border: none;
+	margin-bottom: 8px;
+	outline: 1px solid black;
+	background-size: 100%;
 }
 .swatch-btn-active{
-	border: thin solid grey;
+	outline: 1px solid white;
 }
 
 .skins-non-interactive{

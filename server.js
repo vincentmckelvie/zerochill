@@ -269,23 +269,24 @@ app.post('/buy-item', async (req, res) => {
 	}
 })
 
+
+/* display site */
 app.get('/', function(req, res, next) {
   if (!req.user) {
   	let error = null;
   	if(req.query.error){
   		error = "Incorrect email or password.";
   	}
-  	return res.render('index.ejs',{user:null, error:{loginerror:error}, stripePublicKey:null }); 
+  	return res.render('index.ejs',{user:null, error:{loginerror:error}, stripePublicKey:null, showAds:false }); 
   }
   next();
 }, async function(req, res, next) {
   res.locals.filter = null;
   //const usr = await user.findOne({_id:req.user._id});
-  res.render('index.ejs', { user: req.user, stripePublicKey:process.env.STRIPEPUBLIC });
+  res.render('index.ejs', { user: req.user, stripePublicKey:process.env.STRIPEPUBLIC, showAds:false });
 });
 
-
-
+/* end game */
 app.post("/endgame", async function(req, res) {
    
     let xpAdd = 0;
@@ -324,7 +325,9 @@ app.post("/endgame", async function(req, res) {
 
   	//addEndGameInfo(req, res, {xpAdd:xpAdd, totalDamage:totalDamage, killCount:killCount})
   	
-})
+});
+
+/* friend stuff */
 
 app.post("/addfriend", async function(req, res) {
 	//console.log(req.body.user)

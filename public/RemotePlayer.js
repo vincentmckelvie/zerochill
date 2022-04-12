@@ -15,8 +15,9 @@ import {
 
 import { ParticleEmitter } from './ParticleEmitter.js';
 import { CharacterAnimationHandler } from './CharacterAnimationHandler.js';
-import { clone } from "./scripts/jsm/utils/SkeletonUtils.js"
-import { RemoteAbilities } from "./RemoteAbilities.js"
+import { clone } from "./scripts/jsm/utils/SkeletonUtils.js";
+import { RemoteAbilities } from "./RemoteAbilities.js";
+import { SkinsHandler } from "./SkinsHandler.js";
 
 class RemotePlayer {
 	//{scene:scene, worldScale:worldScale};
@@ -30,28 +31,31 @@ class RemotePlayer {
 		this.offset = new Object3D();
 		this.crouch = new Object3D();
 		this.characterHolder = new Object3D();
-		
+		this.skin = OBJ.skin;
+
 		this.character = clone( self.getModelByName("body-"+OBJ.meshName).scene );
 
 		const ar = [];
-      	this.character.traverse( function ( obj ) {
+     //  	this.character.traverse( function ( obj ) {
 
-	        if(obj.isMesh || obj.isSkinnedMesh){
-	          if(obj.material !=null ){
-	          	if(!self.checkIsInArr(ar, obj.material.name)){
-	          		ar.push(obj.material.name);
-					console.log("{");
-					console.log("name:'"+obj.material.name+"',");
-					console.log("color:'"+obj.material.color.getHexString()+"',");
-					console.log("emissive:'"+obj.material.emissive.getHexString ()+"'");
-					console.log("}");
-	            }
-	          }
-	        }
+	    //     if(obj.isMesh || obj.isSkinnedMesh){
+	    //       if(obj.material !=null ){
+	    //       	if(!self.checkIsInArr(ar, obj.material.name)){
+	    //       		ar.push(obj.material.name);
+					// console.log("{");
+					// console.log("name:'"+obj.material.name+"',");
+					// console.log("color:'"+obj.material.color.getHexString()+"',");
+					// console.log("emissive:'"+obj.material.emissive.getHexString ()+"'");
+					// console.log("}");
+	    //         }
+	    //       }
+	    //     }
 
-      	});
+     //  	});
 
 		this.movement  = clone( self.getModelByName(OBJ.meshName+"-"+OBJ.movement).scene );
+		appGlobal.skinsHandler.changeSwatchOnMesh({meshes:[this.character, this.movement], name:OBJ.meshName},this.skin);
+
 		this.boostTip;
 		this.boostTexture = new TextureLoader().load( './assets/textures/boost.png' );
 		this.boostTexture.wrapS = RepeatWrapping;
@@ -75,7 +79,6 @@ class RemotePlayer {
 		
 		appGlobal.characterOutlineMeshes.push(this.character);
 		appGlobal.characterOutlineMeshes.push(this.movement);
-		
 		appGlobal.scene.characterOutlinePass.selectedObjects = appGlobal.characterOutlineMeshes;
 		
 		this.character.position.y = this.movement.position.y = -1.25;
@@ -254,8 +257,9 @@ class RemotePlayer {
   		this.tipObject.visible = true;
   		this.tipObject.rotation.z+=(.4+Math.random()*Math.PI)
   		const self = this;
-  		if(this.shootTimeout != null)
+  		if(this.shootTimeout != null){
   			clearTimeout(this.shootTimeout);
+  		}
   		this.shootTimeout = setTimeout(function(){
   			self.tipObject.visible = false;
   		}, 100);

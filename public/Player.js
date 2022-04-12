@@ -126,7 +126,7 @@ class Player {
 		}
 
 		this.abilityMult = 1;
-		this.id = socket.id;
+		this.id = OBJ.id;//socket.id;
 		this.jumpCount = 0;
 		this.canDoubleJump = false;
 		this.releasedSpaceBarAfterJump = false;
@@ -527,6 +527,10 @@ class Player {
 	}
 
 	
+	handleGetKill(){
+
+		appGlobal.soundHandler.playSoundByName({name:"kill-2", dist:1});
+	}
 	
 
 	handleDoDamage(){

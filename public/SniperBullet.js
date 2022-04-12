@@ -46,17 +46,23 @@ class SniperBullet {
 		
 		if(this.isLocal){
 			
-			if(OBJ.hitId != null){	
-				socket.emit('doDamage', {
-			  		id: OBJ.hitId,
-			  		damage:this.damage,
-					position:this.startPos,
-					headShot:OBJ.headShot,
-					fromDamageId:socket.id
-				});
+			if(OBJ.hitId != null){
+				if(window.socket != null){	
+					socket.emit('doDamage', {
+				  		id: OBJ.hitId,
+				  		damage:this.damage,
+						position:this.startPos,
+						headShot:OBJ.headShot,
+						fromDamageId:socket.id
+					});
+				}else{
+					let dmg = this.damage
+					if(OBJ.headShot)
+						dmg *=1.51;
+					appGlobal.remotePlayers[OBJ.hitId].receiveDamage({position:this.startPos, health:dmg})
+				}
 				appGlobal.globalHelperFunctions.playerDoDamage();
 			}else{
-
 				if(OBJ.hit){
 					this.knockParams.pos = OBJ.hitPoint;
 					appGlobal.globalHelperFunctions.knockPlayer(this.knockParams);

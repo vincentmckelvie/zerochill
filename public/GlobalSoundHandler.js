@@ -27,6 +27,7 @@ class GlobalSoundHandler {
 			"dmg",
 			"step-0",
 			"step-1",
+			"kill-2",
 		]
 		
 		this.samples = [];

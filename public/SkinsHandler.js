@@ -3,7 +3,8 @@ import {
   MeshStandardMaterial,
   Mesh,
   Scene,
-  Color
+  Color,
+  DoubleSide
 } from 'three';
 import { Skin } from './Skin.js';
 import { Swatches } from './Swatches.js';
@@ -18,10 +19,10 @@ class SkinsHandler {
     this.meshes = [];
     this.parentDom = document.getElementById("player-skins");
     let c = "skins-non-interactive";
-    if(window.logged.in){
+    //if(window.logged.in){
       c = "skins-interactive";
-    }
-    
+    //}
+    this.currentSkin = "default";
     this.parentDom.className = c;
 
     for(let i = 0; i<this.swatches.arr.length; i++){
@@ -37,11 +38,8 @@ class SkinsHandler {
   }
 
   changeSwatch(OBJ){
-    //if(OBJ.character == )
-    //get
+    this.currentSkin = OBJ.swatch;
     this.changeSwatchOnMesh( this.getSendObj(OBJ), OBJ.swatch );
-    //console.log("heyyyyyyyyyy")
-    //console.log(OBJ)
   }
 
   addMeshes(OBJ){
@@ -49,7 +47,6 @@ class SkinsHandler {
   }
 
   getSendObj(OBJ){
-    console.log(OBJ.character)
     for(let i = 0;i<this.meshes.length; i++){
       if(this.meshes[i].name == OBJ.character)
         return this.meshes[i];
@@ -57,14 +54,11 @@ class SkinsHandler {
   }
 
   playerSelectSwitchCharacter(OBJ){
-    console.log(OBJ)
     const dom = this.getDomFromName(OBJ.class);
-    console.log(dom)
     if(dom!=null){
       this.hideAllParentDoms();
       dom.toggleVis(true);
     }
-
   }
 
   hideAllParentDoms(){
@@ -80,7 +74,7 @@ class SkinsHandler {
     }
     return null;
   }
-
+  
   changeSwatchOnMesh(OBJ, swatch){
     //this.swatchObj = OBJ.swatches.getSwatchByName(OBJ.character, OBJ.name);
     const self = this;
@@ -92,13 +86,28 @@ class SkinsHandler {
         if(obj.isMesh || obj.isSkinnedMesh){
        
           if(obj.material !=null ){
-            const newColor = self.swatches.checkIfMaterialMatchesSwatch(obj.material.name, swatchObj.array);
-            
+            const newColor = self.swatches.checkIfMaterialMatchesSwatch(obj.material, swatchObj.array);
             if( newColor != null ){
-              obj.material.color.set("#"+newColor.color);
-              obj.material.emissive.set("#"+newColor.emissive);
-            }
+              
+              const c = new Color().set("#"+newColor.color);
+              const e = new Color().set("#"+newColor.emissive);
+              
+              
+              const mat = new MeshStandardMaterial({
+                  side:obj.material.side, 
+                  color:c, 
+                  emissive:e, 
+                  roughness:newColor.material.roughness, 
+                  metalness:newColor.material.metalness,
+                  name:newColor.name
+              });
+              obj.material.dispose();
 
+              
+              obj.material = mat;
+              obj.material.needsUpdate = true;
+
+            }
           }
         }
 
@@ -128,13 +137,14 @@ class SkinsDom{
     for(let i = 0;i<OBJ.arr.length; i++){
       const btn = document.createElement("div");
       btn.className = "swatch-btn";
-      btn.style.backgroundColor = OBJ.arr[i].icon;
+      //btn.style.backgroundColor = OBJ.arr[i].icon;
       this.parent.append(btn);
       const swatch = OBJ.arr[i].name;
       const index = i;
       if(index == 0 && OBJ.index == 0){
         btn.className = "swatch-btn-active"
       }
+      btn.style.backgroundImage = "url(/assets/swatches/"+this.character+"/"+OBJ.arr[i].name+".jpg)";
       //if(OBJ.logged){
         
         btn.addEventListener("click", function(){

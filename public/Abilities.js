@@ -129,13 +129,14 @@ class Abilities {
 		if(this.sound!=null){
 			appGlobal.soundHandler.playSoundByName({name:this.sound, dist:1});
 		}
-		
-		socket.emit('abilityVisual', {
-			  id: appGlobal.localPlayer.id,
-			  abilityName:this.name,
-			  position:appGlobal.localPlayer.playerCollider.end,
-			  sound:this.sound
-		});
+		if(window.socket!=null){
+			socket.emit('abilityVisual', {
+				  id: appGlobal.localPlayer.id,
+				  abilityName:this.name,
+				  position:appGlobal.localPlayer.playerCollider.end,
+				  sound:this.sound
+			});
+		}
 
 
 		if(this.abilityTime>0){
