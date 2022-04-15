@@ -11,6 +11,7 @@ import { BotPlayer } from './BotPlayer.js';
 import { CustomScene } from './CustomScene.js';
 import { StickyBullet } from './StickyBullet.js';
 import { RocketBullet } from './RocketBullet.js';
+import { BotBullet } from './BotBullet.js';
 import { AutoBullet } from './AutoBullet.js';
 import { SniperBullet } from './SniperBullet.js';
 import { GlobalParticleHandler } from './GlobalParticleHandler.js';
@@ -19,6 +20,8 @@ import { ItemHandler } from './ItemHandler.js';
 import { RemoteBulletHandler } from './RemoteBulletHandler.js';
 import { GlobalSoundHandler } from './GlobalSoundHandler.js';
 import { AbilityPlanetSwitch } from './AbilityPlanetSwitch.js';
+import { AbilityPlanetSwitchBot } from './AbilityPlanetSwitchBot.js';
+
 import { AbilityWalls } from './AbilityWalls.js';
 import { AbilityDirectionalBoost } from './AbilityDirectionalBoost.js';
 import { AbilityTeleport } from './AbilityTeleport.js';
@@ -95,6 +98,18 @@ const abilities = {
 			abilityTime:0,
 			cooldownUI:false,
 			sound:"double-jump",
+	},
+	blink:{
+			class:AbilityBlink,
+			type:"none",
+			cooldown:4000,
+			key:"Shift",
+			abilityKey:"Shift",
+			killOnLand:false,
+			name:"blink",
+			abilityTime:.2,
+			cooldownUI:true,
+			sound:"blink",
 	},
 	blink:{
 			class:AbilityBlink,
@@ -257,7 +272,7 @@ const weapons = {
 		impulse:180, 
 		name:"automatic",
 		knockParams:{pos:new THREE.Vector3(), distance:6, strength:25, gravMult:4},
-		damage:13,
+		damage:23,
 		//damage:1,
 		sound:"automatic-2",
 		abilities:[abilities.blink],
@@ -274,7 +289,7 @@ const weapons = {
 		impulse:180, 
 		name:"submachine",
 		knockParams:{pos:new THREE.Vector3(), distance:6, strength:15, gravMult:4},
-		damage:9,
+		damage:15,
 		sound:"sub",
 		abilities:[abilities.blink],
 		model:"submachine",
@@ -401,6 +416,16 @@ const globalHelperFunctions = {
 				appGlobal.controller.player = null;
 			
 			}
+
+			for(let i = 0; i<appGlobal.remotePlayers.length; i++){
+				appGlobal.remotePlayers[i].kill();
+			}
+
+			for(let i = 0; i<appGlobal.serverItemArr.length; i++){
+				appGlobal.serverItemArr[i].kill();
+			}
+			appGlobal.serverItemArr = [];
+			appGlobal.serverItemArr = initPickups();
 			// socket.emit('handleDeath', {
 			//   id: socket.id
 			// });
@@ -682,6 +707,38 @@ const appGlobal = {
 
 window.appGlobal = appGlobal;
 
+const planetSwitchBot = {
+	class:AbilityPlanetSwitchBot,
+	type:"press",
+	cooldown:0,
+	key:"KeyE",
+	abilityKey:"E",
+	killOnLand:true,
+	name:"bot",
+	abilityTime:0,
+	cooldownUI:false,
+	sound:"planet-switch",
+}
+
+const botWeapon = {
+
+	shootCooldown:600,  
+	bullet:BotBullet, 
+	ammoAmount:12,    
+	reloadCooldown:1000,  
+	zoom:80,    
+	adsRandom:.1, 
+	impulse:10, 
+	knockParams:{pos:new THREE.Vector3(), distance:10, strength:40, gravMult:4},
+	name:"bot",
+	damage:5,
+	sound:"rocket",
+	abilities:[abilities.doubleJump],
+	model:"none",
+	adsMouseSenseMult:0
+
+}
+
 let currentSelectWeapon = appGlobal.weapons.automatic;
 let currentMovement = abilities.planetSwitch;
 let currMeshName = "assault";
@@ -695,6 +752,17 @@ let currLoad = 0;
 //let remotePlayers = [];//window.remotePlayers = {};
 let stats;
 const SERVERFPS = 20;
+
+
+//document.getElementById("debug").innerHTML = "game";
+appGlobal.random = new Math.seedrandom(seed);
+playerIndex = 0;
+appGlobal.gameState = "game";
+appGlobal.serverItemArr = initPickups();
+appGlobal.user = 'bot';
+joinedFirstRoom = true;
+window.history.replaceState({}, '', `${location.pathname}?seed=${seed.toString()}`);
+initLoading();
 
 function getQuery(){
     const query = window.location.search.substring(1);
@@ -723,21 +791,10 @@ if(q != null){
 	seed = q;
 }
 
-//document.getElementById("debug").innerHTML = "game";
-appGlobal.random = new Math.seedrandom(seed);
-playerIndex = 0;
-appGlobal.gameState = "game";
-appGlobal.serverItemArr = initPickups();
-appGlobal.user = 'bot';
-joinedFirstRoom = true;
-window.history.replaceState({}, '', `${location.pathname}?seed=${seed.toString()}`);
-initLoading();
-
-
 
 function initBots(){
 	for(let i = 0; i<10; i++){
-		const bot = new BotPlayer({name:"assault", id:i, movement:"boost" });
+		const bot = new BotPlayer({name:"assault", id:i, movement:"boost", ability:planetSwitchBot, weapon:botWeapon });
 		appGlobal.remotePlayers.push(bot);
 		//appGlobal.scene.add(bot))
 	}

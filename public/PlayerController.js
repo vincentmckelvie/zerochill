@@ -50,8 +50,6 @@ class PlayerController {
 			this.controls.update();
 			this.camera = this.nonPlayingCam;
 		}
-	
-		
 	}
 
 	initPlayer(OBJ){

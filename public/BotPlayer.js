@@ -12,14 +12,11 @@ import {
 	Color
 } from 'three';
 import { Capsule } from './scripts/jsm/math/Capsule.js';
-// import { Weapon } from './Weapon.js';
+import { BotWeapon } from './BotWeapon.js';
 // import { Hud } from './Hud.js';
 // import { FPSAni } from './FPSAni.js';
 import { clone } from "./scripts/jsm/utils/SkeletonUtils.js"
 import { CharacterAnimationHandler } from './CharacterAnimationHandler.js';
-
-
-
 
 class BotPlayer {
 	//{scene:scene, worldScale:worldScale};
@@ -102,10 +99,28 @@ class BotPlayer {
 		//this.mesh.position.y-=1.5;
 		//this.mesh.position.z -=5;
 		//this.playerRotationHelper.position.y = -1.5;
-		this.rotOffset.add(this.xRot);
+
+		const geoS = new BoxGeometry( .1, .1, 3 );
+		const matS = new MeshStandardMaterial({ color:0xffff00, visible:true});
+	
+
+		const geoS2 = new BoxGeometry( .1, .1, .1 );
+		const matS2 = new MeshStandardMaterial({ color:0xff0000, visible:true});
+	
+
+		this.rotationSeeker = new Object3D();
+		this.seekerHelper = new Mesh(geoS,matS);
+		this.seekerHelperTip = new Mesh(geoS2,matS2);
+		this.rotationSeeker.add(this.seekerHelper);
+		this.seekerHelper.add(this.seekerHelperTip)
+		this.seekerHelperTip.position.z=1.5;
+		this.xRotHelper = new Object3D();
+		
+		this.xRotHelper.add(this.xRot);
+		this.xRot.rotation.x=Math.PI;
+		this.xRot.rotation.z=-Math.PI*.5;
 
 		//this.xRot.add(appGlobal.controller.playerCamera);
-		
 		//this.xRot.add(this.mesh);
 		
 		//appGlobal.controller.playerCamera.add(this.mesh)
@@ -113,16 +128,16 @@ class BotPlayer {
 
 		this.camDist = 5;
 		
-
 		//OBJ.weapon.player = this;
-		//this.weapon = new Weapon(OBJ.weapon);
+		OBJ.weapon.player = this;
+		this.weapon = new BotWeapon(OBJ.weapon);
 		//this.ability = new OBJ.weapon.abilities.class(OBJ.weapon.ability);
-		// this.abilities = [];
-		// for(let i = 0; i<OBJ.weapon.abilities.length; i++){
-		// 	this.abilities.push(new OBJ.weapon.abilities[i].class(OBJ.weapon.abilities[i]) );
-		// }
-		
-		// this.abilities.push(new OBJ.movement.class(OBJ.movement));
+		this.abilities = [];
+		//for(let i = 0; i<OBJ.weapon.abilities.length; i++){
+		//this.abilities.push(new AbilityPlanetSwitch( obj.ability) );
+		//}
+		OBJ.ability.bot = this;
+		this.abilities.push(new OBJ.ability.class(OBJ.ability));
 
 		//this.movementAbilityName = OBJ.movement.name; 
 		
@@ -193,8 +208,11 @@ class BotPlayer {
 		const arr = [this.character, this.movement];
 
 		this.characterHolder = new Object3D();
+		this.characterMeshCorrector = new Object3D();
+		this.characterLookAtHelper = new Object3D();
 		this.characterHolder.rotation.y+=Math.PI;
 		this.xRot.add(this.characterHolder);
+
 		const s = 3.25;
 		this.character.position.z = this.movement.position.z = -.2;
 		this.character.position.y = this.movement.position.y = -3.4;
@@ -204,7 +222,8 @@ class BotPlayer {
 		this.character.scale.set(s,s,s);
 		this.movement.scale.set(s,s,s);
 
-		this.characterHolder.add(this.character, this.movement, this.mesh, this.head);
+		this.characterMeshCorrector.add(this.character, this.movement, this.mesh, this.head);
+		this.rotOffset.add(this.xRotHelper,this.rotationSeeker,this.characterMeshCorrector, this.characterLookAtHelper);
 
 		this.mesh.add(this.start);
 		this.head.add(this.end);
@@ -219,12 +238,7 @@ class BotPlayer {
 		this.spineRotTarg = 0;
 		this.shootTimeout;
 
-		this.blastTexture = new TextureLoader().load( './assets/textures/shoot-2.png' );
-		this.tipObject.material.transparent = true;
-		this.tipObject.material.opacity = 1;
-		this.tipObject.material.emissive = new Color(0xffad2b);
-		this.tipObject.material.map = this.blastTexture;
-
+		
 		//this.fps = new FPSAni({model:OBJ.weapon.model, name:OBJ.weapon.name});
 		this.adsMouseSenseMultTarg = 0;
 		this.adsMouseSenseMult = 0;
@@ -240,7 +254,22 @@ class BotPlayer {
 
 		this.remotePlayer = this;
 		this.radius = .45;
+
+		this.aiState = "chasing";
+		this.aiInc = appGlobal.random()*1000;
+		this.aiRndDist = 10+appGlobal.random()*4;
+		this.aiChaseDist = this.aiRndDist*1.5;
+		this.aiRndTurnSpeed = 50+appGlobal.random()*50;
+		this.currPos = new Vector3();
+		this.prevPos = new Vector3();
+		this.axisXRnd = 1;
+		if(Math.random()>.5)this.axisXRnd=-1;
+		this.movementSum = 0;
+		this.movementInc = 0;
+		this.aiStrafeRndCheck = 10+Math.random()*20;
+		this.aiStrafeRndInc = 0;
 		
+		//this.aiState = ""
 		//appGlobal.world = this.getClosestWorld();
 		
 		//this.hitGrav = new Vector3();
@@ -269,7 +298,7 @@ class BotPlayer {
 	
 
 	update(){
-		this.axisY = 1;
+		
 		this.updateNonLooped();
 		for ( let i = 0; i < appGlobal.STEPS_PER_FRAME; i ++ ) {
 			this.updateLooped();
@@ -279,9 +308,8 @@ class BotPlayer {
 	updateLooped(){
 		switch(this.state){
 			case "alive":
-				this.updateControls();
 				this.updatePlayerPositionAndRotation();
-				//this.weapon.update();
+				this.weapon.update();
 			break;
 			case "dead":
 			break;
@@ -290,8 +318,9 @@ class BotPlayer {
 	}
 	updateNonLooped(){
 
-		const p = new Vector3().copy(appGlobal.localPlayer.playerCollider.start);
-		
+		if(appGlobal.localPlayer!=null && appGlobal.localPlayer.state=="alive" && appGlobal.localPlayer.firstLand){
+			this.updateAI();	
+		}
 		this.cah.update();
 
 		//this.fps.update();
@@ -308,9 +337,9 @@ class BotPlayer {
 		switch(this.state){
 			case "alive":
 				//this.updateOutline();
-				// for(let i = 0; i<this.abilities.length; i++){
-				// 	this.abilities[i].update();	
-				// }
+				for(let i = 0; i<this.abilities.length; i++){
+					this.abilities[i].update();	
+				}
 				this.handleBoost();
 				this.handleADSModify();
 			break;
@@ -326,7 +355,133 @@ class BotPlayer {
 		// 	}
 		// }
 		
+	}
 
+	updateAI(){
+		this.tipObject.getWorldPosition(this.tipPos);
+		const p = new Vector3().copy(appGlobal.localPlayer.playerCollider.end);
+		const dist = p.distanceTo(this.playerCollider.end);
+		
+		const wPos = new Vector3();
+		this.xRotHelper.getWorldPosition(wPos);
+		// const wPos2 =new Vector3();
+		// this.characterMeshCorrector.getWorldPosition(wPos2);
+		
+		this.aiInc += appGlobal.deltaTime * (this.aiRndTurnSpeed*.3);
+
+		const v1 = p.clone().sub( wPos ).normalize(); // CHANGED
+		const v3 = new Vector3().crossVectors(v1, this.grav ).normalize(); // CHANGED
+		
+		this.xRotHelper.up.copy(v3);
+		this.xRotHelper.lookAt(p);
+
+		this.seekerHelper.lookAt(appGlobal.localPlayer.playerCollider.end);
+		
+		var lookVec = new Vector3();
+		this.lookAt.getWorldDirection(lookVec).normalize();
+		
+		const ns = new Vector3().copy(this.playerCollider.end).normalize();
+		const np = new Vector3().copy(p).normalize();
+		const lp = p.clone().sub(this.playerCollider.end);
+
+		let angle = lookVec.angleTo(v3);
+		let cosAB = p.dot( this.playerCollider.end );
+		
+		var quaternion = new Quaternion(); // create one and reuse it
+		//quaternion.setFromUnitVectors( ns, np );
+		quaternion.setFromUnitVectors( this.grav, v1);
+		
+		//angle = .dot( v3 );
+		let targetQuaternion = new Quaternion();
+		if(this.world == appGlobal.world){
+			if(dist>5){
+				const wPos1 = new Vector3();
+			 	this.seekerHelperTip.getWorldPosition(wPos1);
+			 	// const wPos2 = new Vector3();
+			 	// this.characterLookAtHelper.getWorldPosition(wPos2);
+				
+				const v11 = p.clone().sub( wPos1 ).normalize(); // CHANGED
+				const v33 = new Vector3().crossVectors(v11, this.grav ).normalize(); // CHANGED
+
+				this.characterLookAtHelper.lookAt(wPos1);
+				this.characterLookAtHelper.up.copy(v33);
+				this.characterLookAtHelper.rotation.z+=-Math.PI/2;
+				targetQuaternion.copy(this.characterLookAtHelper.quaternion);
+			}
+
+			//console.log(angle)
+		}else{
+
+			targetQuaternion.identity ();//(new Quaternion.identity());
+			//this.characterMeshCorrector.quaternion.rotateT;
+		}
+
+		this.characterMeshCorrector.quaternion.rotateTowards( targetQuaternion, appGlobal.deltaTime * 100 );
+		
+
+		switch(this.aiState){
+			case "chasing":
+				this.xRot.rotateOnAxis(new Vector3(0,1,0), Math.sin(this.aiInc)*.02)
+				this.axisY = 1;
+				this.axisX = 0;
+				if( dist < this.aiRndDist){
+					this.aiState = "strafing";
+					this.axisXRnd = 1; 
+					if(Math.random()>.5)this.axisXRnd = -1;
+				}	
+				this.weapon.shouldShoot = true;
+			break;
+			case "strafing":
+			
+				this.aiStrafeRndInc += appGlobal.deltaTime*100;
+				if(this.aiStrafeRndInc > this.aiStrafeRndCheck){
+					this.aiStrafeRndInc = 0;
+					this.aiStrafeRndCheck = 10+Math.random()*20;
+					if(Math.random()>.5){
+						this.axisXRnd = 1; 
+						if(Math.random()>.5)this.axisXRnd = -1;
+					}else{
+						this.axisXRnd = 0;
+					}
+				}
+				
+				if(dist<5){
+					this.axisXRnd = 0;
+				}
+				this.axisY = 0;
+				this.axisX = this.axisXRnd;
+				if(dist > this.aiChaseDist){
+					this.aiState = "chasing"
+				}
+				this.weapon.shouldShoot = true;
+			break;
+		}
+		
+		this.movementInc+=appGlobal.deltaTime*100;
+		//console.log(this.movementInc)
+		this.currPos.copy(this.playerCollider.start);
+		this.movementSum += this.currPos.distanceTo(this.prevPos);
+		
+		if(this.movementInc>40){
+			
+			if(this.movementSum < 30){
+				if(this.world != appGlobal.world)
+					this.boostToOtherWorld();
+			}
+
+			this.movementSum = 0;
+			this.movementInc = 0;
+		}
+		
+		this.prevPos.copy(this.playerCollider.start);
+		
+	}
+
+	boostToOtherWorld(){
+		
+		for(let i = 0; i<this.abilities.length; i++){
+			this.abilities[i].handleKeyDown("KeyE");	
+		}
 	}
 
 	initWalkSound(){
@@ -344,6 +499,7 @@ class BotPlayer {
 		this.stepsTimeout = setInterval(function(){
 			self.canDoWalkSound = true;
 		},330);
+
 	}
 
 	handleADSModify(){
@@ -357,6 +513,7 @@ class BotPlayer {
 	
 	receiveDamage(OBJ){
 		appGlobal.soundHandler.playSoundByName({name:"dmg", dist:1});
+		
 		// const camForward =  new Vector3().copy(this.getCameraForwardVector());
 		// const attacker = new Vector3().copy(OBJ.position).sub(this.playerCollider.end).normalize();
 		
@@ -371,7 +528,7 @@ class BotPlayer {
 
 		this.life -= OBJ.health;
 		//this.hud.updateHealth(this.life);
-		if(this.life <=0 ){
+		if(this.life <= 0 ){
 			appGlobal.localPlayer.handleGetKill();
 			this.kill();
 		}
@@ -388,9 +545,10 @@ class BotPlayer {
 	kill() {
 		if(this.state == "alive"){
 			this.state = "dead";
-			// for(let i = 0; i<this.abilities.length; i++){
-			// 	this.abilities[i].kill();	
-			// }
+			for(let i = 0; i<this.abilities.length; i++){
+				this.abilities[i].kill();	
+			}
+			this.weapon.kill();
 			//this.fps.kill();
 			this.playing = false;
 			//appGlobal.globalHelperFunctions.playerReset(this.id, true);
@@ -413,19 +571,21 @@ class BotPlayer {
 				const end = new Vector3().copy(pos);
 				pos.multiplyScalar(appGlobal.worldScale*6);
 				self.showAllMeshes();
-				self.playerCollider.start.set(pos);
-				self.world = self.getClosestWorld();
+				// self.playerCollider.start.set(pos);
+				// self.playerCollider.end.set(pos);
+				
 
 				self.grav = new Vector3().copy(pos).sub(new Vector3()).normalize();
 				const n = new Vector3().copy(pos).add( self.grav.multiplyScalar(self.playerHeight) );
 		
 				self.playerCollider.set( pos, n, 1.35 );
-
+				self.world = self.getClosestWorld();
 				self.playing = true;
 				self.state = "alive";
 				self.life = 100;
 				self.spawnsInc++;
 				self.spawnsInc = self.spawnsInc%self.spawns.length;
+
 			},800)
 		}
 	}
@@ -492,167 +652,6 @@ class BotPlayer {
 		}
 	}
 
-	handleKeyUp(key){
-		// for(let i = 0; i<this.abilities.length; i++){
-		// 	this.abilities[i].handleKeyUp(key);	
-		// }
-		// if(key=="KeyA"){
-		// 	if(!this.keys.D){
-		// 		this.axisX = 0;
-		// 	}else{
-		// 		this.axisX = 1;
-		// 	}
-		// 	this.keys.A = false;	
-		// }
-		
-		// if(key=="KeyD"){
-		// 	if(!this.keys.A){
-		// 		this.axisX = 0;
-		// 	}else{
-		// 		this.axisX = -1;
-		// 	}
-		// 	this.keys.D = false;
-		// }
-		
-		// if(key=="KeyW"){
-		// 	if(!this.keys.S){
-		// 		this.axisY = 0;
-		// 	}else{
-		// 		this.axisY = -1;
-		// 	}
-		// 	this.keys.W = false;
-		// }	
-		
-		// if(key=="KeyS"){
-		// 	if(!this.keys.W){
-		// 		this.axisY = 0;
-		// 	}else{
-		// 		this.axisY = 1;
-		// 	}
-		// 	this.keys.S = false;
-		// }
-		
-		// if ( key == 'KeyR' ) {
-		// 	this.reloadOT = false;
-		// }
-
-		// if ( key == 'Space' ) {
-		// 	if(this.canDoubleJump && !this.releasedSpaceBarAfterJump){
-		// 		this.releasedSpaceBarAfterJump = true;
-		// 	}
-		// }
-
-		// if(key=="ControlLeft"){
-		// 	this.crouching = false;
-		// 	this.playerHeight = this.ogPlayerHeight;
-		// }
-
-	}
-	
-	handleGamePad(OBJ){
-
-		// this.axisX = OBJ.xaxis;
-		// this.axisY = OBJ.yaxis*-1;
-
-		// this.updateCameraRotation({mx:OBJ.mx*4, my:OBJ.my*4});
-		
-		// if(OBJ.ability1){
-		// 	if(!this.ability1KeyDownOT){
-		// 		const key = "KeyE"
-		// 		for(let i = 0; i<this.abilities.length; i++){
-		// 			this.abilities[i].handleKeyDown(key);
-		// 		}
-		// 		this.ability1KeyDownOT = true;
-		// 	}
-		// }else{
-		// 	const key = "KeyE"
-		// 	for(let i = 0; i<this.abilities.length; i++){
-		// 		this.abilities[i].handleKeyUp(key);	
-		// 	}
-		// 	this.ability1KeyDownOT = false;
-		// }
-
-		// if(OBJ.ability2){
-		// 	if(!this.ability2KeyDownOT){
-			
-		// 		const key = "KeyQ"
-		// 		for(let i = 0; i<this.abilities.length; i++){
-		// 			this.abilities[i].handleKeyDown(key);	
-		// 		}
-		// 		this.ability2KeyDownOT = true;
-		// 	}
-		// }else{
-		// 	const key = "KeyQ"
-		// 	for(let i = 0; i<this.abilities.length; i++){
-		// 		this.abilities[i].handleKeyUp(key);	
-		// 	}
-		// 	this.ability2KeyDownOT = false;
-		// }
-		
-		// this.ads(OBJ.ads);
-		// appGlobal.mouse.down = OBJ.shoot;
-		
-		// appGlobal.keyStates[ 'KeyW' ] = this.keys.W = OBJ.w;
-		// appGlobal.keyStates[ 'KeyS' ] = this.keys.S = OBJ.s;
-		// appGlobal.keyStates[ 'KeyA' ] = this.keys.A = OBJ.a;
-		// appGlobal.keyStates[ 'KeyD' ] = this.keys.D = OBJ.d;
-
-		// appGlobal.keyStates[ 'ShiftLeft' ] = OBJ.boost;
-		// if(OBJ.boost){
-		// 	this.handleBlinkKeyPress();
-		// }
-		// appGlobal.keyStates[ 'Space' ] = OBJ.jump;
-
-		// if(OBJ.reload){
-		// 	this.handleReloadKeyPress();
-		// }else{
-		// 	this.reloadOT = false;
-		// }
-
-	}
-
-	handleKeyDown(key){
-		// for(let i = 0; i<this.abilities.length; i++){
-		// 	this.abilities[i].handleKeyDown(key);	
-		// }
-
-		// if(key=="KeyD"){
-		// 	this.axisX = 1;
-		// 	this.keys.D = true;
-		// }
-		
-		// if(key=="KeyA"){
-		// 	this.axisX = -1;
-		// 	this.keys.A = true;
-		// }
-		
-		// if(key=="KeyW"){
-		// 	this.axisY = 1;
-		// 	this.keys.W = true;
-		// }
-		
-		// if(key=="KeyS"){
-		// 	this.axisY = -1;
-		// 	this.keys.S = true;
-		// }
-
-		// if ( key == 'KeyR') {
-		// 	this.handleReloadKeyPress();
-		// }
-		// if(key == 'ShiftLeft'){
-		// 	this.handleBlinkKeyPress();
-		// }
-	}
-
-
-	handleReloadKeyPress(){
-		// if(!this.reloadOT){
-		// 	this.weapon.reload();
-		// 	this.reloadOT = true;
-		// }
-	}
-
-
 	handleBlinkKeyPress(){
 		// if(this.canBlink && !this.boosting && !this.keys.W){
 		// 	if( this.keys.A || this.keys.D ){
@@ -690,48 +689,7 @@ class BotPlayer {
 		//this.hud.doDamageMarker();
 	}
 
-	updateControls(){
-		
-		// this.playerRotationHelper.getWorldQuaternion(this.remoteQuaternion);
-		
-		// if(this.firstLand){
-		// 	if ( appGlobal.keyStates[ 'ShiftLeft' ] && appGlobal.keyStates[ 'KeyW' ] && this.canBoost ) {
-		// 		this.initBoost();
-		// 	}
-		// 	if( !appGlobal.keyStates[ 'ShiftLeft' ] || !appGlobal.keyStates[ 'KeyW' ] ){
-		// 		this.cancelBoost();
-		// 	}
-		// 	this.boostButtonDown = appGlobal.keyStates[ 'ShiftLeft' ] 
-		// }	
-		// if(!this.canDoubleJump){
-		// 	if ( this.playerOnFloor ) {
-		// 		if ( appGlobal.keyStates[ 'Space' ] ) {
-		// 			this.playerVelocity.add( this.grav.multiplyScalar(10) );
-		// 		}
-		// 	}
-		// }else{
-		// 	if ( this.playerOnFloor ) {
-		// 		if ( appGlobal.keyStates[ 'Space' ] ) {
-		// 			this.releasedSpaceBarAfterJump = false;
-		// 			this.jumpCount ++;
-		// 			this.playerVelocity.add( this.grav.multiplyScalar(10) );
-		// 		}
-		// 	}else{
-		// 		if ( appGlobal.keyStates[ 'Space' ] && this.releasedSpaceBarAfterJump && this.jumpCount < 2 ) {
-		// 			this.playerVelocity.set( 0,0,0 );
-		// 			this.playerVelocity.add( this.grav.multiplyScalar(10) );
-		// 			for(let i = 0; i<this.abilities.length; i++){
-		// 				if(this.abilities[i].name == "double jump"){
-		// 					this.abilities[i].confirmAbility();
-		// 				}
-		// 			}
-		// 			this.jumpCount ++;
-		// 		}
-				
-		// 	}
 
-		// }
-	}
 	
 	handleBoost(){
 
@@ -892,47 +850,30 @@ class BotPlayer {
 			}
 		}
 
-		// for(let i = 0; i<this.abilities.length; i++){
-		// 	this.abilities[i].updateClosestWorldIndex(currClosest.index);
-		// }
-		//this.ability.updateClosestWorldIndex(currClosest.index);
-		//this.currentWorldIndex = currClosest.index;
+		for(let i = 0; i<this.abilities.length; i++){
+			//if(currClosest!=null)
+			this.abilities[i].updateClosestWorldIndex(currClosest.index);
+		}
+		
 		return currClosest;
 
 	}
 
 	checkCanSetClosestWorld(){
 		
-		// if(this.movementAbilityName == "directional boost"){
-			
-		// 	if(this.boostAndGravWorldCollisionHelper(1.5)){
-		// 		return true;
-		// 	}
-			
-		// 	if(this.boosting){
-		// 		return false;
-		// 	}
+	
+		if(this.canSelectClosestWorld && this.boostAndGravWorldCollisionHelper(1.0))
+			return true;
 
-		// }else if(this.movementAbilityName == "planet switch"){
-
-		// 	if(this.abilitiesCanSelectClosestWorld() && this.boostAndGravWorldCollisionHelper(1.0))
-		// 	//if( this.abilitiesCanSelectClosestWorld()  )
-		// 		return true;
-
-		// }else if(this.movementAbilityName == "teleport"){
-		// 	return true;
-		// }
-
-		
-		return true;
+		return false;
 	}
 
 
 	abilitiesCanSelectClosestWorld(){
-		// for(let i = 0; i<this.abilities.length; i++){
-		// 	if(! this.abilities[i].canSetClosestWorld )
-		// 		return false;	
-		// }
+		for(let i = 0; i<this.abilities.length; i++){
+			if(! this.abilities[i].canSetClosestWorld )
+				return false;	
+		}
 		
 		return true;
 	}
@@ -1011,18 +952,18 @@ class BotPlayer {
 				this.firstLand = true;
 				this.canBoost = true;
 				this.didTpsAni = true;
-				// for(let i = 0; i<this.abilities.length; i++){
-				// 	this.abilities[i].init();
-				// }
+				for(let i = 0; i<this.abilities.length; i++){
+					this.abilities[i].init();
+				}
 
 				//this.ability.init();
 				//this.canGrapple = true;
 			}
 
 			this.jumpCount = 0;
-			// for(let i = 0; i<this.abilities.length; i++){
-			// 	this.abilities[i].handlePlayerLand();
-			// }
+			for(let i = 0; i<this.abilities.length; i++){
+				this.abilities[i].handlePlayerLand();
+			}
 			//this.ability.handlePlayerLand();
 			// if(this.grappling){
 			// 	this.canGrapple = true;

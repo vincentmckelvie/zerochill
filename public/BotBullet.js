@@ -8,7 +8,7 @@ import {
 	Sphere
 } from 'three';
 
-class RocketBullet {
+class BotBullet {
 	//{aliveTime:aliveTime, bullet:bullet};
 	constructor(OBJ, ISLOCAL) {
 		
@@ -49,7 +49,7 @@ class RocketBullet {
 	}
 	
 	update(){
-		if(!this.killed){
+		if(!this.killed && appGlobal.localPlayer){
 			this.playerSphereCollision();
 			this.handlePhysics();
 		}
@@ -76,7 +76,8 @@ class RocketBullet {
 		this.mesh.position.copy( this.collider.center );
 
 	}
-	
+
+		
 	kill(){
 		
 		if(!this.killed){
@@ -84,10 +85,17 @@ class RocketBullet {
 			clearTimeout(this.killTimeout);
 
 			if(this.isLocal){
+
 				this.knockParams.pos = this.mesh.position;
 				appGlobal.globalHelperFunctions.knockPlayer(this.knockParams);
 				
-				const arr = appGlobal.globalHelperFunctions.splashDamage(this.knockParams);
+				let arr = [];
+				if(window.socket!=null){
+					arr = appGlobal.globalHelperFunctions.splashDamage(this.knockParams);
+				}else{
+					arr = this.playerSplashDamage(this.knockParams);
+				}
+				
 				if(arr.length>0){
 					for(let i = 0; i<arr.length; i++){
 						const self = this;
@@ -100,12 +108,10 @@ class RocketBullet {
 						  		fromDamageId:socket.id
 							});
 						}else{
-							appGlobal.remotePlayers[arr[i].id].receiveDamage({position:this.mesh.position, health:this.damage})
+							if(appGlobal.localPlayer!=null)
+								appGlobal.localPlayer.receiveDamageBots({position:this.mesh.position, health:this.damage})
 						}
 					}			
-				}else{
-
-					
 				}
 			}
 
@@ -122,10 +128,54 @@ class RocketBullet {
 		}
 	}
 
+	resetKill(){
+		if(!this.killed){
+			this.killed = true;
+			this.mesh.geometry.dispose();
+			this.mesh.material.dispose();
+			window.appGlobal.scene.remove(this.mesh);
+		}
+	}
+
+	playerSplashDamage(OBJ){
+		if(appGlobal.localPlayer!=null){
+			const arr = [];
+			
+			const start = new Vector3().copy(appGlobal.localPlayer.playerCollider.start);// = new THREE.Vector3();
+			//.getWorldPosition(start);
+			const dist = start.distanceTo(OBJ.pos);
+			const id = appGlobal.localPlayer.id;
+			if(dist < OBJ.distance){
+				const s = (OBJ.distance-dist)/OBJ.distance;
+				const obj = {damageMult:s, id:id};
+				arr.push(obj);
+			}
+				
+			return arr;
+		}
+		return [];
+	}
+
 	playerSphereCollision() {
-		const id = appGlobal.globalHelperFunctions.playerSphereCollision(this.collider, this.id)
-		if(id != null){
-			this.kill();
+		
+		const start = new Vector3().copy(appGlobal.localPlayer.playerCollider.start);
+		const end = new Vector3().copy(appGlobal.localPlayer.playerCollider.end);
+		
+		const vector = new Vector3();
+		const center = vector.addVectors(start, end).multiplyScalar( 0.5 );
+
+		const playerRadius = appGlobal.localPlayer.playerCollider.radius*2;
+		const r = playerRadius + this.collider.radius;
+		
+		const r2 = r * r;
+		
+		// approximation: player = 3 spheres
+		
+		for ( const point of [ start, center, end ] ) {
+			const d2 = point.distanceToSquared( this.collider.center );
+			if ( d2 < r2 ) {
+				this.kill();
+			}	
 		}
 	}
 
@@ -133,4 +183,4 @@ class RocketBullet {
 
 }
 
-export { RocketBullet };
+export { BotBullet };

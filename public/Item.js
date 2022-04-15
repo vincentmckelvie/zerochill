@@ -56,7 +56,6 @@ class Item {
 		this.offset.lookAt(OBJ.lookPosition);
 		this.index = OBJ.index;
 		this.killed = OBJ.killed;
-
 		
 	}
 
@@ -85,12 +84,16 @@ class Item {
   	pickUp(){
   		this.kill();
   		appGlobal.soundHandler.playSoundByName({name:"health",dist:1});
-  		socket.emit('getItem', { 
-  			index:this.index, 
-  			id:appGlobal.localPlayer.id, 
-  			sound:"health", 
-  			position:this.offset.position 
-  		});
+  		if(window.socket != null){
+	  		socket.emit('getItem', { 
+	  			index:this.index, 
+	  			id:appGlobal.localPlayer.id, 
+	  			sound:"health", 
+	  			position:this.offset.position 
+	  		});
+  		}else{
+  			appGlobal.localPlayer.healBots({health:25})
+  		}
   // 		socket.emit('playSoundAtPosition', {
 		// 	  id: appGlobal.localPlayer.id,
 		// 	  sound:"health",
@@ -100,7 +103,7 @@ class Item {
 
   	handleCollision(){
   		
-  		if(appGlobal.localPlayer!=null){
+  		if(appGlobal.localPlayer != null){
 
 			const start = new Vector3().copy(appGlobal.localPlayer.playerCollider.start);
 			const end = new Vector3().copy(appGlobal.localPlayer.playerCollider.end);

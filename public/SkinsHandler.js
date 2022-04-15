@@ -1,6 +1,8 @@
 import {
   Object3D,
   MeshStandardMaterial,
+  MeshNormalMaterial,
+  MeshBasicMaterial,
   Mesh,
   Scene,
   Color,
@@ -84,34 +86,63 @@ class SkinsHandler {
     for(let i = 0; i<OBJ.meshes.length; i++){
       OBJ.meshes[i].traverse( function ( obj ) {
         if(obj.isMesh || obj.isSkinnedMesh){
-       
-          if(obj.material !=null ){
-            const newColor = self.swatches.checkIfMaterialMatchesSwatch(obj.material, swatchObj.array);
-            if( newColor != null ){
-              
-              const c = new Color().set("#"+newColor.color);
-              const e = new Color().set("#"+newColor.emissive);
-              
-              
-              const mat = new MeshStandardMaterial({
-                  side:obj.material.side, 
-                  color:c, 
-                  emissive:e, 
-                  roughness:newColor.material.roughness, 
-                  metalness:newColor.material.metalness,
-                  name:newColor.name
-              });
-              obj.material.dispose();
+          switch(swatch){
+            case "normal":
+              console.log(obj.material.name);
+              if(obj.material.name != "directional-boost" && !obj.material.name.includes("blast")){
+                const mat = new MeshNormalMaterial({
+                    side:obj.material.side, 
+                    name:obj.material.name
+                });
+                
+                obj.material.dispose();
+                obj.material = mat;
+                obj.material.roughness = obj.material.roughness;
+                obj.material.metalness = obj.material.metalness;
+              }
+            break;
+            default:
+              if(obj.material !=null ){
+                const newColor = self.swatches.checkIfMaterialMatchesSwatch(obj.material, swatchObj.array);
+                if( newColor != null ){
+                  
+                  const c = new Color().set("#"+newColor.color);
+                  const e = new Color().set("#"+newColor.emissive);
+                  let roughness = .5;
+                  let metalness = 0;
+                  if(OBJ.name=="launcher"){
+                    metalness = 1;
+                  }
+                  if(OBJ.name =="sniper"){
+                    roughness = 0.05;
+                  }
+                  const mat = new MeshStandardMaterial({
+                      side:obj.material.side, 
+                      color:c, 
+                      emissive:e, 
+                      metalness:metalness,
+                      roughness:roughness,
+                      name:obj.material.name
+                  });
 
-              
-              obj.material = mat;
-              obj.material.needsUpdate = true;
+                  if(swatch=="wireframe"){
+                    mat.wireframe=true;
+                  }
 
-            }
+
+
+                  obj.material.dispose();
+                  obj.material = mat;
+                  obj.material.needsUpdate = true;
+                }
+              }
+            break;
           }
+          
         }
 
       });
+
     }
   }
 
@@ -144,7 +175,7 @@ class SkinsDom{
       if(index == 0 && OBJ.index == 0){
         btn.className = "swatch-btn-active"
       }
-      btn.style.backgroundImage = "url(/assets/swatches/"+this.character+"/"+OBJ.arr[i].name+".jpg)";
+      btn.style.backgroundImage = "url(/assets/swatches/"+this.character+"/"+OBJ.arr[i].icon+".jpg)";
       //if(OBJ.logged){
         
         btn.addEventListener("click", function(){

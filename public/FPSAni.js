@@ -57,6 +57,9 @@ class FPSAni {
 		this.boostTarg = 0;
 		this.emissiveHelper = new WeaponEmissiveHandler({name:OBJ.model, emissive:emissive, blast:blast, blastModel:this.tipObject});
 		this.reloading = false;
+		this.adsing = false;
+		appGlobal.skinsHandler.changeSwatchOnMesh({meshes:[this.mesh], name:OBJ.model}, appGlobal.skinsHandler.currentSkin);
+
 	}
 	
 	update(){
@@ -65,16 +68,17 @@ class FPSAni {
 		this.mixer.update(appGlobal.deltaTime*this.deltaMult);
 		const ez = 90;
 		const ezShoot = 40;
-		this.idle.weight += (this.idleTarg - this.idle.weight)   * (ez*appGlobal.deltaTime);	
+		this.idle.weight +=  (this.idleTarg - this.idle.weight)   * (ez*appGlobal.deltaTime);	
 		this.ads.weight  +=  (this.adsTarg - this.ads.weight )   * (ez*appGlobal.deltaTime);
 		this.run.weight  +=  (this.boostTarg - this.run.weight )   * (ez*appGlobal.deltaTime);	
 		if(!this.reloading){
 			this.mesh.rotation.x += (0 - this.mesh.rotation.x)       * (ezShoot*appGlobal.deltaTime)
 			this.mesh.rotation.y += (Math.PI  - this.mesh.rotation.y)* (ezShoot*appGlobal.deltaTime)
 		}
-		if(this.boosting && !this.reloading){
+		if(this.boosting && !this.reloading && appGlobal.localPlayer.animationOnFloor){
+			let onGround = true;
 			this.inc+=(appGlobal.deltaTime*80);
-			this.mesh.position.y=Math.sin(this.inc)*.06;
+			this.mesh.position.y = Math.sin(this.inc)*.06;
 		}else{
 			this.mesh.position.y+=(0-this.mesh.position.y)*appGlobal.deltaTime*40
 		}
@@ -103,6 +107,7 @@ class FPSAni {
 	}
 
 	toggleADS(ADSING){
+		this.adsing = ADSING;
 		if(!this.boosting){
 			if(ADSING){
 				this.adsTarg = 1;
@@ -126,6 +131,17 @@ class FPSAni {
 			this.idleTarg = 0;
 			this.boostTarg = 1;
 		}else{
+			if(this.adsing){
+				this.adsTarg = 1;
+				this.idleTarg = 0;
+				if(this.weaponName=="sniper")
+					this.mesh.visible = false;
+			}else{ 
+				this.adsTarg = 0;
+				this.idleTarg = 1;
+				if(this.weaponName=="sniper")
+					this.mesh.visible = true;
+			}
 			this.boostTarg = 0;
 		}
 	}

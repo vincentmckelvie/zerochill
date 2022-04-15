@@ -24,10 +24,12 @@ class RemotePlayer {
 	constructor(OBJ) {
 		const self = this;
 		const geo = new BoxGeometry( 2, 2.5, 1.5 );
-		const headGeo = new BoxGeometry(1.4,1.6,1.4);
+		const headGeo = new BoxGeometry(1.4/4,1.6/4,1.4/4);
+		const headGeo1 = new BoxGeometry(1.4,1.6,1.4);
 		
 		const mat = new MeshStandardMaterial({    color:0x00ff00, visible:false});
 		const headMat = new MeshStandardMaterial({color:0xff0000, visible:false});
+		const headMat1 = new MeshStandardMaterial({color:0x0000ff,visible:false});
 		this.offset = new Object3D();
 		this.crouch = new Object3D();
 		this.characterHolder = new Object3D();
@@ -87,11 +89,14 @@ class RemotePlayer {
 		this.mesh = new Mesh(geo,mat);
 		this.mesh.position.y = -.25;
 		this.head = new Mesh(headGeo, headMat);
-		this.head.position.y = 1.75;
+		this.head.position.y = .1;
 		
 		
 		this.offset.add(this.crouch);
-		this.crouch.add(this.mesh, this.head, this.characterHolder);
+		//this.crouch.add(this.mesh, this.head, this.characterHolder);
+		this.crouch.add(this.mesh, this.characterHolder);
+		this.headBone = this.character.getObjectByName( 'head' );
+		this.headBone.add(this.head)
 		this.characterHolder.add(this.character, this.movement);
 		this.hitScanArrayIndex = appGlobal.hitScanArray.length;
 		
@@ -104,10 +109,15 @@ class RemotePlayer {
 		this.killed = false;
 		this.start = new Object3D();
 		this.end = new Object3D();
-		this.end.position.y = 1.75;
+		this.end.position.y = .1;
+		this.headBone.add(this.end);
+
+		this.head1 = new Mesh(headGeo, headMat1);
+		this.end.add(this.head1)
+		
 		this.endWorldPosition = new Vector3();
 		this.offset.add(this.start);
-		this.offset.add(this.end);
+		//this.offset.add(this.end);
 		this.id = OBJ.id;
 		this.mesh.playerId = this.id;
 		this.head.playerId = this.id;
@@ -124,6 +134,7 @@ class RemotePlayer {
 		this.cah.initAnimation();
 		this.remoteAbilites = new RemoteAbilities({remotePlayer:this});
 		this.spines = [this.character.getObjectByName( 'spine_01' ), this.movement.getObjectByName( 'spine_01' )] 
+		
 		let name = "tip-" + OBJ.meshName;
 		this.tipObject = this.character.getObjectByName(name);
 		this.tipObject.visible = false;
@@ -132,11 +143,11 @@ class RemotePlayer {
 		this.spineRotTarg = 0;
 		this.shootTimeout;
 
-		this.blastTexture = new TextureLoader().load( './assets/textures/shoot-2.png' );
-		this.tipObject.material.transparent = true;
-		this.tipObject.material.opacity = 1;
+		// this.blastTexture = new TextureLoader().load( './assets/textures/shoot-2.png' );
+		// this.tipObject.material.transparent = true;
+		// this.tipObject.material.opacity = 1;
 		this.tipObject.material.emissive = new Color(0xffad2b);
-		this.tipObject.material.map = this.blastTexture;
+		//this.tipObject.material.map = this.blastTexture;
 
 		this.stepsTimeout;
 		this.playerMovingForWalkSound = false;
@@ -184,7 +195,7 @@ class RemotePlayer {
 
 			this.end.getWorldPosition(this.endWorldPosition);
 			for(let i = 0; i<this.spines.length; i++){
-				this.spines[i].rotation.z += ((this.spineRotTarg+.5)-this.spines[i].rotation.z)*(160*appGlobal.deltaTime); 
+				this.spines[i].rotation.z += ((this.spineRotTarg)-this.spines[i].rotation.z)*(160*appGlobal.deltaTime); 
 			}
 			
 			if(this.shouldDoBoostParticle){

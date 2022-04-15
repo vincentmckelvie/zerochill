@@ -77,17 +77,17 @@ class WeaponEmissiveHandler {
 		}
 		this.texture.offset.x = -this.move;
 		
-		this.blastTexture = new TextureLoader().load( './assets/textures/shoot-2.png' );
+		//this.blastTexture = new TextureLoader().load( './assets/textures/shoot-2.png' );
 		this.blast = OBJ.blast;
 		//this.blast.opacityMap = this.blastTexture;
-		this.blast.transparent = true;
+		//this.blast.transparent = true;
 		this.blast.blendMode = AdditiveBlending;
-		this.blast.alphaTest = 0.5;
-		this.blast.premultipliedAlpha = true;
-		this.blast.opacity = 1;	
+		//this.blast.alphaTest = 0.5;
+		//this.blast.premultipliedAlpha = true;
+		//this.blast.opacity = 1;	
 		this.blast.visible = false;
 		this.blast.emissive = new Color(0xffad2b);
-		this.blast.map = this.blastTexture;
+		//this.blast.map = this.blastTexture;
 	
 		this.highlight = 0;
 	}

@@ -7,7 +7,8 @@ import {
 	Quaternion,
 	PerspectiveCamera,
 	Vector2,
-	Euler
+	Euler,
+	Matrix4
 } from 'three';
 import { Capsule } from './scripts/jsm/math/Capsule.js';
 import { Weapon } from './Weapon.js';
@@ -26,6 +27,7 @@ class Player {
 		//this.camera = OBJ.camera;
 		this.camera = appGlobal.controller.playerCamera;
 		this.defaultFOV = 90;
+		this.fovTarg = this.defaultFOV;
 		this.camera.fov = this.defaultFOV;
 		this.camera.updateProjectionMatrix();
 		
@@ -127,6 +129,7 @@ class Player {
 
 		this.abilityMult = 1;
 		this.id = OBJ.id;//socket.id;
+		console.log(this.id)
 		this.jumpCount = 0;
 		this.canDoubleJump = false;
 		this.releasedSpaceBarAfterJump = false;
@@ -187,7 +190,7 @@ class Player {
 
 	}
 	updateNonLooped(){
-		
+		this.updateFOV();
 		this.fps.update();
 		this.animationObject = {
 			yAxis:this.axisY, 
@@ -221,6 +224,11 @@ class Player {
 
 	}
 
+	updateFOV(){
+		this.camera.fov += (this.fovTarg - this.camera.fov) * (appGlobal.deltaTime*80);
+		this.camera.updateProjectionMatrix();
+	}
+
 	initWalkSound(){
 		
 		this.canDoWalkSound = false;
@@ -248,6 +256,7 @@ class Player {
 	}
 	
 	receiveDamage(OBJ){
+
 		appGlobal.soundHandler.playSoundByName({name:"dmg", dist:1});
 		const camForward =  new Vector3().copy(this.getCameraForwardVector());
 		const attacker = new Vector3().copy(OBJ.position).sub(this.playerCollider.end).normalize();
@@ -258,10 +267,33 @@ class Player {
 		const v1 = new Euler().setFromQuaternion (q1);
 		const v2 = new Euler().setFromQuaternion (q2);	
 		
-		const angle = (v2.x-v1.x)+Math.PI;
-		this.hud.doIncomingDamageMarker( (angle*-1) );
+		const angle = ((v2.x-v1.x)+Math.PI)*-1;
+		
+		this.hud.doIncomingDamageMarker( angle );
 
 		this.life = OBJ.health;
+		this.hud.updateHealth(this.life);
+		if(this.life <=0 ){
+			this.kill();
+		}
+	}
+	receiveDamageBots(OBJ){
+		
+		appGlobal.soundHandler.playSoundByName({name:"dmg", dist:1});
+		const camForward =  new Vector3().copy(this.getCameraForwardVector());
+		const attacker = new Vector3().copy(OBJ.position).sub(this.playerCollider.end).normalize();
+		
+		const q1 = new Quaternion().setFromUnitVectors( new Vector3(0,0,1), camForward );
+		const q2 = new Quaternion().setFromUnitVectors( new Vector3(0,0,1), attacker );
+		
+		const v1 = new Euler().setFromQuaternion (q1);
+		const v2 = new Euler().setFromQuaternion (q2);	
+		
+		const angle = ((v2.x-v1.x)+Math.PI)*-1;
+		
+		this.hud.doIncomingDamageMarker( angle );
+		
+		this.life -= OBJ.health;
 		this.hud.updateHealth(this.life);
 		if(this.life <=0 ){
 			this.kill();
@@ -274,17 +306,31 @@ class Player {
 			//this.life = 100;
 		this.hud.updateHealth(this.life);
 	}
+	healBots(OBJ){
+		this.life += OBJ.health;
+		if(this.life>100)
+			this.life = 100;
+		this.hud.updateHealth(this.life);
+	}
 
 	kill() {
 		if(this.state == "alive"){
+			
 			this.state = "dead";
+			
 			for(let i = 0; i<this.abilities.length; i++){
 				this.abilities[i].kill();	
 			}
+			
 			this.fps.kill();
 			appGlobal.playing = false;
-			appGlobal.globalHelperFunctions.playerReset(socket.id, true);
 			
+			if(window.socket!=null){
+				appGlobal.globalHelperFunctions.playerReset(socket.id, true);
+			}else{
+				appGlobal.globalHelperFunctions.playerReset(this.id, true);
+			}
+
 			if(this.stepsTimeout != null){
 				clearInterval(this.stepsTimeout);
 			}
@@ -293,34 +339,37 @@ class Player {
 	}
 
 	doTPSAni(doTPS){
-		if(this.tpsAni!=null){
-			this.tpsAni.kill();
-		}
+		// if(this.tpsAni!=null){
+		// 	this.tpsAni.kill();
+		// }
 
 		if(doTPS){
 
 			//this.mesh.visible = true;
-			this.adsing = false;
+			//this.adsing = false;
 			//this.tpsAni = gsap.to(this,{duration:.3, camDist:5, ease: "circ.out()", delay:0});
-			if(this.fovAni!=null){
-				this.fovAni.kill();
-			}
-			const self = this;
-			this.fovAni = gsap.to(this.camera,{duration:.3, fov:120, ease: "circ.out()", delay:0, onUpdate:function(){
-				self.camera.updateProjectionMatrix();
-			}});
+			// if(this.fovAni!=null){
+			// 	this.fovAni.kill();
+			// }
+			// const self = this;
+			// this.fovAni = gsap.to(this.camera,{duration:.3, fov:120, ease: "circ.out()", delay:0, onUpdate:function(){
+			// 	self.camera.updateProjectionMatrix();
+			// }});
+
+			this.fovTarg = 120;
 
 		}else{
 
 			//this.mesh.visible = false;
 			//this.tpsAni = gsap.to(this,{duration:.6, camDist:0, ease: "circ.out()", delay:0});
-			if(this.fovAni!=null){
-				this.fovAni.kill();
-			}
-			const self = this;
-			this.fovAni = gsap.to(this.camera,{duration:.6, fov:this.defaultFOV, ease: "circ.out()", delay:0, onUpdate:function(){
-				self.camera.updateProjectionMatrix();
-			}});
+			// if(this.fovAni!=null){
+			// 	this.fovAni.kill();
+			// }
+			// const self = this;
+			// this.fovAni = gsap.to(this.camera,{duration:.6, fov:this.defaultFOV, ease: "circ.out()", delay:0, onUpdate:function(){
+			// 	self.camera.updateProjectionMatrix();
+			// }});
+			this.fovTarg = this.defaultFOV;
 		}
 	}
 
@@ -617,7 +666,10 @@ class Player {
 	}
 
 	initBoost(){
-		
+		this.fps.toggleADS(false);
+		//this.adsing = false;
+		this.adsHelper(false);
+
 		if(this.didTpsAni){	
 			appGlobal.soundHandler.playSoundByName({name:"boost", dist:1});
 			this.doTPSAni(true);
@@ -633,6 +685,7 @@ class Player {
 			this.doTPSAni(false);
 			this.didTpsAni = true;
 		}
+		this.ads(this.adsing);
 		this.fps.toggleBoost(false);
 		this.boostMult = 1;
 		this.boosting = false;
@@ -942,29 +995,42 @@ class Player {
 	}
 
 	ads(shouldADS){
-			
+		
+		this.fps.toggleADS(shouldADS);
+		this.adsing = shouldADS;
+		
 		if(!this.boosting){
 			
-			this.adsing = shouldADS;
-			this.fps.toggleADS(shouldADS);
+			//this.adsing = shouldADS;
 			
-			if(this.fovAni!=null){
-				this.fovAni.kill();
-			}
+			this.adsHelper(shouldADS)
 			
-			const self = this;
-			if(shouldADS){
-				this.fovAni = gsap.to(this.camera,{duration:.3, fov:this.weapon.zoom, ease: "circ.out()", delay:0, onUpdate:function(){
-					self.camera.updateProjectionMatrix();
-				}});
-			}else{
-				this.fovAni = gsap.to(this.camera,{duration:.3, fov:this.defaultFOV, ease: "circ.out()", delay:0, onUpdate:function(){
-					self.camera.updateProjectionMatrix();
-				}});
-			}
 
 		}
 		
+	}
+
+	adsHelper(shouldADS){
+
+		// if(this.fovAni!=null){
+		// 	this.fovAni.kill();
+		// }
+		
+		const self = this;
+		if(shouldADS){
+			this.fovTarg = this.weapon.zoom;
+		}else{
+			this.fovTarg = this.defaultFOV;
+		}
+		// if(shouldADS){
+		// 	this.fovAni = gsap.to(this.camera,{duration:.3, fov:this.weapon.zoom, ease: "circ.out()", delay:0, onUpdate:function(){
+		// 		self.camera.updateProjectionMatrix();
+		// 	}});
+		// }else{
+		// 	this.fovAni = gsap.to(this.camera,{duration:.3, fov:this.defaultFOV, ease: "circ.out()", delay:0, onUpdate:function(){
+		// 		self.camera.updateProjectionMatrix();
+		// 	}});
+		// }
 	}
 
 
