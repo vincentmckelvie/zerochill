@@ -40,7 +40,7 @@ class AutoBullet {
 		this.isBulletDoingDamage = false;
 		this.killTimeout = setTimeout(function(){
 			self.kill();
-		}, 2000);
+		}, 1000);
 		//sphereIdx = ( sphereIdx + 1 ) % spheres.length;
 	}
 	
@@ -118,6 +118,8 @@ class AutoBullet {
 					  fromDamageId:socket.id
 					});
 				}else{
+					if(id.headShot)
+						this.damage*=1.5;
 					appGlobal.remotePlayers[id.id].receiveDamage({position:this.startPos, health:this.damage})
 				}
 				appGlobal.globalHelperFunctions.playerDoDamage();

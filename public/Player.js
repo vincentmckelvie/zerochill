@@ -160,12 +160,7 @@ class Player {
 		this.ability2KeyDownOT = false;
 		
 		appGlobal.world = this.getClosestWorld();
-		//this.hitGrav = new Vector3();
-		//this.grappling = false;
-		//this.canGrapple = false;
-		//this.currentWorldIndex = 0;
-		//this.outlinedWorld;
-		//this.outlinedPoint = new Vector3();
+	
 	}
 
 	
@@ -225,7 +220,7 @@ class Player {
 	}
 
 	updateFOV(){
-		this.camera.fov += (this.fovTarg - this.camera.fov) * (appGlobal.deltaTime*80);
+		this.camera.fov += (this.fovTarg - this.camera.fov) * (appGlobal.deltaTime*120);
 		this.camera.updateProjectionMatrix();
 	}
 

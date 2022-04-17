@@ -37,7 +37,7 @@ class RemotePlayer {
 
 		this.character = clone( self.getModelByName("body-"+OBJ.meshName).scene );
 
-		const ar = [];
+		//const ar = [];
      //  	this.character.traverse( function ( obj ) {
 
 	    //     if(obj.isMesh || obj.isSkinnedMesh){
@@ -56,6 +56,7 @@ class RemotePlayer {
      //  	});
 
 		this.movement  = clone( self.getModelByName(OBJ.meshName+"-"+OBJ.movement).scene );
+		
 		appGlobal.skinsHandler.changeSwatchOnMesh({meshes:[this.character, this.movement], name:OBJ.meshName},this.skin);
 
 		this.boostTip;

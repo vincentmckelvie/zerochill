@@ -21,6 +21,23 @@ class FPSAni {
 		const model = self.getModelByName("fps-"+OBJ.model)
 		this.weaponName = OBJ.name;
 		this.mesh = clone( model.scene );
+		const ar=[];
+		this.mesh.traverse( function ( obj ) {
+
+	        if(obj.isMesh || obj.isSkinnedMesh){
+	          if(obj.material !=null ){
+	          	if(!self.checkIsInArr(ar, obj.material.name)){
+	          		ar.push(obj.material.name);
+					console.log("{");
+					console.log("name:'"+obj.material.name+"',");
+					console.log("color:'"+obj.material.color.getHexString()+"',");
+					console.log("emissive:'"+obj.material.emissive.getHexString ()+"'");
+					console.log("}");
+	            }
+	          }
+	        }
+
+      	});
 		
 		appGlobal.controller.playerCamera.add(this.mesh);
 
@@ -46,6 +63,9 @@ class FPSAni {
 		this.idleTarg = 1;
 		this.adsTarg = 0;
 		this.rotTarg = new Vector3();
+		const skin =  appGlobal.skinsHandler.getCurrentSkinOnCharacter(OBJ.model);
+		appGlobal.skinsHandler.changeSwatchOnMesh({meshes:[this.mesh], name:OBJ.model}, skin);
+
 		const emissive = self.getMaterialByName("emissive", this.mesh);
 		const blast = self.getMaterialByName("blast", this.mesh);
 		//let name = "tip";
@@ -55,16 +75,29 @@ class FPSAni {
 		this.tipPosition = new Vector3(); 
 		this.boosting = false;
 		this.boostTarg = 0;
-		this.emissiveHelper = new WeaponEmissiveHandler({name:OBJ.model, emissive:emissive, blast:blast, blastModel:this.tipObject});
+		
+		this.emissiveHelper = new WeaponEmissiveHandler({name:OBJ.model, emissive:emissive, blast:blast, blastModel:this.tipObject, skin:skin});
+		
 		this.reloading = false;
 		this.adsing = false;
-		appGlobal.skinsHandler.changeSwatchOnMesh({meshes:[this.mesh], name:OBJ.model}, appGlobal.skinsHandler.currentSkin);
 
+		
+	}
+
+	checkIsInArr(arr,s){
+		for(let i = 0; i<arr.length; i++){
+			if(arr[i]==s){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	update(){
 		this.tipObject.getWorldPosition(this.tipPosition);
+		
 		this.emissiveHelper.update();
+		
 		this.mixer.update(appGlobal.deltaTime*this.deltaMult);
 		const ez = 90;
 		const ezShoot = 40;
@@ -85,6 +118,7 @@ class FPSAni {
 	}
 
 	reloadAnimation(TIME){
+		this.emissiveHelper.reload();
 		this.reloading = true;
 		const self = this;
 		gsap.to(this.mesh.rotation,   {duration:TIME/2, /*y:Math.PI,*/ x:-Math.PI*.4, /*z:0 */});

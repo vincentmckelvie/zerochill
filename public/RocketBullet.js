@@ -23,7 +23,7 @@ class RocketBullet {
 		this.alivetime = 2000;
 		
 		const rad = .2;
-		const sphereGeometry = new SphereGeometry( rad, 32, 32 );
+		const sphereGeometry = new SphereGeometry( rad, 6, 6 );
 		const sphereMaterial = new MeshStandardMaterial( { color: 0xffffff, roughness: 0.8, metalness: 0.5 } );
 		this.mesh = new Mesh( sphereGeometry, sphereMaterial );
 		this.mesh.castShadow = true;

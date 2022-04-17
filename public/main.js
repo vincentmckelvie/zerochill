@@ -516,13 +516,14 @@ const globalHelperFunctions = {
 			appGlobal.globalHelperFunctions.setUserName();
 			appGlobal.controller.initPlayer({ weapon: currentSelectWeapon, movement:currentMovement,  name:appGlobal.user});	
 			appGlobal.localPlayer = appGlobal.controller.player;
-
+			const skin = appGlobal.skinsHandler.getCurrentSkinOnCharacter(currMeshName);
+		
 			socket.emit('startPlaying', {
 				id:socket.id,
 				meshName:currMeshName,
 				name:appGlobal.user,
 				movement:currMovementName,
-				skin:appGlobal.skinsHandler.currentSkin
+				skin:skin
 			});
 
 			appGlobal.serverInfoTimeout = window.setInterval(()=> {

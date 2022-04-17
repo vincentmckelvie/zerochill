@@ -12,7 +12,6 @@ class Swatches {
         name:"Material.015", // assault clips
         color: "4d4d4d",
         emissive:"000000",
-        
       },{
         name:"Material.013",
         color: "00cc02",
@@ -52,7 +51,16 @@ class Swatches {
         name:"whiteNonEmissive",
         color: "9c9c9c",
         emissive:"000000",
-      },
+      },{
+        name:"emissive",
+        color: "202020",
+        emissive:"0a34cb",
+      },{
+        name:"assault-secondcolor",
+        color: "3b3b3b",
+        emissive:"000000",
+      }
+    
       
     ];
 
@@ -97,7 +105,15 @@ class Swatches {
         name:"whiteNonEmissive",
         color: "141414",
         emissive:"000000",
-      },
+      },{
+        name:"emissive",
+        color: "010101",
+        emissive:"0f0",
+      },{
+        name:"assault-secondcolor",
+        color: "030303",
+        emissive:"000000",
+      }
       
     ];
 
@@ -143,7 +159,15 @@ class Swatches {
         name:"whiteNonEmissive",
         color: "2eccf0", // light blue 
         emissive:"000000",
-      },
+      },{
+        name:"emissive",
+        color: "5a5a5a",
+        emissive:"00ff15",
+      },{
+        name:"assault-secondcolor",
+        color: "ed3bbd",
+        emissive:"000000",
+      }
       
     ];
 
@@ -188,7 +212,15 @@ class Swatches {
         name:"whiteNonEmissive",
         color: "00f", // light blue 
         emissive:"00f",
-      },
+      },{
+        name:"emissive",
+        color: "000000",
+        emissive:"0f0",
+      },{
+        name:"assault-secondcolor",
+        color: "00f",
+        emissive:"000000",
+      }
       
     ];
 
@@ -256,7 +288,20 @@ class Swatches {
       name:"GreyKawaii",
       color:"746b61",
       emissive:"000000"
-    }]
+    },{
+      name:"Material",
+      color:"f7fff9",
+      emissive:"000000"
+    },{
+      name:"dark-sticky",
+      color:"4313ff",
+      emissive:"000000"
+    },{
+      name:"emissive",
+      color:"363636",
+      emissive:"ff61da"
+    }
+    ]
 
     this.stickyDark = [
     { name : "light",
@@ -318,7 +363,21 @@ class Swatches {
       name:"GreyKawaii",
       color:"333333",
       emissive:"000000"
-    }]
+    },{
+      name:"Material",
+      color:"ff6a00",
+      emissive : "ff0000" 
+     
+    },{
+      name:"dark-sticky",
+      color:"1e00ff",
+      emissive:"1e00ff"
+    },{
+      name:"emissive",
+      color:"030303",
+      emissive : "ff6a00" 
+    }
+    ]
 
     this.stickyKawaii = [
     { name : "light",
@@ -380,7 +439,20 @@ class Swatches {
       name:"GreyKawaii",
       color:"41b0ae",
       emissive:"000000"
-    }]
+    },{
+      name:"Material",
+      color:"ea59f7",
+      emissive : "000000" 
+    },{
+      name:"dark-sticky",
+      color:"ea59f7",
+      emissive:"000000"
+    },{
+      name:"emissive",
+      color:"2ec96f",
+      emissive : "ea59f7" 
+    }
+    ]
 
 
     this.stickyRGB = [
@@ -441,9 +513,22 @@ class Swatches {
       emissive:"00f"
     },{
       name:"GreyKawaii",
-      color:"f00",
-      emissive:"f00"
-    }]
+      color:"0f0",
+      emissive:"0f0"
+    },{
+      name:"Material",
+      color:"00f",
+      emissive : "00f" 
+    },{
+      name:"dark-sticky",
+      color:"00f",
+      emissive:"00f"
+    },{
+      name:"emissive",
+      color:"000",
+      emissive : "f00" 
+    }
+    ]
 
 
 
@@ -469,10 +554,6 @@ class Swatches {
       color:'00cb03',
       emissive:'000000'
     },{
-      name:'blast.004',
-      color:'cc2c00',
-      emissive:'000000'
-    },{
       name:'GreenPunk',
       color:'00cb03',
       emissive:'000000'
@@ -488,7 +569,16 @@ class Swatches {
       name:'tip.005',
       color:'00cb03',
       emissive:'000000'
-    }]
+    },{
+      name:'GreenPunk.003',
+      color:'00cc03',
+      emissive:'000000'
+    },{
+      name:'emissive',
+      color:'000000',
+      emissive:'ff6600'
+    }
+    ]
 
     this.nitroDark = [
     {
@@ -523,6 +613,14 @@ class Swatches {
       name:'tip.005',
       color:'ff0000',
       emissive:'000000'
+    },{
+      name:'GreenPunk.003',
+      color:'333333',
+      emissive:'000000'
+    },{
+      name:'emissive',
+      color:'000000',
+      emissive:'ff0000'
     }];
 
     this.nitroKawaii = [
@@ -558,13 +656,22 @@ class Swatches {
       name:'tip.005',
       color:'d12c6e',
       emissive:'000000'
-    }]
+    },{
+      name:'GreenPunk.003',
+      color:'d12c6e',
+      emissive:'000000'
+    },{
+      name:'emissive',
+      color:'434343',
+      emissive:'ff1c7e'
+    }
+    ]
 
     this.nitroRGB = [
     {
       name:'darkgreysub',
-      color:'0f0',
-      emissive:'0f0'
+      color:'00f',
+      emissive:'00f'
     },{
       name:'greensub',
       color:'0f0',
@@ -592,6 +699,14 @@ class Swatches {
     },{
       name:'tip.005',
       color:'f00',
+      emissive:'f00'
+    },{
+      name:'GreenPunk.003',
+      color:'0f0',
+      emissive:'0f0'
+    },{
+      name:'emissive',
+      color:'000',
       emissive:'f00'
     }]
 
@@ -641,11 +756,14 @@ class Swatches {
         name:'BlueShiny',
         color:'035aff',
         emissive:'000000'
-      },
-      {
-      name:'DarkGreyShiny',
-      color:'111111',
-      emissive:'000000'
+      },{
+        name:'DarkGreyShiny',
+        color:'111111',
+        emissive:'000000'
+      },{
+        name:'emissive',
+        color:'151515',
+        emissive:'035aff'
       }
     ]
 
@@ -690,10 +808,14 @@ class Swatches {
         color:'333333',
         emissive:'000000'
       },
-      {
-      name:'DarkGreyShiny',
-      color:'030303',
-      emissive:'000000'
+      { 
+        name:'DarkGreyShiny',
+        color:'030303',
+        emissive:'000000'
+      },{
+        name:'emissive',
+        color:'000000',
+        emissive:'2f00ff'
       }
     ]
 
@@ -715,7 +837,7 @@ class Swatches {
       },
       {
         name:'SpkeyBoySniperColor',
-        color:'2f00ff',
+        color:'40de94',
         emissive:'000000'
       },
       {
@@ -739,9 +861,13 @@ class Swatches {
         emissive:'000000'
       },
       {
-      name:'DarkGreyShiny',
-      color:'704beb',
-      emissive:'000000'
+        name:'DarkGreyShiny',
+        color:'704beb',
+        emissive:'000000'
+      },{
+        name:'emissive',
+        color:'464646',
+        emissive:'2f00ff'
       }
     ]
 
@@ -787,9 +913,13 @@ class Swatches {
         emissive:'f00'
       },
       {
-      name:'DarkGreyShiny',
-      color:'00f',
-      emissive:'00f'
+        name:'DarkGreyShiny',
+        color:'00f',
+        emissive:'00f'
+      },{
+        name:'emissive',
+        color:'000',
+        emissive:'f00'
       }
     ]
 
@@ -815,9 +945,13 @@ class Swatches {
       emissive:'000000'
       },
       {
-      name:'redmetal',
-      color:'814314',
-      emissive:'000000'
+        name:'redmetal',
+        color:'814314',
+        emissive:'000000'
+      },{
+        name:'emissive',
+        color:'000',
+        emissive:'f00'
       }
     ]
 
@@ -833,165 +967,193 @@ class Swatches {
       emissive:'6007fa'
       },
       {
-      name:'redemissive',
-      color:'000000',
-      emissive:'6007fa'
+        name:'redemissive',
+        color:'000000',
+        emissive:'6007fa'
       },
       {
-      name:'redmetal',
-      color:'1c1c1c',
-      emissive:'000000'
+        name:'redmetal',
+        color:'1c1c1c',
+        emissive:'000000'
+      },{
+        name:'emissive',
+        color:'000',
+        emissive:'6007fa'
       }
     ]
 
     this.thrustKawaii = [
       {
-      name:'metal',
-      color:'2462ff',
-      emissive:'1a2278'
+        name:'metal',
+        color:'2462ff',
+        emissive:'1a2278'
       },{
-      name:'emissive.003',
-      color:'000000',
-      emissive:'e6d540'
+        name:'emissive.003',
+        color:'000000',
+        emissive:'e6d540'
       },{
-      name:'redemissive',
-      color:'000000',
-      emissive:'e6d540'
+        name:'redemissive',
+        color:'000000',
+        emissive:'e6d540'
       },{
-      name:'redmetal',
-      color:'e6880e',
-      emissive:'855921'
+        name:'redmetal',
+        color:'e6880e',
+        emissive:'855921'
+      },{
+        name:'emissive',
+        color:'252525',
+        emissive:'855921'
       }
     ]
 
     this.thrustRGB = [
       {
-      name:'metal',
-      color:'00f',
-      emissive:'00f'
+        name:'metal',
+        color:'00f',
+        emissive:'00f'
       },{
-      name:'emissive.003',
-      color:'0f0',
-      emissive:'0f0'
+        name:'emissive.003',
+        color:'0f0',
+        emissive:'0f0'
       },{
-      name:'redemissive',
-      color:'f00',
-      emissive:'f00'
+        name:'redemissive',
+        color:'f00',
+        emissive:'f00'
       },{
-      name:'redmetal',
-      color:'0f0',
-      emissive:'0f0'
+        name:'redmetal',
+        color:'0f0',
+        emissive:'0f0'
+      },{
+        name:'emissive',
+        color:'000',
+        emissive:'f00'
       }
     ]
 
     this.bugDefault = [
       {
-      name:'dark-sixgunn',
-      color:'292929',
-      emissive:'000000'
+        name:'dark-sixgunn',
+        color:'292929',
+        emissive:'000000'
       },{
-      name:'BugColor3',
-      color:'0569ec',
-      emissive:'000000'
+        name:'BugColor3',
+        color:'0569ec',
+        emissive:'000000'
       },{
-      name:'YellowBug',
-      color:'cc6600',
-      emissive:'000000'
+        name:'YellowBug',
+        color:'cc6600',
+        emissive:'000000'
       },{
-      name:'LightSixGun',
-      color:'0b0b0b',
-      emissive:'000000'
+        name:'LightSixGun',
+        color:'0b0b0b',
+        emissive:'000000'
       },{
-      name:'BlackBug',
-      color:'010101',
-      emissive:'000000'
+        name:'BlackBug',
+        color:'010101',
+        emissive:'000000'
       },{
-      name:'WhiteBug',
-      color:'cccccc',
-      emissive:'e4e4e4'
+        name:'WhiteBug',
+        color:'cccccc',
+        emissive:'e4e4e4'
+      },{
+        name:'emissive',
+        color:'292929',
+        emissive:'0bc5d6'
       }
     ]
 
     this.bugDark = [
       {
-      name:'dark-sixgunn',
-      color:'333333',
-      emissive:'000000'
+        name:'dark-sixgunn',
+        color:'313131',
+        emissive:'000000'
       },{
-      name:'BugColor3',
-      color:'000000',
-      emissive:'ffb224'
+        name:'BugColor3',
+        color:'000000',
+        emissive:'ffb224'
       },{
-      name:'YellowBug',
-      color:'030303',
-      emissive:'000000'
+        name:'YellowBug',
+        color:'030303',
+        emissive:'000000'
       },{
-      name:'LightSixGun',
-      color:'0b0b0b',
-      emissive:'000000'
+        name:'LightSixGun',
+        color:'0b0b0b',
+        emissive:'000000'
       },{
-      name:'BlackBug',
-      color:'333333',
-      emissive:'000000'
+        name:'BlackBug',
+        color:'313131',
+        emissive:'000000'
       },{
-      name:'WhiteBug',
-      color:'000000',
-      emissive:'ffb224'
+        name:'WhiteBug',
+        color:'000000',
+        emissive:'ffb224'
+      },{
+        name:'emissive',
+        color:'000000',
+        emissive:'ffb224'
       }
     ]
     this.bugKawaii = [
       {
-      name:'dark-sixgunn',
-      color:'292929',
-      emissive:'000000'
+        name:'dark-sixgunn',
+        color:'dbff59',
+        emissive:'000000'
       },{
-      name:'BugColor3',
-      color:'7c57eb',
-      emissive:'000000'
+        name:'BugColor3',
+        color:'7c57eb',
+        emissive:'000000'
       },{
-      name:'YellowBug',
-      color:'38d953',
-      emissive:'000000'
+        name:'YellowBug',
+        color:'38d953',
+        emissive:'000000'
       },{
-      name:'LightSixGun',
-      color:'0b0b0b',
-      emissive:'000000'
+        name:'LightSixGun',
+        color:'38d953',
+        emissive:'000000'
       },{
-      name:'BlackBug',
-      color:'13005e',
-      emissive:'000000'
+        name:'BlackBug',
+        color:'13005e',
+        emissive:'000000'
       },{
-      name:'WhiteBug',
-      color:'000000',
-      emissive:'dbff59'
+        name:'WhiteBug',
+        color:'000000',
+        emissive:'dbff59'
+      },{
+        name:'emissive',
+        color:'000000',
+        emissive:'7c57eb'
       }
     ]
 
     this.bugRGB = [
       {
-      name:'dark-sixgunn',
-      color:'00f',
-      emissive:'00f'
+        name:'dark-sixgunn',
+        color:'00f',
+        emissive:'00f'
       },{
-      name:'BugColor3',
-      color:'f00',
-      emissive:'f00'
+        name:'BugColor3',
+        color:'f00',
+        emissive:'f00'
       },{
-      name:'YellowBug',
-      color:'0f0',
-      emissive:'0f0'
+        name:'YellowBug',
+        color:'0f0',
+        emissive:'0f0'
       },{
-      name:'LightSixGun',
-      color:'f00',
-      emissive:'f00'
+        name:'LightSixGun',
+        color:'f00',
+        emissive:'f00'
       },{
-      name:'BlackBug',
-      color:'00f',
-      emissive:'00f'
+        name:'BlackBug',
+        color:'00f',
+        emissive:'00f'
       },{
-      name:'WhiteBug',
-      color:'f00',
-      emissive:'f00'
+        name:'WhiteBug',
+        color:'f00',
+        emissive:'f00'
+      },{
+        name:'emissive',
+        color:'000',
+        emissive:'0f0'
       }
     ]
 
@@ -1013,15 +1175,15 @@ class Swatches {
             array:this.shootManKawaii
           },{
             name:"rgb", 
-            icon:"kawaii", 
+            icon:"rgb", 
             array:this.shootManRGB
           },{
             name:"normal", 
-            icon:"kawaii", 
+            icon:"normal", 
             array:null
           },{
             name:"wireframe", 
-            icon:"kawaii", 
+            icon:"wireframe", 
             array:this.shootManDefault
           }
         ]
@@ -1043,15 +1205,15 @@ class Swatches {
             array:this.stickyKawaii
           },{
             name:"rgb", 
-            icon:"kawaii", 
+            icon:"rgb", 
             array:this.stickyRGB
           },{
             name:"normal", 
-            icon:"kawaii", 
+            icon:"normal", 
             array:null
           },{
             name:"wireframe", 
-            icon:"kawaii", 
+            icon:"wireframe", 
             array:this.stickyDefault
           }
         ]
@@ -1072,15 +1234,15 @@ class Swatches {
             array:this.nitroKawaii
           },{
             name:"rgb", 
-            icon:"kawaii", 
+            icon:"rgb", 
             array:this.nitroRGB
           },{
             name:"normal", 
-            icon:"kawaii", 
+            icon:"normal", 
             array:null
           },{
             name:"wireframe", 
-            icon:"kawaii", 
+            icon:"wireframe", 
             array:this.nitroDefault
           }
         ]
@@ -1101,15 +1263,15 @@ class Swatches {
             array:this.starfishKawaii
           },{
             name:"rgb", 
-            icon:"kawaii", 
+            icon:"rgb", 
             array:this.starfishRGB
           },{
             name:"normal", 
-            icon:"kawaii", 
+            icon:"normal", 
             array:null
           },{
             name:"wireframe", 
-            icon:"kawaii", 
+            icon:"wireframe", 
             array:this.starfishDefault
           }
         ]
@@ -1130,15 +1292,15 @@ class Swatches {
             array:this.thrustKawaii
           },{
             name:"rgb", 
-            icon:"kawaii", 
+            icon:"rgb", 
             array:this.thrustRGB
           },{
             name:"normal", 
-            icon:"kawaii", 
+            icon:"normal", 
             array:null
           },{
             name:"wireframe", 
-            icon:"kawaii", 
+            icon:"wireframe", 
             array:this.thrustDefault
           }
         ]
@@ -1159,15 +1321,15 @@ class Swatches {
             array:this.bugKawaii
           },{
             name:"rgb", 
-            icon:"kawaii", 
+            icon:"rgb", 
             array:this.bugRGB
           },{
             name:"normal", 
-            icon:"kawaii", 
+            icon:"normal", 
             array:null
           },{
             name:"wireframe",
-            icon:"kawaii",
+            icon:"wireframe",
             array:this.bugDefault
           }
         ]
@@ -1175,6 +1337,13 @@ class Swatches {
     ];
 
     
+  }
+
+  getSwatchEmissive(array){
+    for(let i = 0;i<array.length; i++){
+      if(array[i].name=="emissive")
+        return array[i];
+    }
   }
 
   checkIfMaterialMatchesSwatch(mat, swatches){
@@ -1195,6 +1364,14 @@ class Swatches {
     for(let i = 0; i<this.arr.length; i++){
       if(name==this.arr[i].name)
         return this.arr[i].swatches;
+    }
+  }
+
+  getSwatch(array, name){
+    for(let i = 0; i<array.length; i++){
+      if(array[i].name == name){
+        return array[i];
+      }
     }
   }
 

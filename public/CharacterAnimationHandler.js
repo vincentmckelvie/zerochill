@@ -65,6 +65,7 @@ class CharacterAnimationHandler{
 	
 	initAnimation(){
 
+		const tposeAni = this.getAniByName(this.animations,"tpose");
 		const idleAni = this.getAniByName(this.animations,"idle-2");
 		//idleAni.timeScale = 20;
 		const runFAni = this.getAniByName(this.animations,"run_f");
@@ -87,6 +88,7 @@ class CharacterAnimationHandler{
 		const gunAniSniper =  this.getAniByName(this.animations,"sniper-idle");
 		const adsAniSniper =  this.getAniByName(this.animations,"sniper-ads");
 
+		
 		this.parseAnimation(idleAni, true);
 		this.parseAnimation(runRAni, true);
 		this.parseAnimation(runLAni, true);
@@ -94,6 +96,7 @@ class CharacterAnimationHandler{
 		this.parseAnimation(runBAni, true);
 		this.parseAnimation(jumpAni, true);
 
+		this.parseAnimation(tposeAni, false);
 		this.parseAnimation(gunAniSubmachine,  false);
 		this.parseAnimation(adsAniSubmachine,  false);
 		this.parseAnimation(gunAniAssault,     false);
@@ -157,11 +160,16 @@ class CharacterAnimationHandler{
 				this.adsIdle = adsIdleSniper;
 				this.gunIdle = gunIdleSniper;
 			break;
+			case "bot":
+				const gunIdleBot = this.mixer.clipAction(      tposeAni);
+				const adsIdleBot = this.mixer.clipAction(      tposeAni);
+				this.adsIdle = adsIdleBot;
+				this.gunIdle = gunIdleBot;
+			break;
 		}
+
 		//this.gunAnis.push({name:"sniper", idle:gunIdleSniper, ads:adsIdleSniper})
 		
-
-
 		this.jump = this.mixer.clipAction(     jumpAni);
 
 		for(let i = 0; i<this.animations.length; i++){

@@ -48,6 +48,28 @@ class SkinsHandler {
     this.meshes.push(OBJ);
   }
 
+  getCurrentSkinOnCharacter(character){
+    for(let i = 0; i < this.doms.length; i++){
+      if(character == this.doms[i].character){
+        for(let k = 0; k< this.doms[i].buttons.length; k++){
+          if(this.doms[i].buttons[k].active)
+            return this.doms[i].buttons[k].swatch;  
+        }
+        
+      }
+    }
+  }
+
+  getSwatchArrayFromSkinName(character, name){
+    for(let i = 0; i < this.doms.length; i++){
+      if(character == this.doms[i].character){
+        this.swatches
+      }
+    }
+  }
+
+  
+
   getSendObj(OBJ){
     for(let i = 0;i<this.meshes.length; i++){
       if(this.meshes[i].name == OBJ.character)
@@ -88,7 +110,7 @@ class SkinsHandler {
         if(obj.isMesh || obj.isSkinnedMesh){
           switch(swatch){
             case "normal":
-              console.log(obj.material.name);
+
               if(obj.material.name != "directional-boost" && !obj.material.name.includes("blast")){
                 const mat = new MeshNormalMaterial({
                     side:obj.material.side, 
@@ -99,6 +121,7 @@ class SkinsHandler {
                 obj.material = mat;
                 obj.material.roughness = obj.material.roughness;
                 obj.material.metalness = obj.material.metalness;
+
               }
             break;
             default:
@@ -128,8 +151,6 @@ class SkinsHandler {
                   if(swatch=="wireframe"){
                     mat.wireframe=true;
                   }
-
-
 
                   obj.material.dispose();
                   obj.material = mat;
@@ -166,24 +187,8 @@ class SkinsDom{
     this.character = OBJ.character;
 
     for(let i = 0;i<OBJ.arr.length; i++){
-      const btn = document.createElement("div");
-      btn.className = "swatch-btn";
-      //btn.style.backgroundColor = OBJ.arr[i].icon;
-      this.parent.append(btn);
-      const swatch = OBJ.arr[i].name;
-      const index = i;
-      if(index == 0 && OBJ.index == 0){
-        btn.className = "swatch-btn-active"
-      }
-      btn.style.backgroundImage = "url(/assets/swatches/"+this.character+"/"+OBJ.arr[i].icon+".jpg)";
-      //if(OBJ.logged){
-        
-        btn.addEventListener("click", function(){
-          appGlobal.skinsHandler.changeSwatch({ swatch:swatch, character:self.character });
-          self.makeAllButtonsNonActive();
-          btn.className = "swatch-btn-active";
-        });
-        this.buttons.push(btn);
+      const btn = new SkinButton(OBJ, i, self, this.parent);
+      this.buttons.push(btn);
       //}
     }
     
@@ -197,8 +202,42 @@ class SkinsDom{
   }
   makeAllButtonsNonActive(){
     for(let i = 0; i<this.buttons.length; i++){
-      this.buttons[i].className="swatch-btn";
+      this.buttons[i].active = false;
+      this.buttons[i].btn.className = "swatch-btn";
     }
+  }
+
+}
+
+class SkinButton{
+  constructor(OBJ, INDEX, PARENT, DOM){
+      this.character = OBJ.character
+      this.parent = PARENT;
+      const self = this;
+
+      this.active = false;
+      if(INDEX == 0)
+        this.active = true;
+
+      this.index = INDEX;
+      this.btn = document.createElement("div");
+      this.btn.className = "swatch-btn";
+      //btn.style.backgroundColor = OBJ.arr[i].icon;
+      DOM.append(this.btn);
+      this.swatch = OBJ.arr[this.index].name;
+      
+      if(this.index == 0){
+        this.btn.className = "swatch-btn-active"
+      }
+      this.btn.style.backgroundImage = "url(/assets/swatches/"+this.character+"/"+OBJ.arr[this.index].icon+".jpg)";
+      //if(OBJ.logged){
+        
+      this.btn.addEventListener("click", function(){
+        appGlobal.skinsHandler.changeSwatch({ swatch:self.swatch, character:self.character });
+        self.parent.makeAllButtonsNonActive();
+        self.active = true; 
+        self.btn.className = "swatch-btn-active";
+      });
   }
 
 }

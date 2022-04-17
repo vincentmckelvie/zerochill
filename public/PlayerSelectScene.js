@@ -228,6 +228,8 @@ class PlayerSelectScene {
 			//console.log(this.characters[i].object);
 			const tipObject = this.characters[i].object.getObjectByName(name);
 			tipObject.visible = false;
+
+			
 			
 			self.initCAH(this.characters[i]);
 			for(let k = 0; k<this.characters[i].attach.length; k++){

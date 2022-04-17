@@ -13,7 +13,7 @@ class BotBullet {
 	constructor(OBJ, ISLOCAL) {
 		
 		this.isLocal = ISLOCAL;
-		this.damage = OBJ.damage;
+		this.damage = OBJ.damage+window.timeIncrease.damage;
 		this.id = OBJ.id;
 		//this.gravity = OBJ.gravity;
 		// this.vector1 = new Vector3();
@@ -23,8 +23,10 @@ class BotBullet {
 		this.alivetime = 2000;
 		
 		const rad = .2;
-		const sphereGeometry = new SphereGeometry( rad, 32, 32 );
-		const sphereMaterial = new MeshStandardMaterial( { color: 0xffffff, roughness: 0.8, metalness: 0.5 } );
+		const sphereGeometry = new SphereGeometry( rad, 6, 6 );
+		//const sphereMaterial = new MeshStandardMaterial( {color:0x37ff79, roughness:.1} );
+		const sphereMaterial = new MeshStandardMaterial( {color:0xf74ba8, roughness:.1} );
+		
 		this.mesh = new Mesh( sphereGeometry, sphereMaterial );
 		this.mesh.castShadow = true;
 		this.receiveShadow = true;
@@ -32,7 +34,7 @@ class BotBullet {
 
 		//spheres.push( { mesh: sphere, collider: new THREE.Sphere( new THREE.Vector3( 0, 0, 0 ), SPHERE_RADIUS ), velocity: new THREE.Vector3() } );
 		this.collider = new Sphere( new Vector3( 0, 0, 0 ), rad );
-		const impulse = OBJ.impulse ;
+		const impulse = OBJ.impulse + window.timeIncrease.impulse;
 		this.velocity = new Vector3().copy(OBJ.dir).multiplyScalar( impulse );
 		this.collider.center.copy( OBJ.pos );
 		this.knockParams = OBJ.knockParams;

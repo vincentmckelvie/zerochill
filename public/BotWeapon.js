@@ -39,6 +39,7 @@ class BotWeapon {
 		this.contactEmitters = [];
 		this.abilityCanShoot = true;
 		this.shouldShoot = false;
+
 		
 	}
 
@@ -60,7 +61,7 @@ class BotWeapon {
 			 	}else{
 			 		this.shootTimeout = setTimeout(function(){
 				 		self.canShoot = true;
-					}, this.shootCooldown);
+					}, this.shootCooldown-window.timeIncrease.shootSpeed);
 			 	}
 
 			 	this.currentAmmo --;

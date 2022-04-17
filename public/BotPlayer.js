@@ -9,7 +9,8 @@ import {
 	Vector2,
 	Euler,
 	TextureLoader,
-	Color
+	Color,
+	SphereGeometry
 } from 'three';
 import { Capsule } from './scripts/jsm/math/Capsule.js';
 import { BotWeapon } from './BotWeapon.js';
@@ -107,13 +108,16 @@ class BotPlayer {
 		const geoS2 = new BoxGeometry( .1, .1, .1 );
 		const matS2 = new MeshStandardMaterial({ color:0xff0000, visible:true});
 	
-
 		this.rotationSeeker = new Object3D();
-		this.seekerHelper = new Mesh(geoS,matS);
-		this.seekerHelperTip = new Mesh(geoS2,matS2);
-		this.rotationSeeker.add(this.seekerHelper);
-		this.seekerHelper.add(this.seekerHelperTip)
-		this.seekerHelperTip.position.z=1.5;
+		//this.seekerHelper = new Mesh(geoS,matS);
+		//this.seekerHelperTip = new Mesh(geoS2,matS2);
+		this.seekerHelperTip = new Object3D();//new Mesh(geoS2,matS2);
+		//this.rotationSeeker.add(this.seekerHelper);
+		this.rotationSeeker.add(this.seekerHelperTip)
+		this.seekerHelperTip.position.z = 2;
+		//this.seekerHelperTip.position.y = 2;
+		//this.seekerHelperTip.position.y = .1;
+		//this.seekerHelperTip.position.z = .5;
 		this.xRotHelper = new Object3D();
 		
 		this.xRotHelper.add(this.xRot);
@@ -180,11 +184,42 @@ class BotPlayer {
 		this.abilityCanShoot = true;
 		this.hitWorldWhenNotChecking = false;
 		
-		this.movement  = clone( self.getModelByName(OBJ.name+"-"+OBJ.movement).scene );
+		//this.movement  = clone( self.getModelByName(OBJ.name+"-"+OBJ.movement).scene );
 		this.character = clone( self.getModelByName("body-"+OBJ.name).scene );
 
+		const skel = ["spine_01", "spine_02", "neck_01", "head", "clavicle_l", "clavicle_r", "upperarm_r", "upperarm_l","lowerarm_r", "pelvis", "thigh_l", "calf_r", "hand_l"];
+		for(let k =0; k<12; k++){
+
+			let name = skel[Math.floor(Math.random()*skel.length)];
+			if(k<2)
+				name = "head"
+			//let name = "spine_01"
+			//console.log(name);
+			const bone = this.character.getObjectByName(name);
+			
+			let sze = .01+Math.random()*.5; 
+			let moveSize = .2;
+			
+			if(name=="head"){
+				sze *= 2;
+				moveSize *= 2;
+			}
+			
+			const geo = new SphereGeometry((sze*.25),6,6);
+			const mat = new MeshStandardMaterial({color:0x37ff79, roughness:.1});
+			const mesh = new Mesh(geo,mat);
+
+			mesh.position.x = -(moveSize*.5)+Math.random()*moveSize;
+			mesh.position.y = -(moveSize*.5)+Math.random()*moveSize;
+			mesh.position.z = -(moveSize*.5)+Math.random()*moveSize;
+			
+			bone.add(mesh);
+
+		}
+			
+
 		appGlobal.characterOutlineMeshes.push(this.character);
-		appGlobal.characterOutlineMeshes.push(this.movement);
+		//appGlobal.characterOutlineMeshes.push(this.movement);
 		appGlobal.scene.characterOutlinePass.selectedObjects = appGlobal.characterOutlineMeshes;
 		
 		const geo = new BoxGeometry( 2, 2.5, 1.5 );
@@ -201,11 +236,9 @@ class BotPlayer {
 		this.mesh.isHead = false;
 		this.head.isHead = true;
 		
-
 		appGlobal.hitScanArray.push(this.mesh, this.head);
 		
-
-		const arr = [this.character, this.movement];
+		const arr = [this.character/*, this.movement*/];
 
 		this.characterHolder = new Object3D();
 		this.characterMeshCorrector = new Object3D();
@@ -214,31 +247,44 @@ class BotPlayer {
 		this.xRot.add(this.characterHolder);
 
 		const s = 3.25;
-		this.character.position.z = this.movement.position.z = -.2;
-		this.character.position.y = this.movement.position.y = -3.4;
+		this.character.position.z/* = this.movement.position.z*/ = -.2;
+		this.character.position.y /*= this.movement.position.y*/ = -3.4;
 		this.start = new Object3D();
 		this.end = new Object3D();
 
 		this.character.scale.set(s,s,s);
-		this.movement.scale.set(s,s,s);
+		//this.movement.scale.set(s,s,s);
 
-		this.characterMeshCorrector.add(this.character, this.movement, this.mesh, this.head);
-		this.rotOffset.add(this.xRotHelper,this.rotationSeeker,this.characterMeshCorrector, this.characterLookAtHelper);
+		this.characterMeshCorrector.add(this.character/*, this.movement*/, this.mesh, this.head);
+		this.rotOffset.add(this.xRotHelper,this.characterMeshCorrector, this.rotationSeeker, this.characterLookAtHelper);
 
 		this.mesh.add(this.start);
 		this.head.add(this.end);
-		this.cah = new CharacterAnimationHandler({meshes:arr, animations:appGlobal.loadObjs[0].model.animations, name:OBJ.name});
+		this.cah = new CharacterAnimationHandler({meshes:arr, animations:appGlobal.loadObjs[0].model.animations, name:"bot"});
 		this.cah.initAnimation();
 
 		let name = "tip-" + OBJ.name;
-		this.tipObject = this.character.getObjectByName(name);
-		this.tipObject.visible = false;
 		
+		this.tipObject = this.character.getObjectByName(name);
+		
+		this.spineBone = this.character.getObjectByName("spine_01"); 
+		this.pelvisBone = this.character.getObjectByName("pelvis");
+		//this.pelvisBone.add(this.characterLookAtHelper, this.rotationSeeker); 
+		
+
+		// this.character.traverse( function ( obj ) {
+		// 	if(obj.isMesh || obj.isSkinnedMesh){
+				
+		// 		console.log(obj.name)
+		// 		//obj.dispose();
+		// 	}
+
+		// });
+
 		this.tipPos = new Vector3();
 		this.spineRotTarg = 0;
 		this.shootTimeout;
 
-		
 		//this.fps = new FPSAni({model:OBJ.weapon.model, name:OBJ.weapon.name});
 		this.adsMouseSenseMultTarg = 0;
 		this.adsMouseSenseMult = 0;
@@ -257,9 +303,10 @@ class BotPlayer {
 
 		this.aiState = "chasing";
 		this.aiInc = appGlobal.random()*1000;
-		this.aiRndDist = 10+appGlobal.random()*4;
+		this.aiRndDist = 6+appGlobal.random()*6;
 		this.aiChaseDist = this.aiRndDist*1.5;
-		this.aiRndTurnSpeed = 50+appGlobal.random()*50;
+		this.shootDist = this.aiChaseDist;
+		this.aiRndTurnSpeed = 50+Math.random()*50;
 		this.currPos = new Vector3();
 		this.prevPos = new Vector3();
 		this.axisXRnd = 1;
@@ -268,7 +315,18 @@ class BotPlayer {
 		this.movementInc = 0;
 		this.aiStrafeRndCheck = 10+Math.random()*20;
 		this.aiStrafeRndInc = 0;
+		this.chaseReset = false;
+		this.chaseResetTimeout;
+		this.boostTimer = 40+appGlobal.random()*110;
+		this.moveBoostAmount = 6; 
+		this.canCheckPlanetSwitch = true;
+		this.planetSwitchCheckTimeout;
+		this.targetQuaternion = new Quaternion();
+		this.strafeRandomTimeout;
+		this.canDoStrafeRandom = true;
 		
+
+		self.hideGunStuff();
 		//this.aiState = ""
 		//appGlobal.world = this.getClosestWorld();
 		
@@ -280,6 +338,27 @@ class BotPlayer {
 		//this.outlinedPoint = new Vector3();
 		//this.state = "playing"
 	}
+
+	hideGunStuff(){
+
+		const gunNames = [
+			"Cube043", // launcher
+			"Sphere067", //sixgun
+			"Sphere068",//fatty
+			"Plane001",//sub
+			"Sphere070",//sniper
+			"Sphere073"//assault
+		]
+		for(let i = 0; i<gunNames.length; i++){
+			const gun = this.character.getObjectByName(gunNames[i]); 
+			//console.log(gun)
+			if(gun!=null){
+				gun.visible = false;
+			}
+		}
+		this.tipObject.visible = false;
+	}
+	
 	setSpawns(){
 		for(let i = 0; i<100; i++){
 			const pos = new Vector3();
@@ -358,7 +437,8 @@ class BotPlayer {
 	}
 
 	updateAI(){
-		this.tipObject.getWorldPosition(this.tipPos);
+
+		this.head.getWorldPosition(this.tipPos);
 		const p = new Vector3().copy(appGlobal.localPlayer.playerCollider.end);
 		const dist = p.distanceTo(this.playerCollider.end);
 		
@@ -374,104 +454,170 @@ class BotPlayer {
 		
 		this.xRotHelper.up.copy(v3);
 		this.xRotHelper.lookAt(p);
+		
+		// 
+		// var lookVec = new Vector3();
+		// this.lookAt.getWorldDirection(lookVec).normalize();
+		
+		// const ns = new Vector3().copy(this.playerCollider.end).normalize();
+		// const np = new Vector3().copy(p).normalize();
+		// const lp = p.clone().sub(this.playerCollider.end);
 
-		this.seekerHelper.lookAt(appGlobal.localPlayer.playerCollider.end);
+		// let angle = lookVec.angleTo(v3);
+		// let cosAB = p.dot( this.playerCollider.end );
 		
-		var lookVec = new Vector3();
-		this.lookAt.getWorldDirection(lookVec).normalize();
-		
-		const ns = new Vector3().copy(this.playerCollider.end).normalize();
-		const np = new Vector3().copy(p).normalize();
-		const lp = p.clone().sub(this.playerCollider.end);
-
-		let angle = lookVec.angleTo(v3);
-		let cosAB = p.dot( this.playerCollider.end );
-		
-		var quaternion = new Quaternion(); // create one and reuse it
-		//quaternion.setFromUnitVectors( ns, np );
-		quaternion.setFromUnitVectors( this.grav, v1);
+		// var quaternion = new Quaternion(); // create one and reuse it
+		// //quaternion.setFromUnitVectors( ns, np );
+		// quaternion.setFromUnitVectors( this.grav, v1);
 		
 		//angle = .dot( v3 );
-		let targetQuaternion = new Quaternion();
+		//if(appGlobal.localPlayer.animationOnFloor){
+			this.rotationSeeker.lookAt(appGlobal.localPlayer.playerCollider.end);
+		//}
+		
 		if(this.world == appGlobal.world){
 			if(dist>5){
 				const wPos1 = new Vector3();
+			 	
 			 	this.seekerHelperTip.getWorldPosition(wPos1);
-			 	// const wPos2 = new Vector3();
-			 	// this.characterLookAtHelper.getWorldPosition(wPos2);
+			 	//this.spineBone.getWorldPosition(wPos1);
 				
 				const v11 = p.clone().sub( wPos1 ).normalize(); // CHANGED
-				const v33 = new Vector3().crossVectors(v11, this.grav ).normalize(); // CHANGED
-
-				this.characterLookAtHelper.lookAt(wPos1);
-				this.characterLookAtHelper.up.copy(v33);
-				this.characterLookAtHelper.rotation.z+=-Math.PI/2;
-				targetQuaternion.copy(this.characterLookAtHelper.quaternion);
+				
+				const v44 = new Vector3();
+				this.pelvisBone.getWorldDirection(v44);
+				v44.normalize();
+				
+				const v22 = new Vector3().crossVectors(v44, this.grav).normalize();
+				const v33 = new Vector3().crossVectors(v11, this.grav).normalize(); // CHANGED
+				//if(appGlobal.localPlayer.animationOnFloor){
+					this.characterLookAtHelper.lookAt(p);
+					this.characterLookAtHelper.up.copy( v33 );
+					
+					this.characterLookAtHelper.rotation.z += -Math.PI/2;
+					
+					//const eul = new Euler(this.characterLookAtHelper.rotation.x+Math.PI/2, this.characterLookAtHelper.rotation.y, this.characterLookAtHelper.rotation.z, "XYZ")
+					this.targetQuaternion.copy(this.characterLookAtHelper.quaternion);
+					//eul.applyQuaternion(this.characterLookAtHelper.quaternion)
+					//this.targetQuaternion.setFromEuler(eul);
+					//this.targetQuaternion.copy(quat);
+				//}
+				
+			}else{
+				//targetQuaternion.identity();
 			}
-
 			//console.log(angle)
 		}else{
-
-			targetQuaternion.identity ();//(new Quaternion.identity());
-			//this.characterMeshCorrector.quaternion.rotateT;
+			this.targetQuaternion.identity ();
 		}
 
-		this.characterMeshCorrector.quaternion.rotateTowards( targetQuaternion, appGlobal.deltaTime * 100 );
+		//this.spineBone.quaternion.rotateTowards( this.targetQuaternion, appGlobal.deltaTime * 100 );		
+		//this.spineBone.lookAt(appGlobal.localPlayer.playerCollider.end);
+
+		//this.spineBone.rotation.y = Math.PI/2		
 		
+		//this.spineBone.setRotationFromAxisAngle(new Vector3(0,0,1),this.rotationS)		
+		
+
+		this.characterMeshCorrector.quaternion.rotateTowards( this.targetQuaternion, appGlobal.deltaTime * 100 );
 
 		switch(this.aiState){
 			case "chasing":
+				
 				this.xRot.rotateOnAxis(new Vector3(0,1,0), Math.sin(this.aiInc)*.02)
 				this.axisY = 1;
 				this.axisX = 0;
+				
 				if( dist < this.aiRndDist){
 					this.aiState = "strafing";
 					this.axisXRnd = 1; 
 					if(Math.random()>.5)this.axisXRnd = -1;
-				}	
-				this.weapon.shouldShoot = true;
+				}
+
+				this.weapon.shouldShoot = false;
+
 			break;
 			case "strafing":
-			
-				this.aiStrafeRndInc += appGlobal.deltaTime*100;
-				if(this.aiStrafeRndInc > this.aiStrafeRndCheck){
-					this.aiStrafeRndInc = 0;
-					this.aiStrafeRndCheck = 10+Math.random()*20;
-					if(Math.random()>.5){
-						this.axisXRnd = 1; 
-						if(Math.random()>.5)this.axisXRnd = -1;
-					}else{
-						this.axisXRnd = 0;
-					}
+				if(this.canDoStrafeRandom){
+					const self = this;
+					this.canDoStrafeRandom = false;
+					this.strafeRandomTimeout = setTimeout(function(){
+						if(Math.random()>.4){
+							self.axisXRnd = 1; 
+							if(Math.random()>.5)self.axisXRnd = -1;
+						}else{
+							self.axisXRnd = 0;
+						}
+						self.canDoStrafeRandom = true;
+					}, 700+Math.random() * 1200)
+
 				}
+			
 				
 				if(dist<5){
 					this.axisXRnd = 0;
 				}
+
 				this.axisY = 0;
 				this.axisX = this.axisXRnd;
+				
 				if(dist > this.aiChaseDist){
-					this.aiState = "chasing"
+					if(!this.chaseReset){
+						const self = this;
+						this.chaseReset = true;
+						this.chaseResetTimeout = setTimeout(function(){
+							self.chaseReset = false;
+							if(appGlobal.localPlayer != null){
+								const pp = new Vector3().copy(appGlobal.localPlayer.playerCollider.end);
+								const dd = pp.distanceTo(self.playerCollider.end);
+			
+								if(dd > self.aiChaseDist){
+									self.aiState = "chasing";	
+								}
+							}else{
+								self.aiState = "chasing";
+							}
+						},1000 + Math.random()*500 - window.timeIncrease.chasingSwitch);// chasing quicker
+						
+					}
+					
 				}
-				this.weapon.shouldShoot = true;
+				if(dist<this.shootDist){
+						this.weapon.shouldShoot = true;
+				}else{
+					this.weapon.shouldShoot = false;
+				}
+
 			break;
 		}
+
 		
-		this.movementInc+=appGlobal.deltaTime*100;
+		//this.movementInc+=appGlobal.deltaTime*100;
 		//console.log(this.movementInc)
 		this.currPos.copy(this.playerCollider.start);
-		this.movementSum += this.currPos.distanceTo(this.prevPos);
 		
-		if(this.movementInc>40){
-			
-			if(this.movementSum < 30){
-				if(this.world != appGlobal.world)
-					this.boostToOtherWorld();
-			}
-
-			this.movementSum = 0;
-			this.movementInc = 0;
+		this.movementSum += this.currPos.distanceTo(this.prevPos);
+		if(this.canCheckPlanetSwitch && this.world != appGlobal.world){
+			const self = this;
+			this.canCheckPlanetSwitch = false;
+			this.planetSwitchCheckTimeout = setTimeout(function(){
+				self.canCheckPlanetSwitch = true;
+				if(self.movementSum < self.moveBoostAmount + window.timeIncrease.planetSwitchMovementThreshold){ // higher means they'll move switch planets quicker
+					if(self.world != appGlobal.world)
+						self.boostToOtherWorld();
+				}
+				//console.log(self.movementSum);
+				self.movementSum = 0;
+			}, 2000 - window.timeIncrease.planetSwitchCheck); // lower means they'll switch planets quicker
 		}
+		//console.log(this.movementSum)
+		// //if(this.movementInc > this.boostTimer){
+			
+			
+
+		// 	this.movementSum = 0;
+		// 	this.movementInc = 0;
+		// //}
 		
 		this.prevPos.copy(this.playerCollider.start);
 		
@@ -529,7 +675,12 @@ class BotPlayer {
 		this.life -= OBJ.health;
 		//this.hud.updateHealth(this.life);
 		if(this.life <= 0 ){
-			appGlobal.localPlayer.handleGetKill();
+			
+			if(appGlobal.localPlayer)
+				appGlobal.localPlayer.handleGetKill();
+			
+			appGlobal.totalKills++;
+			
 			this.kill();
 		}
 	}
@@ -545,9 +696,11 @@ class BotPlayer {
 	kill() {
 		if(this.state == "alive"){
 			this.state = "dead";
+			
 			for(let i = 0; i<this.abilities.length; i++){
 				this.abilities[i].kill();	
 			}
+
 			this.weapon.kill();
 			//this.fps.kill();
 			this.playing = false;
@@ -556,6 +709,21 @@ class BotPlayer {
 			if(this.stepsTimeout != null){
 				clearInterval(this.stepsTimeout);
 			}
+			if(this.chaseResetTimeout!=null)
+				clearInterval(this.chaseResetTimeout)
+
+			if(this.planetSwitchCheckTimeout!=null)
+				clearInterval(this.planetSwitchCheckTimeout)
+
+			if(this.strafeRandomTimeout!=null)
+				clearInterval(this.strafeRandomTimeout);
+
+
+			this.canDoStrafeRandom = true;
+			this.canCheckPlanetSwitch = true;
+			this.chaseReset= false;
+		
+
 			this.canDoWalkSound = false;
 
 			this.hideAllMeshes();
@@ -585,19 +753,19 @@ class BotPlayer {
 				self.life = 100;
 				self.spawnsInc++;
 				self.spawnsInc = self.spawnsInc%self.spawns.length;
-
-			},800)
+				self.hideGunStuff();
+			},1500-window.timeIncrease.respawnSpeed)
 		}
 	}
 
 	hideAllMeshes(){
 		this.toggleMesh(this.character, false)
-		this.toggleMesh(this.movement,  false)
+		//this.toggleMesh(this.movement,  false)
 	}
 
 	showAllMeshes(){
 		this.toggleMesh(this.character, true)
-		this.toggleMesh(this.movement,  true)
+		//this.toggleMesh(this.movement,  true)
 	}
 
 	toggleMesh(mesh, show){

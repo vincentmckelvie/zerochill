@@ -420,12 +420,16 @@ const globalHelperFunctions = {
 			for(let i = 0; i<appGlobal.remotePlayers.length; i++){
 				appGlobal.remotePlayers[i].kill();
 			}
-
-			for(let i = 0; i<appGlobal.serverItemArr.length; i++){
-				appGlobal.serverItemArr[i].kill();
+			
+			if(clockInterval!=null){
+				clearInterval(clockInterval);
 			}
-			appGlobal.serverItemArr = [];
-			appGlobal.serverItemArr = initPickups();
+			
+			document.getElementById("instructions").innerHTML = "<div class='bots-stats'>Time : "+clockTime+"</div><div class='bots-stats'>Kills : "+appGlobal.totalKills+"</div>";
+		
+			//appGlobal.itemHandler.kill();
+			appGlobal.itemHandler.resetBots();
+			
 			// socket.emit('handleDeath', {
 			//   id: socket.id
 			// });
@@ -541,7 +545,41 @@ const globalHelperFunctions = {
 			appGlobal.globalHelperFunctions.setUserName();
 			appGlobal.controller.initPlayer({ weapon: currentSelectWeapon, movement:currentMovement,  name:appGlobal.user});	
 			appGlobal.localPlayer = appGlobal.controller.player;
+			
+			if(clockInterval!=null){
+				clearInterval(clockInterval);
+			}
+			
+			clockTime = 0;
+			appGlobal.totalKills = 0;
+			window.timeIncrease.damage = 0;
+			window.timeIncrease.impulse = 0;
+			window.timeIncrease.respawnSpeed = 0;
+			window.timeIncrease.shootSpeed = 0;
+			window.timeIncrease.chasingSwitch = 0
+			window.timeIncrease.planetSwitchCheck = 0
+			window.timeIncrease.planetSwitchMovementThreshold = 0;
+			
+			clockInterval = setInterval(function(){
+				let min = Math.floor(clockTime/60);
+				let sec = Math.floor(clockTime%60);
+				document.getElementById('timer').innerHTML = pad(min,2)+":"+pad(sec, 2);
+				
+				clockTime ++;
+				if(clockTime%30==0){
+					window.timeIncrease.damage += 2;
+					window.timeIncrease.impulse += 10;
+					window.timeIncrease.respawnSpeed -= 50;
+					window.timeIncrease.shootSpeed -= 50;
+					window.timeIncrease.chasingSwitch += 50;
+					window.timeIncrease.planetSwitchCheck += 40;
+					window.timeIncrease.planetSwitchMovementThreshold += 5;
+				}
 
+			},1000);
+
+			
+			
 			// socket.emit('startPlaying', {
 			// 	id:socket.id,
 			// 	meshName:currMeshName,
@@ -644,6 +682,7 @@ const appGlobal = {
 	serverItemArr:[],
 	soundHandler:null,
 	hue:0,
+	totalKills:0,
 	loadObjs:[
 		{name:"anis",    	    	model:null, loaded:false, url:"character-anis-3.glb"},
 		{name:"body-launcher",  	model:null, loaded:false, url:"models/launcher/default/body.glb"         },
@@ -731,7 +770,7 @@ const botWeapon = {
 	impulse:10, 
 	knockParams:{pos:new THREE.Vector3(), distance:10, strength:40, gravMult:4},
 	name:"bot",
-	damage:5,
+	damage:4,
 	sound:"rocket",
 	abilities:[abilities.doubleJump],
 	model:"none",
@@ -749,11 +788,28 @@ let playerIndex = "";
 let playerAmount = 0;
 let maxPlayers = 0;
 let currLoad = 0;
+let clockInterval, clockTime = 0;
+
 //let remotePlayers = [];//window.remotePlayers = {};
 let stats;
 const SERVERFPS = 20;
 
+const q = getQuery();
+let seed = Math.floor(Math.random()*2000);
+if(q != null){
+	seed = q;
+}
 
+const timeIncrease = {
+	damage:0,
+	impulse:0,
+	shootSpeed:0,
+	respawnSpeed:0,
+	chasingSwitch:0,
+	planetSwitchCheck:0,
+	planetSwitchMovementThreshold:0
+}
+window.timeIncrease = timeIncrease;
 //document.getElementById("debug").innerHTML = "game";
 appGlobal.random = new Math.seedrandom(seed);
 playerIndex = 0;
@@ -762,6 +818,7 @@ appGlobal.serverItemArr = initPickups();
 appGlobal.user = 'bot';
 joinedFirstRoom = true;
 window.history.replaceState({}, '', `${location.pathname}?seed=${seed.toString()}`);
+
 initLoading();
 
 function getQuery(){
@@ -785,18 +842,13 @@ function parseQuery(vars){
 }
 
 
-const q = getQuery();
-let seed = Math.floor(Math.random()*2000);
-if(q != null){
-	seed = q;
-}
-
 
 function initBots(){
-	for(let i = 0; i<10; i++){
-		const bot = new BotPlayer({name:"assault", id:i, movement:"boost", ability:planetSwitchBot, weapon:botWeapon });
+	const names = ["assault","sixgun","launcher","sticky","submachine", "sniper"];
+	for(let i = 0; i<12; i++){
+		const rndName = names[Math.floor(Math.random()*names.length)]
+		const bot = new BotPlayer({name:rndName, id:i, movement:"boost", ability:planetSwitchBot, weapon:botWeapon });
 		appGlobal.remotePlayers.push(bot);
-		//appGlobal.scene.add(bot))
 	}
 }
 
@@ -818,20 +870,7 @@ function initLoading(){
 			handleLoad(ii,gltf);
 		});
 	}
-	/*
-	loader.load( 'character-anis.glb', function ( gltf ) {
-		handleLoad(0,gltf);
-	});
-	loader.load( 'test3.glb', function ( gltf ) {
-		handleLoad(1,gltf);
-	});
-	loader.load( 'test4.glb', function ( gltf ) {
-		handleLoad(2,gltf);
-	});
-	loader.load( 'fps.glb', function ( gltf ) {
-		handleLoad(3,gltf);
-	});
-	*/
+	
 }
 
 
@@ -1054,6 +1093,7 @@ function animate() {
 		appGlobal.titleScene.update();
 		appGlobal.parallax.update();
 	}
+
 	// for(let i = 0; i<appGlobal.bots.length;i++){
 	// 	appGlobal.bots[i].update();
 	// }

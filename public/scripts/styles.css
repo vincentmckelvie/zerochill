@@ -17,6 +17,10 @@ body{
 	margin-left: -40px;
 	overflow: hidden;
 }
+.bots-stats{
+	font-size: 30px;
+	margin: 5px auto;
+}
 
 #ad-holder-right{
 	width: 300px;

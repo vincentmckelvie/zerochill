@@ -19,6 +19,8 @@ import {
 class Item {
 	//{scene:scene, worldScale:worldScale};
 	constructor(OBJ) {
+		this.obj = OBJ;
+		//this.sizeMult = OBJ.sizeMult;
 		const sizeMult = 1.2+(OBJ.sizeMult*.7);
 		const geo = new SphereGeometry( 1, 4, 2 );
 		//const geo = new TorusGeometry( 1, .3, 16, 18 );
@@ -38,9 +40,10 @@ class Item {
 			appGlobal.scene.add(this.offset);
 			this.offset.add(this.planetRot)
 			this.planetRot.add(this.rot, this.cyl);
-
 			this.rot.add(this.mesh);
 		}
+		
+		//this.scale = OBJ.scale;
 		this.rot.rotation.y = Math.PI *.5;
 		this.cyl.rotation.y = Math.PI *.5;
 		this.cyl.position.y = ((OBJ.scale*sizeMult)+OBJ.scale)/2;
