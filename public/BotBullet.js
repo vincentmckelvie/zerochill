@@ -39,7 +39,7 @@ class BotBullet {
 		this.collider.center.copy( OBJ.pos );
 		this.knockParams = OBJ.knockParams;
 		//this.velocity.addScaledVector( this.player.playerVelocity, 2 );
-		this.contactParticle = appGlobal.particles.explosion;
+		this.contactParticle = appGlobal.particles.slime;
 		this.killed = false;
 		const self = this;
 		this.startPos = new Vector3().copy( OBJ.pos );

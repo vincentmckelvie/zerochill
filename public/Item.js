@@ -86,6 +86,7 @@ class Item {
 
   	pickUp(){
   		this.kill();
+  		appGlobal.itemsPickedUp++;
   		appGlobal.soundHandler.playSoundByName({name:"health",dist:1});
   		if(window.socket != null){
 	  		socket.emit('getItem', { 

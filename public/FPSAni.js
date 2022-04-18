@@ -21,23 +21,23 @@ class FPSAni {
 		const model = self.getModelByName("fps-"+OBJ.model)
 		this.weaponName = OBJ.name;
 		this.mesh = clone( model.scene );
-		const ar=[];
-		this.mesh.traverse( function ( obj ) {
+		// const ar=[];
+		// this.mesh.traverse( function ( obj ) {
 
-	        if(obj.isMesh || obj.isSkinnedMesh){
-	          if(obj.material !=null ){
-	          	if(!self.checkIsInArr(ar, obj.material.name)){
-	          		ar.push(obj.material.name);
-					console.log("{");
-					console.log("name:'"+obj.material.name+"',");
-					console.log("color:'"+obj.material.color.getHexString()+"',");
-					console.log("emissive:'"+obj.material.emissive.getHexString ()+"'");
-					console.log("}");
-	            }
-	          }
-	        }
+	 //        if(obj.isMesh || obj.isSkinnedMesh){
+	 //          if(obj.material !=null ){
+	 //          	if(!self.checkIsInArr(ar, obj.material.name)){
+	 //          		ar.push(obj.material.name);
+		// 			console.log("{");
+		// 			console.log("name:'"+obj.material.name+"',");
+		// 			console.log("color:'"+obj.material.color.getHexString()+"',");
+		// 			console.log("emissive:'"+obj.material.emissive.getHexString ()+"'");
+		// 			console.log("}");
+	 //            }
+	 //          }
+	 //        }
 
-      	});
+  //     	});
 		
 		appGlobal.controller.playerCamera.add(this.mesh);
 
@@ -213,7 +213,9 @@ class FPSAni {
 
 
 	kill(){
-		appGlobal.controller.playerCamera.remove(this.mesh)
+		appGlobal.globalHelperFunctions.tearDownObject(this.mesh);
+		appGlobal.controller.playerCamera.remove(this.mesh);
+		this.emissiveHelper.kill();
 	}
 
 }

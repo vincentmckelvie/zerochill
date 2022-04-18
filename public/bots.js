@@ -128,7 +128,7 @@ const abilities = {
 const particles = {
 	explosion:{
 		burst:true,
-		amount:20,
+		amount:10,
 	    killTimeout:400, 
 	    mesh:"box", 
 	    col: new THREE.Color().setHSL(.1,1,.7), 
@@ -145,6 +145,26 @@ const particles = {
 		lookAt:true,
 		lookAtLength:3,
 		sound:"explosion"
+	},
+	slime:{
+		burst:true,
+		amount:10,
+	    killTimeout:400, 
+	    mesh:"box", 
+	    col: new THREE.Color(0xf74ba8), 
+	    pos:new THREE.Vector3(), 
+	    rndPos:0.8, 
+	    rot:new THREE.Vector3(), 
+	    rndRot:0, 
+	    rndScl:.5, 
+	    scl:.1,
+	    velPosScale:40,
+		velRot:0,
+		velScl:-5, 
+		velPosRnd: 3,
+		lookAt:true,
+		lookAtLength:3,
+		sound:"slime-thud"
 	},
 	shot:{
 		burst:true,
@@ -189,7 +209,7 @@ const particles = {
 	},
 	blink:{
 		burst:false,
-		amount:30,
+		amount:10,
 	    killTimeout:600, 
 	    mesh:"box", 
 	    col: new THREE.Color().setHSL(.6,1,.7), 
@@ -425,7 +445,7 @@ const globalHelperFunctions = {
 				clearInterval(clockInterval);
 			}
 			
-			document.getElementById("instructions").innerHTML = "<div class='bots-stats'>Time : "+clockTime+"</div><div class='bots-stats'>Kills : "+appGlobal.totalKills+"</div>";
+			document.getElementById("instructions").innerHTML = "<div class='bots-stats-biggest'>Score:"+(clockTime+(appGlobal.totalKills*2)+(appGlobal.itemsPickedUp*10))+"</div><div class='bots-stats-lower'>Time : "+clockTime+"</div><div class='bots-stats-lower'>Kills : "+appGlobal.totalKills+" <span class='bots-score-mult'>* 2</span></div><div class='bots-stats-lower'>Items : "+appGlobal.itemsPickedUp+" <span class='bots-score-mult'>* 10</span></div>";
 		
 			//appGlobal.itemHandler.kill();
 			appGlobal.itemHandler.resetBots();
@@ -552,6 +572,7 @@ const globalHelperFunctions = {
 			
 			clockTime = 0;
 			appGlobal.totalKills = 0;
+			appGlobal.itemsPickedUp = 0;
 			window.timeIncrease.damage = 0;
 			window.timeIncrease.impulse = 0;
 			window.timeIncrease.respawnSpeed = 0;
@@ -683,6 +704,7 @@ const appGlobal = {
 	soundHandler:null,
 	hue:0,
 	totalKills:0,
+	itemsPickedUp:0,
 	loadObjs:[
 		{name:"anis",    	    	model:null, loaded:false, url:"character-anis-3.glb"},
 		{name:"body-launcher",  	model:null, loaded:false, url:"models/launcher/default/body.glb"         },
@@ -761,17 +783,17 @@ const planetSwitchBot = {
 
 const botWeapon = {
 
-	shootCooldown:600,  
+	shootCooldown:800,  
 	bullet:BotBullet, 
-	ammoAmount:12,    
-	reloadCooldown:1000,  
+	ammoAmount:6,    
+	reloadCooldown:1200,  
 	zoom:80,    
 	adsRandom:.1, 
 	impulse:10, 
 	knockParams:{pos:new THREE.Vector3(), distance:10, strength:40, gravMult:4},
 	name:"bot",
 	damage:4,
-	sound:"rocket",
+	sound:"splat",
 	abilities:[abilities.doubleJump],
 	model:"none",
 	adsMouseSenseMult:0

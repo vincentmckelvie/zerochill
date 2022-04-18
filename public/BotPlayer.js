@@ -658,7 +658,7 @@ class BotPlayer {
 	}
 	
 	receiveDamage(OBJ){
-		appGlobal.soundHandler.playSoundByName({name:"dmg", dist:1});
+		//appGlobal.soundHandler.playSoundByName({name:"dmg", dist:1});
 		
 		// const camForward =  new Vector3().copy(this.getCameraForwardVector());
 		// const attacker = new Vector3().copy(OBJ.position).sub(this.playerCollider.end).normalize();
@@ -673,6 +673,10 @@ class BotPlayer {
 		//this.hud.doIncomingDamageMarker( (angle*-1) );
 
 		this.life -= OBJ.health;
+		
+		if(appGlobal.localPlayer)
+			appGlobal.localPlayer.handleDoDamage();
+		
 		//this.hud.updateHealth(this.life);
 		if(this.life <= 0 ){
 			

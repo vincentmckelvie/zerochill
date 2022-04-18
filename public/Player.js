@@ -129,7 +129,7 @@ class Player {
 
 		this.abilityMult = 1;
 		this.id = OBJ.id;//socket.id;
-		console.log(this.id)
+		//console.log(this.id)
 		this.jumpCount = 0;
 		this.canDoubleJump = false;
 		this.releasedSpaceBarAfterJump = false;
@@ -578,7 +578,8 @@ class Player {
 	
 
 	handleDoDamage(){
-		appGlobal.soundHandler.playSoundByName({name:"hit", dist:1});
+		//conso
+		appGlobal.soundHandler.playSoundByName({name:"dink", dist:1});
 		this.hud.doDamageMarker();
 	}
 

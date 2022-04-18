@@ -25,65 +25,42 @@ class WeaponEmissiveHandler {
 		this.sat = 1;
 		if(OBJ.skin != "normal"){
 			this.emissive.emissiveMap = this.texture;
-			console.log(OBJ.name);
-			console.log(OBJ.skin)
 			const swatchArray = appGlobal.skinsHandler.swatches.getSwatchByName(OBJ.name, OBJ.skin).array;
-			console.log(swatchArray)
 			const emissiveSwatchObject = appGlobal.skinsHandler.swatches.getSwatchEmissive(swatchArray);
 			let hsl = {h:0,s:0,l:0};
 			const emissive = new Color("#"+emissiveSwatchObject.emissive).getHSL(hsl);
-			console.log(emissive);
 			const color = new Color("#"+emissiveSwatchObject.color);
 			this.emissive.color = color;
 			this.hue = hsl.h;
 			this.sat = hsl.s;
 
-			//this.emissive.color = ;
-			
 			switch(name){
 				case "sixgun":
 					this.random = false;
 					this.move = 0.16666666666;
 					
-					//this.hue = 0.594;
-					//this.emissive.emissive  = new Color(0x29ADF6);
 				break;
 				case "assault":
 					this.random = false;
 					this.move = 0.03333333333;
-					//this.hue = .63;
-					//this.sat = .95;
-					//this.emissive.color = new Color(0x232323);
-					//this.emissive.emissive  = new Color(0x29ADF6);
+					
 				break;
 				case "sniper":
-					//this.emissive.color = new Color(0x030E16);
 					this.emissive.roughness = 0.05;
-					//this.hue = .609;
-					//this.sat = 1;
 					this.random = false;
 					this.move = .333;
 				break;
 				case "launcher":
 					this.random = false;
-					//this.emissive.color = new Color(0x222222);
-					//this.emissive.emissive  = new Color(0xff0000);
 					this.move = 0;
 				break;
 				case "submachine":
-					//this.emissive.color = new Color(0x0F0F0F);
-					//this.emissive.emissive  = new Color(0xFFAA00);
-					//this.hue = 0.067;
-					//this.sat = 1.0;
 					this.random = false;
 					this.move = .04;
 				break;
 				case "sticky":
 					this.random = false;
 					this.move = 0;
-					//this.emissive.color = new Color(0x022668A);
-					//this.hue = .701;
-					//this.sat = 1;
 				break;
 				default:
 					this.random = true;
@@ -127,7 +104,8 @@ class WeaponEmissiveHandler {
 	}
 
 	kill(){
-	
+		this.emissive.dispose();
+		this.texture.dispose();
 	}
 
 }

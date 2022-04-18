@@ -8,6 +8,24 @@ body{
 	background: #000;
 }
 
+.bots-stats-biggest{
+		margin: 5px auto;
+		font-size: 34px;
+		width: 150px;
+		text-align: center;
+}
+
+.bots-stats-lower{
+	display: inline;
+	font-size: 22px;
+	margin-right: 20px;
+
+}
+.bots-score-mult{
+	font-size: 14px;
+}
+
+
 #ad-holder-horizontal{
 	width: 728px;
 	height: 90px;
@@ -16,10 +34,6 @@ body{
 	margin-top: 80px;
 	margin-left: -40px;
 	overflow: hidden;
-}
-.bots-stats{
-	font-size: 30px;
-	margin: 5px auto;
 }
 
 #ad-holder-right{
