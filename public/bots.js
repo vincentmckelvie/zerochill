@@ -420,7 +420,7 @@ const globalHelperFunctions = {
 	playerDoDamage:
 		function(OBJ){
 			if(appGlobal.localPlayer !=null ){
-				appGlobal.localPlayer.handleDoDamage();
+				appGlobal.localPlayer.handleDoDamage(OBJ);
 			}
 		},
 	playerReset:
@@ -446,7 +446,7 @@ const globalHelperFunctions = {
 			}
 			
 			document.getElementById("instructions").innerHTML = "<div class='bots-stats-biggest'>Score:"+(clockTime+(appGlobal.totalKills*2)+(appGlobal.itemsPickedUp*10))+"</div><div class='bots-stats-lower'>Time : "+clockTime+"</div><div class='bots-stats-lower'>Kills : "+appGlobal.totalKills+" <span class='bots-score-mult'>* 2</span></div><div class='bots-stats-lower'>Items : "+appGlobal.itemsPickedUp+" <span class='bots-score-mult'>* 10</span></div>";
-		
+			document.getElementById("kills-bots").innerHTML="";
 			//appGlobal.itemHandler.kill();
 			appGlobal.itemHandler.resetBots();
 			

@@ -110,7 +110,7 @@ class RemotePlayer {
 		this.killed = false;
 		this.start = new Object3D();
 		this.end = new Object3D();
-		this.end.position.y = .1;
+		this.end.position.y = 0;
 		this.headBone.add(this.end);
 
 		this.head1 = new Mesh(headGeo, headMat1);
@@ -282,14 +282,16 @@ class RemotePlayer {
   		this.remoteAbilites.kill();
   		this.shouldDoBoostParticle = false;
   		this.killed = true;
-  		this.mesh.geometry.dispose();
-		this.mesh.material.dispose();
-		
+  		
+
 		appGlobal.globalHelperFunctions.tearDownObject(this.character);
 		
 		this.characterHolder.remove(this.character);
-  		this.crouch.remove(this.mesh, this.head);
-  		this.offset.remove(this.start, this.end, this.crouch, this.characterHolder);
+  		this.crouch.remove(this.mesh);
+  		this.headBone.remove(this.head,this.end);
+  		appGlobal.globalHelperFunctions.removeFromHitscanArray(this.mesh);
+  		appGlobal.globalHelperFunctions.removeFromHitscanArray(this.head);
+  		this.offset.remove(this.start, this.crouch, this.characterHolder);
   		this.boostParticle.kill();
   		appGlobal.scene.remove(this.offset);
   	}

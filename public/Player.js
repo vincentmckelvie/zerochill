@@ -572,15 +572,18 @@ class Player {
 
 	
 	handleGetKill(){
-
 		appGlobal.soundHandler.playSoundByName({name:"kill-2", dist:1});
 	}
 	
 
-	handleDoDamage(){
-		//conso
-		appGlobal.soundHandler.playSoundByName({name:"dink", dist:1});
-		this.hud.doDamageMarker();
+	handleDoDamage(OBJ){
+		if(OBJ.headShot)
+			appGlobal.soundHandler.playSoundByName({name:"dink", dist:1});
+		else
+			appGlobal.soundHandler.playSoundByName({name:"dink-body-3", dist:1});
+		
+		this.hud.doDamageMarker(OBJ.headShot);
+
 	}
 
 	updateControls(){
@@ -736,8 +739,7 @@ class Player {
 
 
 	playerWorldCollision(world) {
-		//this.playerCollisions();
-
+		//this.playerCollisions();	
 		
 		const center = this.vector1.addVectors( this.playerCollider.start, this.playerCollider.end ).multiplyScalar( 0.5 );
 
@@ -984,7 +986,7 @@ class Player {
 		this.xRot.rotation.y   -= OBJ.mx *(0.005*( appGlobal.settingsParams["mouseSens"] * adsHelper ));
 		this.camera.rotation.x -= OBJ.my *(0.005*( appGlobal.settingsParams["mouseSens"] * adsHelper ));
 		
-		const max = 1.4;
+		const max = 1.5;
 		if(this.camera.rotation.x<-max)this.camera.rotation.x = -max;
 		if(this.camera.rotation.x>max)this.camera.rotation.x = max;
 		this.playerRotationHelper.rotation.y = this.camera.rotation.y;

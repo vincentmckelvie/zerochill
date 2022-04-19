@@ -26,12 +26,17 @@ import {
 	ClampToEdgeWrapping,
 	Group,
 	MeshStandardMaterial,
-	SkinnedMesh
+	SkinnedMesh,
+	ShapeGeometry,
+	MeshBasicMaterial,
+	DoubleSide,
+	Euler
 } from 'three';
 import { OrbitControls } from './scripts/jsm/controls/OrbitControls.js';
 import { clone } from "./scripts/jsm/utils/SkeletonUtils.js"
 import { CharacterAnimationHandler } from './CharacterAnimationHandler.js';
 import { CharacterSkin } from './CharacterSkin.js';
+import { FontLoader } from './scripts/jsm/loaders/FontLoader.js';
 
 //import { RoomEnvironment } from './scripts/jsm/environments/RoomEnvironment.js';
 
@@ -41,6 +46,7 @@ class PlayerSelectScene {
 	constructor() {
 
 		const self = this;
+
 		this.scene = new Scene();
 		//this.scene.background = new Color( 0x88ccff );
 		this.w = 400;
@@ -228,8 +234,6 @@ class PlayerSelectScene {
 			//console.log(this.characters[i].object);
 			const tipObject = this.characters[i].object.getObjectByName(name);
 			tipObject.visible = false;
-
-			
 			
 			self.initCAH(this.characters[i]);
 			for(let k = 0; k<this.characters[i].attach.length; k++){
@@ -255,6 +259,121 @@ class PlayerSelectScene {
 		
 		this.characters[0].object.visible = true;
 		this.characters[0].attach[0].obj.visible = true;
+
+		this.infoTexts = [];
+		this.loader = new FontLoader();
+		this.loader.load( 'assets/fonts/helvetiker_regular.typeface.json', function ( font ) {
+
+			const assaultGun = assault.getObjectByName("Sphere073");
+			const assaultFoot = assault.getObjectByName("foot_l");
+			const assaultBoostHolder = assaultBoost.getObjectByName("boost-part015");
+			const assaultDirectionalHolder = assaultDirectional.getObjectByName("boost-part017");
+			const assaultTeleportHolder = assaultTeleport.getObjectByName("boost-part016");
+
+			const assaultText = new PlayerSelectInfoText({text:"assault rifle",                     parent:assaultGun,                offset:new Vector3(-3, 3, 6),     font:font, distanceMult:400,  scale:.055, rot:new Euler(0,0,0)});
+			self.infoTexts.push(assaultText);
+			const assaultAbility = new PlayerSelectInfoText({text:"[SHIFT + A,S,D] to dash",        parent:assaultFoot,               offset:new Vector3(-.2, .2, -.2), font:font, distanceMult:300, scale:.0032, rot:new Euler( -Math.PI/2, 0, Math.PI/2 )});
+			self.infoTexts.push(assaultAbility);
+			const assaultPlanetSwitchText = new PlayerSelectInfoText({text:"[E] to switch planets", parent:assaultBoostHolder,        offset:new Vector3(.4, .3, 0), font:font, distanceMult:350,  scale:.0032, rot:new Euler(0,0,0)});
+			self.infoTexts.push(assaultPlanetSwitchText);
+			const assaultBoostText = new PlayerSelectInfoText({text:"[SHIFT] to directional boost", parent:assaultDirectionalHolder,  offset:new Vector3(.4, .3, 0), font:font, distanceMult:350,  scale:.0032, rot:new Euler(0,0,0)});
+			self.infoTexts.push(assaultBoostText);
+			const assaultTeleportText = new PlayerSelectInfoText({text:"[E] to teleport",           parent:assaultTeleportHolder,     offset:new Vector3(.4, .3, 0), font:font, distanceMult:350,  scale:.0032, rot:new Euler(0,0,0)});
+			self.infoTexts.push(assaultTeleportText);
+
+
+
+			const stickyGun = sticky.getObjectByName("Sphere068");
+			const stickyFoot = sticky.getObjectByName("foot_l");
+			const stickyBoostHolder = stickyBoost.getObjectByName("boost-part008");
+			const stickyDirectionalHolder = stickyDirectional.getObjectByName("boost-part006");
+			const stickyTeleportHolder = stickyTeleport.getObjectByName("boost-part007");
+
+			const stickyText = new PlayerSelectInfoText({text:"sticky bombs",                      parent:stickyGun,                offset:new Vector3(2, 3, 2),      font:font, distanceMult:300,  scale:.045, rot:new Euler( -Math.PI/2,0,Math.PI)});
+			self.infoTexts.push(stickyText);
+			const stickyAbility = new PlayerSelectInfoText({text:"[SPACE] to double jump",         parent:stickyFoot,               offset:new Vector3(-.2, .2, -.2), font:font, distanceMult:300, scale:.0032, rot:new Euler( -Math.PI/2, 0, Math.PI/2 )});
+			self.infoTexts.push(stickyAbility);
+			const stickyPlanetSwitchText = new PlayerSelectInfoText({text:"[E] to switch planets", parent:stickyBoostHolder,        offset:new Vector3(.4, .3, 0), font:font, distanceMult:350,  scale:.0032, rot:new Euler(0,0,0)});
+			self.infoTexts.push(stickyPlanetSwitchText);
+			const stickyBoostText = new PlayerSelectInfoText({text:"[SHIFT] to directional boost", parent:stickyDirectionalHolder,  offset:new Vector3(.4, .3, 0), font:font, distanceMult:350,  scale:.0032, rot:new Euler(0,0,0)});
+			self.infoTexts.push(stickyBoostText);
+			const stickyTeleportText = new PlayerSelectInfoText({text:"[E] to teleport",           parent:stickyTeleportHolder,     offset:new Vector3(.4, .3, 0), font:font, distanceMult:350,  scale:.0032, rot:new Euler(0,0,0)});
+			self.infoTexts.push(stickyTeleportText);
+			
+
+			const nitroGun = submachine.getObjectByName("Plane001");
+			const nitroFoot = submachine.getObjectByName("foot_l");
+			const nitroBoostHolder = submachineBoost.getObjectByName("boost-part011");
+			const nitroDirectionalHolder = submachineDirectional.getObjectByName("boost-part009");
+			const nitroTeleportHolder = submachineTeleport.getObjectByName("boost-part010");
+
+			const nitroText = new PlayerSelectInfoText({text:"submachine gun",                    parent:nitroGun,                offset:new Vector3(-.7, 1.2, .6),      font:font, distanceMult:300,  scale:.022, rot:new Euler(0,0,0)});
+			self.infoTexts.push(nitroText);
+			const nitroAbility = new PlayerSelectInfoText({text:"[SHIFT + A,S,D] to dash",        parent:nitroFoot,               offset:new Vector3(-.2, .2, -.2), font:font, distanceMult:300, scale:.0032, rot:new Euler( -Math.PI/2, 0, Math.PI/2 )});
+			self.infoTexts.push(nitroAbility);
+			const nitroPlanetSwitchText = new PlayerSelectInfoText({text:"[E] to switch planets", parent:nitroBoostHolder,        offset:new Vector3(.4, .3, 0), font:font, distanceMult:350,  scale:.0032, rot:new Euler(0,0,0)});
+			self.infoTexts.push(nitroPlanetSwitchText);
+			const nitroBoostText = new PlayerSelectInfoText({text:"[SHIFT] to directional boost", parent:nitroDirectionalHolder,  offset:new Vector3(.4, .3, 0), font:font, distanceMult:350,  scale:.0032, rot:new Euler(0,0,0)});
+			self.infoTexts.push(nitroBoostText);
+			const nitroTeleportText = new PlayerSelectInfoText({text:"[E] to teleport",           parent:nitroTeleportHolder,     offset:new Vector3(.4, .3, 0), font:font, distanceMult:350,  scale:.0032, rot:new Euler(0,0,0)});
+			self.infoTexts.push(nitroTeleportText);
+
+
+			const sniperGun = sniper.getObjectByName("Sphere070");
+			const sniperFoot = sniper.getObjectByName("head");
+			const sniperBoostHolder = sniperBoost.getObjectByName("boost-part014");
+			const sniperDirectionalHolder = sniperDirectional.getObjectByName("boost-part012");
+			const sniperTeleportHolder = sniperTeleport.getObjectByName("boost-part013");
+
+			const sniperText = new PlayerSelectInfoText({text:"sniper rifle",                      parent:sniperGun,                offset:new Vector3(-3, 3, 6),     font:font, distanceMult:400,  scale:.055, rot:new Euler(0,0,0)});
+			self.infoTexts.push(sniperText);
+			const sniperAbility = new PlayerSelectInfoText({text:"[Q] for wall hacks",             parent:sniperFoot,               offset:new Vector3(.4, .2, .2), font:font, distanceMult:300, scale:.0032, rot:new Euler( 0, Math.PI/2, 0 )});
+			self.infoTexts.push(sniperAbility);
+			const sniperPlanetSwitchText = new PlayerSelectInfoText({text:"[E] to switch planets", parent:sniperBoostHolder,        offset:new Vector3(.4, .3, 0), font:font, distanceMult:350,  scale:.0032, rot:new Euler(0,0,0)});
+			self.infoTexts.push(sniperPlanetSwitchText);
+			const sniperBoostText = new PlayerSelectInfoText({text:"[SHIFT] to directional boost", parent:sniperDirectionalHolder,  offset:new Vector3(.4, .3, 0), font:font, distanceMult:350,  scale:.0032, rot:new Euler(0,0,0)});
+			self.infoTexts.push(sniperBoostText);
+			const sniperTeleportText = new PlayerSelectInfoText({text:"[E] to teleport",           parent:sniperTeleportHolder,     offset:new Vector3(.4, .3, 0), font:font, distanceMult:350,  scale:.0032, rot:new Euler(0,0,0)});
+			self.infoTexts.push(sniperTeleportText);
+
+
+			const launcherGun = launcher.getObjectByName("Cube043");
+			const launcherFoot = launcher.getObjectByName("foot_l");
+			const launcherBoostHolder = launcherBoost.getObjectByName("boost-part001");
+			const launcherDirectionalHolder = launcherDirectional.getObjectByName("boost-part002");
+			const launcherTeleportHolder = launcherTeleport.getObjectByName("boost-part000");
+
+			const launcherText = new PlayerSelectInfoText({text:"rocket launcher",                   parent:launcherGun,                offset:new Vector3(-1, 1, 2),     font:font, distanceMult:400,  scale:.022, rot:new Euler(0,0,0)});
+			self.infoTexts.push(sniperText);
+			const launcherAbility = new PlayerSelectInfoText({text:"[SPACE] to double jump",         parent:launcherFoot,               offset:new Vector3(-.2, .2, -.2), font:font, distanceMult:300, scale:.0032, rot:new Euler( -Math.PI/2, 0, Math.PI/2 )});
+			self.infoTexts.push(launcherAbility);
+			const launcherPlanetSwitchText = new PlayerSelectInfoText({text:"[E] to switch planets", parent:launcherBoostHolder,        offset:new Vector3(.4, .3, 0), font:font, distanceMult:350,  scale:.0032, rot:new Euler(0,0,0)});
+			self.infoTexts.push(launcherPlanetSwitchText);
+			const launcherBoostText = new PlayerSelectInfoText({text:"[SHIFT] to directional boost", parent:launcherDirectionalHolder,  offset:new Vector3(.4, .3, 0), font:font, distanceMult:350,  scale:.0032, rot:new Euler(0,0,0)});
+			self.infoTexts.push(launcherBoostText);
+			const launcherTeleportText = new PlayerSelectInfoText({text:"[E] to teleport",           parent:launcherTeleportHolder,     offset:new Vector3(.4, .3, 0), font:font, distanceMult:350,  scale:.0032, rot:new Euler(0,0,0)});
+			self.infoTexts.push(launcherTeleportText);
+
+
+
+			const sixgunGun = sixgun.getObjectByName("Sphere067");
+			const sixgunFoot = sixgun.getObjectByName("head");
+			const sixgunBoostHolder = sixgunBoost.getObjectByName("boost-part005");
+			const sixgunDirectionalHolder = sixgunDirectional.getObjectByName("boost-part003");
+			const sixgunTeleportHolder = sixgunTeleport.getObjectByName("boost-part004");
+
+			const sixgunText = new PlayerSelectInfoText({text:"revolver",                          parent:sixgunGun,                offset:new Vector3(8, 6, -6),     font:font, distanceMult:300,  scale:.12, rot:new Euler(0,Math.PI,0)});
+			self.infoTexts.push(sixgunText);
+			const sixgunAbility = new PlayerSelectInfoText({text:"[Q] for wall hacks",             parent:sixgunFoot,               offset:new Vector3(.4, .2, .2), font:font, distanceMult:300, scale:.0032, rot:new Euler( 0, Math.PI/2, 0 )});
+			self.infoTexts.push(sixgunAbility);
+			const sixgunPlanetSwitchText = new PlayerSelectInfoText({text:"[E] to switch planets", parent:sixgunBoostHolder,        offset:new Vector3(.4, .3, 0), font:font, distanceMult:350,  scale:.0032, rot:new Euler(0,0,0)});
+			self.infoTexts.push(sixgunPlanetSwitchText);
+			const sixgunBoostText = new PlayerSelectInfoText({text:"[SHIFT] to directional boost", parent:sixgunDirectionalHolder,  offset:new Vector3(.4, .3, 0), font:font, distanceMult:350,  scale:.0032, rot:new Euler(0,0,0)});
+			self.infoTexts.push(sixgunBoostText);
+			const sixgunTeleportText = new PlayerSelectInfoText({text:"[E] to teleport",           parent:sixgunTeleportHolder,     offset:new Vector3(.4, .3, 0), font:font, distanceMult:350,  scale:.0032, rot:new Euler(0,0,0)});
+			self.infoTexts.push(sixgunTeleportText);
+			
+		}); 
 
 	}
 
@@ -360,3 +479,49 @@ class PlayerSelectScene {
 export { PlayerSelectScene };
 
 
+class PlayerSelectInfoText{
+	constructor(OBJ){
+		this.text = OBJ.text;
+		this.parent = OBJ.parent;
+		this.textTarg = new Vector3();
+		this.parentTarg = new Vector3();
+		this.offset = new Vector3().copy(OBJ.offset);
+	
+		const matLite = new MeshBasicMaterial( {
+			color: 0xffffff,
+			side: DoubleSide
+		} );
+
+		const message = this.text;
+		const shapes = OBJ.font.generateShapes( message, 12 );
+		const geometry = new ShapeGeometry( shapes );
+		geometry.computeBoundingBox();
+		const xMid = - 0.5 * ( geometry.boundingBox.max.x - geometry.boundingBox.min.x );
+		geometry.translate( xMid, 0, 0 );
+
+		// make shape ( N.B. edge view not visible )
+
+		this.text = new Mesh( geometry, matLite );
+		//text.position.z = - 150;
+		this.parent.add( this.text );
+		this.text.position.copy(this.offset);
+		this.text.scale.set(OBJ.scale, OBJ.scale, OBJ.scale);
+		this.text.getWorldPosition(this.textTarg);
+		this.text.rotation.copy(OBJ.rot); 
+		this.parent.getWorldPosition(this.parentTarg);
+		const d = this.textTarg.distanceTo(this.parentTarg);
+			
+		this.holder = new Object3D();
+		const dMult = OBJ.distanceMult;
+		const cubeGeometry = new BoxGeometry( 1, 1, d * dMult );
+		const cubeMaterial = new MeshBasicMaterial( { color: 0xffffff } );
+		this.cube = new Mesh(cubeGeometry, cubeMaterial);
+		this.text.add(this.holder);
+		this.holder.add(this.cube);
+		this.cube.position.z = d*(dMult*.5);
+		this.holder.lookAt(this.parentTarg);
+		this.cube.dontUpdateMaterial = true;
+		this.text.dontUpdateMaterial = true;
+		
+	}
+}

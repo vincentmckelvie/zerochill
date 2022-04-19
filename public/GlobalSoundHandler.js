@@ -24,6 +24,7 @@ class GlobalSoundHandler {
 			"teleport",
 			"planet-switch",
 			"dink",
+			"dink-body-3",
 			"dmg",
 			"step-0",
 			"step-1",
@@ -33,11 +34,14 @@ class GlobalSoundHandler {
 			"slime-thud"
 		]
 		this.repeatHandlerDeath = new SoundRepeatHandler({name:"kill-2",timeout:200});
-		this.repeatHandlerHit = new SoundRepeatHandler({name:"dink",timeout:200});
-		this.repeatHandlerHit = new SoundRepeatHandler({name:"dmg",timeout:200});
+		this.repeatHandlerDink = new SoundRepeatHandler({name:"dink",timeout:200});
+		this.repeatHandlerDinkBody = new SoundRepeatHandler({name:"dink-body-2",timeout:100});
+		this.repeatHandlerDmg = new SoundRepeatHandler({name:"dmg",timeout:200});
 		this.repeatArray = [];
 		this.repeatArray.push(this.repeatHandlerDeath);
-		this.repeatArray.push(this.repeatHandlerHit);
+		this.repeatArray.push(this.repeatHandlerDink);
+		this.repeatArray.push(this.repeatHandlerDinkBody);
+		this.repeatArray.push(this.repeatHandlerDmg);
 		
 		this.samples = [];
 		
@@ -89,7 +93,6 @@ class GlobalSoundHandler {
 
 	playSoundByName(OBJ){
 		const rep = this.checkIfRepeatSound(OBJ); 
-		console.log(rep)
 		if(rep != null){
 			if(rep.canPlaySoundTimeout()){
 				this.playSoundByNameHelper(OBJ);

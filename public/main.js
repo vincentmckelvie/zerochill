@@ -382,9 +382,9 @@ const globalHelperFunctions = {
 			return arr;
 		},
 	playerDoDamage:
-		function(OBJ){
+		function(OBJ){ 
 			if(appGlobal.localPlayer !=null ){
-				appGlobal.localPlayer.handleDoDamage();
+				appGlobal.localPlayer.handleDoDamage(OBJ);
 			}
 		},
 	playerReset:
@@ -577,6 +577,16 @@ const globalHelperFunctions = {
 
 			});
 		},
+	removeFromHitscanArray:
+		function(OBJ){
+			for(let i = 0; i<appGlobal.hitScanArray.length; i++){
+				if(appGlobal.hitScanArray[i]==OBJ){
+					appGlobal.hitScanArray.splice(i, 1);
+		      		i--; 
+		      	}
+			}
+			//appGlobal.hitScanArray.push(this.mesh, this.head);
+		}
 
 }
 

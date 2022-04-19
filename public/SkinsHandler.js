@@ -111,7 +111,7 @@ class SkinsHandler {
           switch(swatch){
             case "normal":
 
-              if(obj.material.name != "directional-boost" && !obj.material.name.includes("blast")){
+              if(obj.material.name != "directional-boost" && !obj.material.name.includes("blast") && obj.dontUpdateMaterial==null){
                 const mat = new MeshNormalMaterial({
                     side:obj.material.side, 
                     name:obj.material.name

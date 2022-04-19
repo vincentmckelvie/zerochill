@@ -671,11 +671,11 @@ class BotPlayer {
 		
 		// const angle = (v2.x-v1.x)+Math.PI;
 		//this.hud.doIncomingDamageMarker( (angle*-1) );
-
+	
 		this.life -= OBJ.health;
 		
 		if(appGlobal.localPlayer)
-			appGlobal.localPlayer.handleDoDamage();
+			appGlobal.localPlayer.handleDoDamage(OBJ);
 		
 		//this.hud.updateHealth(this.life);
 		if(this.life <= 0 ){
@@ -684,6 +684,7 @@ class BotPlayer {
 				appGlobal.localPlayer.handleGetKill();
 			
 			appGlobal.totalKills++;
+			document.getElementById("kills-bots").innerHTML="kills: "+appGlobal.totalKills;
 			
 			this.kill();
 		}
@@ -699,6 +700,7 @@ class BotPlayer {
 
 	kill() {
 		if(this.state == "alive"){
+			
 			this.state = "dead";
 			
 			for(let i = 0; i<this.abilities.length; i++){
@@ -726,31 +728,34 @@ class BotPlayer {
 			this.canDoStrafeRandom = true;
 			this.canCheckPlanetSwitch = true;
 			this.chaseReset= false;
-		
 
 			this.canDoWalkSound = false;
 
 			this.hideAllMeshes();
+
 			const self = this;
+
+			const pos = new Vector3().copy(self.spawns[self.spawnsInc]);
+			const end = new Vector3().copy(pos);
+			pos.multiplyScalar(appGlobal.worldScale*6);
+			
+			self.grav = new Vector3().copy(pos).sub(new Vector3()).normalize();
+			const n = new Vector3().copy(pos).add( self.grav.multiplyScalar(self.playerHeight) );
+	
+			self.playerCollider.set( pos, n, 1.35 );
+			this.updatePlayerPositionAndRotation();
+				
 			setTimeout(function(){
 
-				const pos = new Vector3().copy(self.spawns[self.spawnsInc]);
-				// pos.x = -1+appGlobal.random()*2;
-				// pos.y = -1+appGlobal.random()*2;
-				// pos.z = -1+appGlobal.random()*2;
-				//pos.y = 1;
+				// const pos = new Vector3().copy(self.spawns[self.spawnsInc]);
+				// const end = new Vector3().copy(pos);
+				// pos.multiplyScalar(appGlobal.worldScale*6);
+				// self.showAllMeshes();
 				
-				const end = new Vector3().copy(pos);
-				pos.multiplyScalar(appGlobal.worldScale*6);
+				// self.grav = new Vector3().copy(pos).sub(new Vector3()).normalize();
+				// const n = new Vector3().copy(pos).add( self.grav.multiplyScalar(self.playerHeight) );
 				self.showAllMeshes();
-				// self.playerCollider.start.set(pos);
-				// self.playerCollider.end.set(pos);
-				
-
-				self.grav = new Vector3().copy(pos).sub(new Vector3()).normalize();
-				const n = new Vector3().copy(pos).add( self.grav.multiplyScalar(self.playerHeight) );
-		
-				self.playerCollider.set( pos, n, 1.35 );
+				// self.playerCollider.set( pos, n, 1.35 );
 				self.world = self.getClosestWorld();
 				self.playing = true;
 				self.state = "alive";
@@ -758,17 +763,21 @@ class BotPlayer {
 				self.spawnsInc++;
 				self.spawnsInc = self.spawnsInc%self.spawns.length;
 				self.hideGunStuff();
-			},1500-window.timeIncrease.respawnSpeed)
+			},2500-window.timeIncrease.respawnSpeed)
 		}
 	}
 
 	hideAllMeshes(){
-		this.toggleMesh(this.character, false)
+		this.toggleMesh(this.character, false);
+		// this.head.visible = false;
+		// this.mesh.visible = false;
 		//this.toggleMesh(this.movement,  false)
 	}
 
 	showAllMeshes(){
 		this.toggleMesh(this.character, true)
+		// this.head.visible = true;
+		// this.mesh.visible = true;
 		//this.toggleMesh(this.movement,  true)
 	}
 

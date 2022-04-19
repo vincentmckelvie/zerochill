@@ -110,19 +110,23 @@ class AutoBullet {
 				const self = this;
 				this.isBulletDoingDamage = true;
 				if(window.socket != null){
-					socket.emit('doDamage', {
+					const obj = {
 					  id: id.id,
 					  damage:self.damage,
 					  position:this.startPos,
 					  headShot:id.headShot,
 					  fromDamageId:socket.id
-					});
+					}
+					socket.emit('doDamage', obj);
+					appGlobal.globalHelperFunctions.playerDoDamage(obj);
 				}else{
-					if(id.headShot)
-						this.damage*=1.5;
-					appGlobal.remotePlayers[id.id].receiveDamage({position:this.startPos, health:this.damage})
+					if(id.headShot){
+						this.damage *= 1.5;
+					}
+					console.log(id.headShot)
+					appGlobal.remotePlayers[id.id].receiveDamage({headShot:id.headShot, position:this.startPos, health:this.damage})
 				}
-				appGlobal.globalHelperFunctions.playerDoDamage();
+				
 			}
 			this.kill();
 		}

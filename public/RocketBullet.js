@@ -69,7 +69,7 @@ class RocketBullet {
 			const r2 = r * r;
 
 			if ( d2 < r2 ) {
-				this.kill();
+				this.kill(false);
 			}
 		}
 
@@ -77,7 +77,7 @@ class RocketBullet {
 
 	}
 	
-	kill(){
+	kill(hitPlayer){
 		
 		if(!this.killed){
 			
@@ -85,27 +85,28 @@ class RocketBullet {
 
 			if(this.isLocal){
 				this.knockParams.pos = this.mesh.position;
-				appGlobal.globalHelperFunctions.knockPlayer(this.knockParams);
+				
+				if(!hitPlayer)
+					appGlobal.globalHelperFunctions.knockPlayer(this.knockParams);
 				
 				const arr = appGlobal.globalHelperFunctions.splashDamage(this.knockParams);
 				if(arr.length>0){
 					for(let i = 0; i<arr.length; i++){
 						const self = this;
 						if(window.socket!=null){
-							socket.emit('doDamage', {
+							const obj = {
 						  		id: arr[i].id,
 						  		damage:self.damage*arr[i].damageMult,
 						  		position:this.startPos,
 						  		headShot:false,
 						  		fromDamageId:socket.id
-							});
+							}
+							socket.emit('doDamage', obj);
+							appGlobal.globalHelperFunctions.playerDoDamage(obj);
 						}else{
-							appGlobal.remotePlayers[arr[i].id].receiveDamage({position:this.mesh.position, health:this.damage})
+							appGlobal.remotePlayers[arr[i].id].receiveDamage({headShot:false, position:this.mesh.position, health:this.damage})
 						}
 					}			
-				}else{
-
-					
 				}
 			}
 
@@ -125,7 +126,7 @@ class RocketBullet {
 	playerSphereCollision() {
 		const id = appGlobal.globalHelperFunctions.playerSphereCollision(this.collider, this.id)
 		if(id != null){
-			this.kill();
+			this.kill(true);
 		}
 	}
 
