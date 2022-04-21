@@ -218,6 +218,8 @@ class CustomScene {
 		appGlobal.controller.updateWindowSize();
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
 		this.composer.setSize( window.innerWidth, window.innerHeight );
+		if(appGlobal.playerSelectScene!=null)
+			appGlobal.playerSelectScene.updateWindowSize();
 		//this.effectFXAA.uniforms[ 'resolution' ].value.set( 1 / window.innerWidth, 1 / window.innerHeight );
 	}
 	getDelta(){

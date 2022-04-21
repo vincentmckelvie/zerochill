@@ -48,9 +48,9 @@ class Hud {
 		const self = this;
 		//this.hitMarker.style.display = "block";
 		if(headshot){
-			this.hitMarker.style.backgroundImage = 'url("../assets/ui/dmg-marker-hs.png")';
+			this.hitMarker.style.backgroundImage = 'url("../assets/ui/dmg-marker-hs-2.png")';
 		}else{
-			this.hitMarker.style.backgroundImage = 'url("../assets/ui/dmg-marker-bs.png")';
+			this.hitMarker.style.backgroundImage = 'url("../assets/ui/dmg-marker-bs-2.png")';
 		}
 		this.toggleElem(this.hitMarker, true)
 		this.damageMarkerTimeout = setTimeout(function(){

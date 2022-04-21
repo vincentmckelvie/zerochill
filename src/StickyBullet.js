@@ -22,7 +22,7 @@ class StickyBullet {
 		this.vector3 = new Vector3();
 		
 		this.knockParams = OBJ.knockParams;
-		this.worldPosition = OBJ.worldPosition; 
+		//this.worldPosition = OBJ.worldPosition; 
 
 		this.alivetime = 2000;
 		
@@ -46,6 +46,7 @@ class StickyBullet {
 		this.killed = false;
 		this.contactParticle = appGlobal.particles.explosion;
 		const self = this;
+		this.grav = new Vector3();
 		this.killTimeout = setTimeout(function(){
 			self.kill();
 		}, 2000)
@@ -63,10 +64,10 @@ class StickyBullet {
 
 		this.collider.center.addScaledVector( this.velocity, appGlobal.deltaTime );
 
-		const g = new Vector3().copy(this.collider.center).sub(this.worldPosition).normalize();
-		this.velocity.x -= g.x*(appGlobal.gravity*appGlobal.deltaTime);
-		this.velocity.y -= g.y*(appGlobal.gravity*appGlobal.deltaTime);
-		this.velocity.z -= g.z*(appGlobal.gravity*appGlobal.deltaTime);
+		this.grav.copy(this.collider.center).sub(this.worldPosition).normalize();
+		this.velocity.x -= this.grav.x*(appGlobal.gravity*appGlobal.deltaTime);
+		this.velocity.y -= this.grav.y*(appGlobal.gravity*appGlobal.deltaTime);
+		this.velocity.z -= this.grav.z*(appGlobal.gravity*appGlobal.deltaTime);
 		
 		const damping = Math.exp( - 1.5 * appGlobal.deltaTime ) - 1;
 		this.velocity.addScaledVector( this.velocity, damping );
@@ -84,6 +85,7 @@ class StickyBullet {
 				this.handleStick();
 			}
 		}
+		
 		this.mesh.position.copy( this.collider.center );
 		
 	}

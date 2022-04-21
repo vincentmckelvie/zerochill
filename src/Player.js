@@ -13,7 +13,9 @@ import {
 import { Capsule } from './scripts/jsm/math/Capsule.js';
 import { Weapon } from './Weapon.js';
 import { Hud } from './Hud.js';
+import { clone } from "./scripts/jsm/utils/SkeletonUtils.js";
 import { FPSAni } from './FPSAni.js';
+import { CharacterAnimationHandler } from './CharacterAnimationHandler.js';
 
 class Player {
 	//{scene:scene, worldScale:worldScale};
@@ -30,6 +32,7 @@ class Player {
 		this.fovTarg = this.defaultFOV;
 		this.camera.fov = this.defaultFOV;
 		this.camera.updateProjectionMatrix();
+
 		
 		this.boostMult = 1;
 		this.boostMultMax = 1.8;
@@ -91,8 +94,9 @@ class Player {
 		this.mesh.position.z -=5;
 		//this.playerRotationHelper.position.y = -1.5;
 		this.rotOffset.add(this.xRot);
-
-		this.xRot.add(appGlobal.controller.playerCamera);
+		this.emoteHelper = new Object3D();
+		this.emoteHelper.add(appGlobal.controller.playerCamera);
+		this.xRot.add(this.emoteHelper);
 		//this.xRot.add(this.mesh);
 		appGlobal.controller.playerCamera.add(this.mesh)
 		this.xRot.add(this.playerRotationHelper)
@@ -144,12 +148,63 @@ class Player {
 			boost:false,
 			adsing:false,
 		}
-		
+		if(this.emoting){
+			this.cah.handleAnimationEasing(0,this.animationObject);
+		}
 		//this.gravRotationEase = .005;
 		this.gravRotationEase = .005;
 		this.abilityCanShoot = true;
 		this.hitWorldWhenNotChecking = false;
-		this.fps = new FPSAni({model:OBJ.weapon.model, name:OBJ.weapon.name});
+
+		this.character = clone( self.getModelByName("body-"+OBJ.weapon.model).scene );
+		let move = "boost";
+		if(OBJ.movement.name == "directional boost"){
+			move = "directional";
+		}else if(OBJ.movement.name == "teleport"){
+			move = "teleport";
+		}
+		this.movement  = clone( self.getModelByName(OBJ.weapon.model+"-"+move).scene );
+
+		const arr = [this.character, this.movement];
+		this.cah = new CharacterAnimationHandler({meshes:arr, animations:appGlobal.loadObjs[0].model.animations, name:OBJ.weapon.model});
+		this.cah.initAnimation();
+
+		let name = "tip-" + OBJ.weapon.model;
+		this.tipObject = this.character.getObjectByName(name);
+		this.tipObject.visible = false;
+
+		this.boostTip;
+		// this.boostTexture = new TextureLoader().load( './assets/textures/boost.png' );
+		// this.boostTexture.wrapS = RepeatWrapping;
+		// this.boostTexture.wrapT =  ClampToEdgeWrapping;
+		// this.boostTexture.magFilter = LinearFilter; 
+
+		this.movement.traverse( function ( obj ) {
+			if(obj.name.includes("boost-part")){
+				obj.visible = false;
+				// obj.material.transparent = true;
+				// obj.material.map = self.boostTexture;
+				// obj.material.emissiveMap = self.boostTexture;
+				// obj.material.color = new Color(0x000000);
+				// obj.material.emissive = new Color(0xffbf80);
+				// self.boostTip = obj;
+			}
+		});
+
+		this.characterHolder = new Object3D();
+		this.xRot.add(this.characterHolder);
+		this.characterHolder.add(this.character, this.movement);
+		const s = 3.25;
+		this.characterHolder.position.z = -.2;
+		this.characterHolder.scale.set(s,s,s);
+		this.characterHolder.position.y = -3.25;
+		this.characterHolder.rotation.y += Math.PI;
+
+		this.character.visible = this.movement.visible = false;
+		const skin =  appGlobal.skinsHandler.getCurrentSkinOnCharacter(OBJ.weapon.model);
+		appGlobal.skinsHandler.changeSwatchOnMesh({meshes:[this.character, this.movement], name:OBJ.weapon.model}, skin);
+
+		this.fps = new FPSAni({model:OBJ.weapon.model, name:OBJ.weapon.name, player:this});
 		this.adsMouseSenseMultTarg = 0;
 		this.adsMouseSenseMult = 0;
 
@@ -160,11 +215,42 @@ class Player {
 		this.ability2KeyDownOT = false;
 		
 		appGlobal.world = this.getClosestWorld();
+
+		this.maxSpeed = 40;
+		this.isDoingJumpPad = false;
+		this.jumpPadTween = null;
+
+		this.emoting = false;
 	
 	}
 
-	
+	getModelByName(NAME){
+		for(let i = 0; i<appGlobal.loadObjs.length;i++){
+			if(appGlobal.loadObjs[i].name==NAME)
+				return appGlobal.loadObjs[i].model;	
+		}
+	}
 
+	doJumpPad(grav){
+		if(!this.isDoingJumpPad){
+			const self = this;
+			this.isDoingJumpPad = true;
+			this.maxSpeed = 120;
+			
+			const toNewWorld = new Vector3().copy(grav).multiplyScalar(300);
+			
+			this.playerVelocity.add( toNewWorld );
+			
+			if(this.jumpPadTween != null){
+				this.jumpPadTween.kill();
+			}
+			
+			this.jumpPadTween = gsap.to(this,{duration:.5, maxSpeed:40, ease: "none", delay:0, oncomplete:function(){ self.isDoingJumpPad = false; }, onUpdate:function(){}});
+
+		}
+
+	}
+	
 	update(){
 		this.updateNonLooped();
 		for ( let i = 0; i < appGlobal.STEPS_PER_FRAME; i ++ ) {
@@ -178,6 +264,9 @@ class Player {
 				this.updateControls();
 				this.updatePlayerPositionAndRotation();
 				this.weapon.update();
+				for(let i = 0; i<this.abilities.length; i++){
+					this.abilities[i].updateLooped();	
+				}
 			break;
 			case "dead":
 			break;
@@ -187,6 +276,7 @@ class Player {
 	updateNonLooped(){
 		this.updateFOV();
 		this.fps.update();
+
 		this.animationObject = {
 			yAxis:this.axisY, 
 			xAxis:this.axisX,
@@ -194,6 +284,9 @@ class Player {
 			boost:this.boosting,
 			adsing:this.adsing
 		}
+
+		this.cah.update();
+		this.cah.handleAnimationEasing(0,this.animationObject);
 		
 		switch(this.state){
 			case "alive":
@@ -499,35 +592,68 @@ class Player {
 
 	}
 
+	killEmoting(){
+		this.emoteHelper.rotation.y = 0;
+		
+		if(this.tpsAni!=null){
+			this.tpsAni.kill();
+		}
+		this.character.visible = this.movement.visible = false;
+		const self = this;
+		this.tpsAni = gsap.to(this,{duration:.3, camDist:0, ease: "circ.out()", delay:0, onComplete:function(){ 
+			self.fps.show();
+			self.emoting = false; 
+		}  });
+	}
+
 	handleKeyDown(key){
 		for(let i = 0; i<this.abilities.length; i++){
 			this.abilities[i].handleKeyDown(key);	
 		}
-
+		if(key=="KeyC"){
+			if(!this.emoting && (this.axisY==0 && this.axisX==0)){
+				this.emoting = true;
+				this.character.visible = this.movement.visible = true;
+				if(this.tpsAni!=null){
+					this.tpsAni.kill();
+				}
+				this.fps.hide();
+				this.tpsAni = gsap.to(this,{duration:.3, camDist:6, ease: "circ.out()", delay:0});
+				gsap.to(this.camera.rotation,{duration:.3, x:0, ease: "circ.out()", delay:0});
+			}else{
+				this.killEmoting();
+			}
+		}
 		if(key=="KeyD"){
+			this.killEmoting();
 			this.axisX = 1;
 			this.keys.D = true;
 		}
 		
 		if(key=="KeyA"){
+			this.killEmoting();
 			this.axisX = -1;
 			this.keys.A = true;
 		}
 		
 		if(key=="KeyW"){
+			this.killEmoting();
 			this.axisY = 1;
 			this.keys.W = true;
 		}
 		
 		if(key=="KeyS"){
+			this.killEmoting();
 			this.axisY = -1;
 			this.keys.S = true;
 		}
 
 		if ( key == 'KeyR') {
+			this.killEmoting();
 			this.handleReloadKeyPress();
 		}
 		if(key == 'ShiftLeft'){
+			this.killEmoting();
 			this.handleBlinkKeyPress();
 		}
 	}
@@ -625,7 +751,6 @@ class Player {
 				}
 				
 			}
-
 		}
 	}
 	
@@ -633,7 +758,7 @@ class Player {
 
 		if(this.boosting){
 			
-			this.boostMeter -= (appGlobal.deltaTime*(2.7*this.abilityMult));
+			this.boostMeter -= (appGlobal.deltaTime*(1.8*this.abilityMult));
 		
 			if(this.boostMeter<0){
 				this.boostMeter = 0;
@@ -865,7 +990,7 @@ class Player {
 
 	updatePlayerPositionAndRotation() {
 
-		//this.camera.position.z = this.camDist;
+		this.camera.position.z = this.camDist;
 		
 		let damping = Math.exp( - 4 * appGlobal.deltaTime ) - 1;
 		//console.log(damping);
@@ -938,7 +1063,7 @@ class Player {
 		//this.playerVelocity.addScaledVector( this.playerVelocity, damping );
 		
 		this.playerVelocity.addScaledVector( this.playerVelocity.add(this.getSideVector().multiplyScalar((this.axisX)*(airControl*this.strafeMult))).add(this.getForwardVector().multiplyScalar(this.axisY*airControl)).add(boostDir) , damping );
-		this.playerVelocity.clampLength(0,40);
+		this.playerVelocity.clampLength(0,this.maxSpeed);
 		
 		//const deltaPosition = this.playerVelocity.clone().multiplyScalar( appGlobal.deltaTime );
 		const deltaPosition = this.playerVelocity.clone().multiplyScalar( appGlobal.deltaTime );
@@ -978,13 +1103,17 @@ class Player {
 
 	updateCameraRotation(OBJ){
 
-		let adsValHolder = this.weapon.adsMouseSensMult * appGlobal.settingsParams["adsMouseSenseMult"];
+		let adsValHolder = this.weapon.adsMouseSensMult * window.settingsParams["adsMouseSenseMult"];
 		if(adsValHolder > .95)
 			adsValHolder = .95;
 		const adsHelper = 1.0 - (adsValHolder  * this.adsMouseSenseMult);
-
-		this.xRot.rotation.y   -= OBJ.mx *(0.005*( appGlobal.settingsParams["mouseSens"] * adsHelper ));
-		this.camera.rotation.x -= OBJ.my *(0.005*( appGlobal.settingsParams["mouseSens"] * adsHelper ));
+		if(!this.emoting){
+			this.xRot.rotation.y   -= OBJ.mx *(0.005*( window.settingsParams["mouseSens"] * adsHelper ));
+			this.camera.rotation.x -= OBJ.my *(0.005*( window.settingsParams["mouseSens"] * adsHelper ));
+		}else{
+			this.camera.rotation.x = 0;
+			this.emoteHelper.rotation.y  -= OBJ.mx *(0.005*( window.settingsParams["mouseSens"] * adsHelper ));
+		}
 		
 		const max = 1.5;
 		if(this.camera.rotation.x<-max)this.camera.rotation.x = -max;
@@ -993,6 +1122,8 @@ class Player {
 	}
 
 	ads(shouldADS){
+
+		//this.killEmoting();
 		
 		this.fps.toggleADS(shouldADS);
 		this.adsing = shouldADS;

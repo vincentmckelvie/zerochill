@@ -1,3 +1,4 @@
+
 import * as THREE from 'three';
 import Stats from './scripts/jsm/libs/stats.module.js';
 import { GLTFLoader } from './scripts/jsm/loaders/GLTFLoader.js';
@@ -6,12 +7,9 @@ import { Capsule } from './scripts/jsm/math/Capsule.js';
 
 import { World } from './World.js';
 import { PlayerController } from './PlayerController.js';
-import { BotPlayer } from './BotPlayer.js';
-
 import { CustomScene } from './CustomScene.js';
 import { StickyBullet } from './StickyBullet.js';
 import { RocketBullet } from './RocketBullet.js';
-import { BotBullet } from './BotBullet.js';
 import { AutoBullet } from './AutoBullet.js';
 import { SniperBullet } from './SniperBullet.js';
 import { GlobalParticleHandler } from './GlobalParticleHandler.js';
@@ -20,12 +18,13 @@ import { ItemHandler } from './ItemHandler.js';
 import { RemoteBulletHandler } from './RemoteBulletHandler.js';
 import { GlobalSoundHandler } from './GlobalSoundHandler.js';
 import { AbilityPlanetSwitch } from './AbilityPlanetSwitch.js';
-import { AbilityPlanetSwitchBot } from './AbilityPlanetSwitchBot.js';
-
 import { AbilityWalls } from './AbilityWalls.js';
 import { AbilityDirectionalBoost } from './AbilityDirectionalBoost.js';
 import { AbilityTeleport } from './AbilityTeleport.js';
 import { AbilityDoubleJump } from './AbilityDoubleJump.js';
+import { AbilityNade } from './AbilityNade.js';
+import { AbilityJumpPad } from './AbilityJumpPad.js';
+import { AbilitySticky } from './AbilitySticky.js';
 import { AbilityBlink } from './AbilityBlink.js';
 import { RemoteController } from './RemoteController.js';
 import { PlayerSelectScene } from './PlayerSelectScene.js';
@@ -37,6 +36,7 @@ import { SkinsHandler } from './SkinsHandler.js';
 
 import { Servers } from './Servers.js';
 import { GamePad } from './GamePad.js';
+import { io } from "https://cdn.socket.io/4.4.1/socket.io.esm.min.js";
 
 const abilities = {
 	planetSwitch:{
@@ -60,6 +60,40 @@ const abilities = {
 			killOnLand:false,
 			name:"wall hack",
 			abilityTime:3000,
+			cooldownUI:true,
+			sound:"wall-hack",
+	},
+	nade:{
+			class:AbilityNade,
+			type:"press",
+			cooldown:9000,
+			key:"KeyQ",
+			abilityKey:"Q",
+			killOnLand:false,
+			name:"nade",
+			abilityTime:0,
+			cooldownUI:true,
+			sound:"wall-hack",
+	},jumpPad:{
+			class:AbilityJumpPad,
+			type:"press",
+			cooldown:9000,
+			key:"KeyQ",
+			abilityKey:"Q",
+			killOnLand:false,
+			name:"nade",
+			abilityTime:0,
+			cooldownUI:true,
+			sound:"wall-hack",
+	},sticky:{
+			class:AbilitySticky,
+			type:"press",
+			cooldown:9000,
+			key:"KeyQ",
+			abilityKey:"Q",
+			killOnLand:false,
+			name:"sticky",
+			abilityTime:0,
 			cooldownUI:true,
 			sound:"wall-hack",
 	},
@@ -102,19 +136,7 @@ const abilities = {
 	blink:{
 			class:AbilityBlink,
 			type:"none",
-			cooldown:4000,
-			key:"Shift",
-			abilityKey:"Shift",
-			killOnLand:false,
-			name:"blink",
-			abilityTime:.2,
-			cooldownUI:true,
-			sound:"blink",
-	},
-	blink:{
-			class:AbilityBlink,
-			type:"none",
-			cooldown:4000,
+			cooldown:3000,
 			key:"Shift",
 			abilityKey:"Shift",
 			killOnLand:false,
@@ -128,7 +150,7 @@ const abilities = {
 const particles = {
 	explosion:{
 		burst:true,
-		amount:10,
+		amount:20,
 	    killTimeout:400, 
 	    mesh:"box", 
 	    col: new THREE.Color().setHSL(.1,1,.7), 
@@ -145,26 +167,6 @@ const particles = {
 		lookAt:true,
 		lookAtLength:3,
 		sound:"explosion"
-	},
-	slime:{
-		burst:true,
-		amount:10,
-	    killTimeout:400, 
-	    mesh:"box", 
-	    col: new THREE.Color(0xf74ba8), 
-	    pos:new THREE.Vector3(), 
-	    rndPos:0.8, 
-	    rot:new THREE.Vector3(), 
-	    rndRot:0, 
-	    rndScl:.5, 
-	    scl:.1,
-	    velPosScale:40,
-		velRot:0,
-		velScl:-5, 
-		velPosRnd: 3,
-		lookAt:true,
-		lookAtLength:3,
-		sound:"slime-thud"
 	},
 	shot:{
 		burst:true,
@@ -209,7 +211,7 @@ const particles = {
 	},
 	blink:{
 		burst:false,
-		amount:10,
+		amount:30,
 	    killTimeout:600, 
 	    mesh:"box", 
 	    col: new THREE.Color().setHSL(.6,1,.7), 
@@ -292,7 +294,7 @@ const weapons = {
 		impulse:180, 
 		name:"automatic",
 		knockParams:{pos:new THREE.Vector3(), distance:6, strength:25, gravMult:4},
-		damage:23,
+		damage:13,
 		//damage:1,
 		sound:"automatic-2",
 		abilities:[abilities.blink],
@@ -309,9 +311,9 @@ const weapons = {
 		impulse:180, 
 		name:"submachine",
 		knockParams:{pos:new THREE.Vector3(), distance:6, strength:15, gravMult:4},
-		damage:15,
+		damage:9,
 		sound:"sub",
-		abilities:[abilities.blink],
+		abilities:[abilities.nade],
 		model:"submachine",
 		adsMouseSenseMult:0
 	},
@@ -344,7 +346,7 @@ const weapons = {
 		knockParams:{pos:new THREE.Vector3(), distance:8, strength:50, gravMult:6},
 		damage:50,
 		sound:"sniper-six2",
-		abilities:[abilities.walls],
+		abilities:[abilities.sticky],
 		model:"sixgun",
 		adsMouseSenseMult:0
 	},
@@ -372,7 +374,7 @@ const globalHelperFunctions = {
 					appGlobal.remotePlayers[i].remotePlayer.start.getWorldPosition(start);
 					appGlobal.remotePlayers[i].remotePlayer.end.getWorldPosition(end);
 					const vector = new THREE.Vector3();
-					const center = vector.addVectors(start, end).multiplyScalar( 0.5 );
+					const center = vector.addVectors(start, end ).multiplyScalar( 0.5 );
 
 					const playerRadius = appGlobal.remotePlayers[i].remotePlayer.radius*2;
 					const r = playerRadius + collider.radius;
@@ -418,7 +420,7 @@ const globalHelperFunctions = {
 			return arr;
 		},
 	playerDoDamage:
-		function(OBJ){
+		function(OBJ){ 
 			if(appGlobal.localPlayer !=null ){
 				appGlobal.localPlayer.handleDoDamage(OBJ);
 			}
@@ -436,20 +438,6 @@ const globalHelperFunctions = {
 				appGlobal.controller.player = null;
 			
 			}
-
-			for(let i = 0; i<appGlobal.remotePlayers.length; i++){
-				appGlobal.remotePlayers[i].kill();
-			}
-			
-			if(clockInterval!=null){
-				clearInterval(clockInterval);
-			}
-			
-			document.getElementById("instructions").innerHTML = "<div class='bots-stats-biggest'>Score:"+(clockTime+(appGlobal.totalKills*2)+(appGlobal.itemsPickedUp*10))+"</div><div class='bots-stats-lower'>Time : "+clockTime+"</div><div class='bots-stats-lower'>Kills : "+appGlobal.totalKills+" <span class='bots-score-mult'>* 2</span></div><div class='bots-stats-lower'>Items : "+appGlobal.itemsPickedUp+" <span class='bots-score-mult'>* 10</span></div>";
-			document.getElementById("kills-bots").innerHTML="";
-			//appGlobal.itemHandler.kill();
-			appGlobal.itemHandler.resetBots();
-			
 			// socket.emit('handleDeath', {
 			//   id: socket.id
 			// });
@@ -462,6 +450,7 @@ const globalHelperFunctions = {
 					}
 				}, 3000);
 			}
+
 		},
 	getRemotePlayerById:
 		function(id){
@@ -565,60 +554,27 @@ const globalHelperFunctions = {
 			appGlobal.globalHelperFunctions.setUserName();
 			appGlobal.controller.initPlayer({ weapon: currentSelectWeapon, movement:currentMovement,  name:appGlobal.user});	
 			appGlobal.localPlayer = appGlobal.controller.player;
-			
-			if(clockInterval!=null){
-				clearInterval(clockInterval);
-			}
-			
-			clockTime = 0;
-			appGlobal.totalKills = 0;
-			appGlobal.itemsPickedUp = 0;
-			window.timeIncrease.damage = 0;
-			window.timeIncrease.impulse = 0;
-			window.timeIncrease.respawnSpeed = 0;
-			window.timeIncrease.shootSpeed = 0;
-			window.timeIncrease.chasingSwitch = 0
-			window.timeIncrease.planetSwitchCheck = 0
-			window.timeIncrease.planetSwitchMovementThreshold = 0;
-			
-			clockInterval = setInterval(function(){
-				let min = Math.floor(clockTime/60);
-				let sec = Math.floor(clockTime%60);
-				document.getElementById('timer').innerHTML = pad(min,2)+":"+pad(sec, 2);
-				
-				clockTime ++;
-				if(clockTime%30==0){
-					window.timeIncrease.damage += 2;
-					window.timeIncrease.impulse += 10;
-					window.timeIncrease.respawnSpeed -= 50;
-					window.timeIncrease.shootSpeed -= 50;
-					window.timeIncrease.chasingSwitch += 50;
-					window.timeIncrease.planetSwitchCheck += 40;
-					window.timeIncrease.planetSwitchMovementThreshold += 5;
-				}
+			const skin = appGlobal.skinsHandler.getCurrentSkinOnCharacter(currMeshName);
+		
+			socket.emit('startPlaying', {
+				id:socket.id,
+				meshName:currMeshName,
+				name:appGlobal.user,
+				movement:currMovementName,
+				skin:skin
+			});
 
-			},1000);
-
+			appGlobal.serverInfoTimeout = window.setInterval(()=> {
 			
-			
-			// socket.emit('startPlaying', {
-			// 	id:socket.id,
-			// 	meshName:currMeshName,
-			// 	name:appGlobal.user,
-			// 	movement:currMovementName
-			// });
-
-			// appGlobal.serverInfoTimeout = window.setInterval(()=> {
-			
-			// 	socket.emit('sendPlayerData', {
-			// 		id: socket.id,
-			// 		animationObject:appGlobal.localPlayer.animationObject,
-			// 		pos: appGlobal.localPlayer.playerCollider.start,
-			// 		rot: appGlobal.localPlayer.remoteQuaternion,
-			// 		camRotation:appGlobal.localPlayer.camera.rotation.x, 
-			// 		//crouching: appGlobal.localPlayer.crouching,
-			// 	})
-			// },1000/SERVERFPS);
+				socket.emit('sendPlayerData', {
+					id: socket.id,
+					animationObject:appGlobal.localPlayer.animationObject,
+					pos: appGlobal.localPlayer.playerCollider.start,
+					rot: appGlobal.localPlayer.remoteQuaternion,
+					camRotation:appGlobal.localPlayer.camera.rotation.x, 
+					//crouching: appGlobal.localPlayer.crouching,
+				})
+			},1000/SERVERFPS);
 		},
 	setUserName:
 		function(){
@@ -659,6 +615,16 @@ const globalHelperFunctions = {
 
 			});
 		},
+	removeFromHitscanArray:
+		function(OBJ){
+			for(let i = 0; i<appGlobal.hitScanArray.length; i++){
+				if(appGlobal.hitScanArray[i]==OBJ){
+					appGlobal.hitScanArray.splice(i, 1);
+		      		i--; 
+		      	}
+			}
+			//appGlobal.hitScanArray.push(this.mesh, this.head);
+		}
 
 }
 
@@ -668,8 +634,10 @@ const settings = {
 	"volume":1,
 	"crossHairColor":"fff",
 	"adsMouseSenseMult":1,
-	"gamePad":"false"
+	"gamePad":"false",
+	"showInstructions":"true"
 }
+window.settingsParams = settings;
 
 const appGlobal = {
 	gravity:50,
@@ -703,8 +671,6 @@ const appGlobal = {
 	serverItemArr:[],
 	soundHandler:null,
 	hue:0,
-	totalKills:0,
-	itemsPickedUp:0,
 	loadObjs:[
 		{name:"anis",    	    	model:null, loaded:false, url:"character-anis-3.glb"},
 		{name:"body-launcher",  	model:null, loaded:false, url:"models/launcher/default/body.glb"         },
@@ -750,8 +716,7 @@ const appGlobal = {
 	playerSelectScene:null,
 	titleScene:null,
 	user:"",
-	settingsParams:settings,
-	settings:null,
+	settings:new Settings(),
 	servers:null,
 	socketRooms:[],
 	currentRoom:'',
@@ -761,44 +726,9 @@ const appGlobal = {
 	worldsHolder:null,
 	parallax:new ParallaxGUI(),
 	skinsHandler:new SkinsHandler(),
-	bots:[],
 };
 
-
-
 window.appGlobal = appGlobal;
-
-const planetSwitchBot = {
-	class:AbilityPlanetSwitchBot,
-	type:"press",
-	cooldown:0,
-	key:"KeyE",
-	abilityKey:"E",
-	killOnLand:true,
-	name:"bot",
-	abilityTime:0,
-	cooldownUI:false,
-	sound:"planet-switch",
-}
-
-const botWeapon = {
-
-	shootCooldown:800,  
-	bullet:BotBullet, 
-	ammoAmount:6,    
-	reloadCooldown:1200,  
-	zoom:80,    
-	adsRandom:.1, 
-	impulse:10, 
-	knockParams:{pos:new THREE.Vector3(), distance:10, strength:40, gravMult:4},
-	name:"bot",
-	damage:4,
-	sound:"splat",
-	abilities:[abilities.doubleJump],
-	model:"none",
-	adsMouseSenseMult:0
-
-}
 
 let currentSelectWeapon = appGlobal.weapons.automatic;
 let currentMovement = abilities.planetSwitch;
@@ -810,78 +740,9 @@ let playerIndex = "";
 let playerAmount = 0;
 let maxPlayers = 0;
 let currLoad = 0;
-let clockInterval, clockTime = 0;
-
 //let remotePlayers = [];//window.remotePlayers = {};
 let stats;
 const SERVERFPS = 20;
-
-const q = getQuery();
-let seed = Math.floor(Math.random()*2000);
-if(q != null){
-	seed = q;
-}
-
-const timeIncrease = {
-	damage:0,
-	impulse:0,
-	shootSpeed:0,
-	respawnSpeed:0,
-	chasingSwitch:0,
-	planetSwitchCheck:0,
-	planetSwitchMovementThreshold:0
-}
-window.timeIncrease = timeIncrease;
-//document.getElementById("debug").innerHTML = "game";
-appGlobal.random = new Math.seedrandom(seed);
-playerIndex = 0;
-appGlobal.gameState = "game";
-appGlobal.serverItemArr = initPickups();
-appGlobal.user = 'bot';
-joinedFirstRoom = true;
-window.history.replaceState({}, '', `${location.pathname}?seed=${seed.toString()}`);
-
-initLoading();
-
-function getQuery(){
-    const query = window.location.search.substring(1);
-   	const vars = query.split("&");
-   	//console.log(vars)
-    return parseQuery(vars);
-}
-
-function parseQuery(vars){
-	for (let i = 0; i < vars.length; i++) {
-        const pair = vars[i].split('=');
-        if(pair != null){
-        	//console.log(pair[0])
-	        if (decodeURIComponent(pair[0]) == "seed") {
-	        	return pair[1];
-	        }
-    	}
-    }
-    return null;
-}
-
-
-
-function initBots(){
-	const names = ["assault","sixgun","launcher","sticky","submachine", "sniper"];
-	for(let i = 0; i<12; i++){
-		const rndName = names[Math.floor(Math.random()*names.length)]
-		const bot = new BotPlayer({name:rndName, id:i, movement:"boost", ability:planetSwitchBot, weapon:botWeapon });
-		appGlobal.remotePlayers.push(bot);
-	}
-}
-
-function initPickups(){
-	const arr = [];
-	for(let i = 0;i< Math.floor(7+appGlobal.random()*10); i++ ){
-		arr.push({index:i, killed:false})
-	}
-	return arr;
-}
-
 
 function initLoading(){
 	
@@ -892,7 +753,20 @@ function initLoading(){
 			handleLoad(ii,gltf);
 		});
 	}
-	
+	/*
+	loader.load( 'character-anis.glb', function ( gltf ) {
+		handleLoad(0,gltf);
+	});
+	loader.load( 'test3.glb', function ( gltf ) {
+		handleLoad(1,gltf);
+	});
+	loader.load( 'test4.glb', function ( gltf ) {
+		handleLoad(2,gltf);
+	});
+	loader.load( 'fps.glb', function ( gltf ) {
+		handleLoad(3,gltf);
+	});
+	*/
 }
 
 
@@ -908,7 +782,6 @@ function handleLoad(index, gltf){
 		initThree();
 	}
 }
-
 function checkLoaded(){
 	for(let i = 0; i<appGlobal.loadObjs.length; i++){
 		if(!appGlobal.loadObjs[i].loaded)
@@ -924,19 +797,17 @@ function initThree(){
 	
 	overlayChildDisplayHelper();
 	
-	appGlobal.settings = new Settings();
+	//appGlobal.settings = ;
 	appGlobal.scene = new CustomScene();
 	appGlobal.particleHandler = new GlobalParticleHandler();
-	appGlobal.controller = new PlayerController({id:100, user:appGlobal.user});
+	appGlobal.controller = new PlayerController({id:socket.id, user:appGlobal.user});
 	appGlobal.remoteBullets = new RemoteBulletHandler();
 	appGlobal.itemHandler = new ItemHandler();
 	appGlobal.soundHandler = new GlobalSoundHandler();
 	appGlobal.playerSelectScene = new PlayerSelectScene();
 	appGlobal.titleScene = new TitleScene();
-	
+	//appGlobal.parallax = new ParallaxGUI();
 	appGlobal.scene.reset();
-
-	initBots();
 	
 	const container = document.getElementById( 'container' );
 	container.appendChild( appGlobal.scene.renderer.domElement );
@@ -1058,6 +929,7 @@ document.addEventListener( 'mousedown', (event) => {
 			appGlobal.mouse.down = true;
 		}else if(event.button == 2){
 			appGlobal.localPlayer.ads(true);
+			appGlobal.localPlayer.killEmoting();
 		}
 	}
 
@@ -1116,10 +988,6 @@ function animate() {
 		appGlobal.parallax.update();
 	}
 
-	// for(let i = 0; i<appGlobal.bots.length;i++){
-	// 	appGlobal.bots[i].update();
-	// }
-
 	appGlobal.gamePad.update();
 	appGlobal.scene.update();
 	
@@ -1144,6 +1012,24 @@ function toggleOverlay(showOverlay){
 		document.getElementById("overlay").style.display="none";
 	}
 }
+
+if(document.getElementById("close-login-btn")!=null){
+	document.getElementById("close-login-btn").addEventListener("click", function(){
+		document.getElementById('user').style.display = "none";
+	});
+}
+if(document.getElementById("user-btn")!=null){
+	document.getElementById("user-btn").addEventListener("click", function(){
+		document.getElementById('user').style.display = "block";
+	});
+}
+
+
+document.getElementById("close-instructions-btn").addEventListener("click", function (){
+	document.getElementById("instructions-modal").style.display = "none";
+	appGlobal.settings.handleInstructionsClose();
+});
+
 
 document.getElementById("class-button-sticky").addEventListener("click", function (){
 	//handleInitPlaying(appGlobal.weapons.sticky);
@@ -1230,6 +1116,26 @@ function handleSwitchClass(elem, activeName, nonActiveName, OBJ){
 	
 // }
 
+function getQuery(){
+
+    const query = window.location.search.substring(1);
+   	const vars = query.split("&");
+    return parseQuery(vars);
+    
+}
+
+function parseQuery(vars){
+	for (let i = 0; i < vars.length; i++) {
+        const pair = vars[i].split('=');
+        if(pair != null){
+	        if (decodeURIComponent(pair[0]) == "game" || decodeURIComponent(pair[0]) == "g") {
+	        	if(isSocketRoom(pair[1]))
+	        		return pair[1];
+	        }
+    	}
+    }
+    return null;
+}
 
 function isSocketRoom(name){
 	for(let i = 0; i<appGlobal.socketRooms.length; i++){
@@ -1238,6 +1144,324 @@ function isSocketRoom(name){
 	}
 	return false;
 }
+
+
+var socket = io("localhost:3000", function(){} );
+window.socket = socket;
+  
+socket.on('connect', () => {
+ 	
+ 	socket.on('serverInitialPing', (data)=>{
+ 		
+ 		if(data.id==socket.id && !initedServers){
+ 			
+ 			appGlobal.servers = new Servers({info:data.info});
+	 		const q = getQuery();
+	 		if(q != null){
+	 			socket.emit("switchRooms", {id:socket.id, gameToJoin:q, gameToLeave:"join"});
+	 		}else{
+	 			socket.emit("switchRooms", {id:socket.id, gameToJoin:data.gameToJoin, gameToLeave:"join"});
+	 		}
+	 		initedServers = true;
+
+ 		}
+
+ 	})
+	
+	socket.on('serverInitJoinGame',(data)=> {
+		if(!joinedFirstRoom){
+			appGlobal.roomName = data.roomName;
+			updateURL();
+			document.getElementById("debug").innerHTML = data.state;
+			appGlobal.random = new Math.seedrandom(""+data.seed+"");
+			playerIndex = data.playerIndex;
+			appGlobal.gameState = data.state;
+			appGlobal.serverItemArr = data.itemArr;
+			appGlobal.user = data.user;
+			joinedFirstRoom = true;
+			initLoading();
+		}
+	});
+	
+	socket.on('serverTimer',(data)=> {
+		appGlobal.servers.updateServerInfo({info:data.info})
+		let min = Math.floor(data.serverTime/60);
+		let sec = Math.floor(data.serverTime%60);
+		document.getElementById('timer').innerHTML = pad(min,2)+":"+pad(sec, 2);
+	});
+
+	socket.on('serverShoot',(data)=> {
+		if(data.id!=socket.id){
+			const obj = {id:data.id, name:data.name, obj:data.obj}
+			appGlobal.remoteBullets.shoot(obj);
+		}
+	});
+
+	socket.on('serverDoDamage',(data)=> {
+		if(appGlobal.localPlayer!=null){
+			if (data.id == socket.id) {
+				appGlobal.localPlayer.receiveDamage(data);
+			} 
+		}
+	});
+
+	socket.on('serverUpdateDead',(data)=> {
+		const player = appGlobal.globalHelperFunctions.getRemotePlayerById(data.id);
+		if(player!=null){
+			appGlobal.remotePlayers[player.index].killRemotePlayer();
+		}
+	});
+  
+ 
+	socket.on('updateAll', (data) => {
+		
+		if(appGlobal.initedThree){
+			
+			for(let i = 0; i<data.players.length; i++){
+				
+				const player = appGlobal.globalHelperFunctions.getRemotePlayerById(data.players[i].id);
+				
+				if(data.players[i].id != socket.id){ //remote players
+					
+					if(player == null){
+						appGlobal.remotePlayers.push(new RemoteController({id:data.players[i].id, name:data.players[i].name}));
+					}else{
+						if(data.players[i].playing){
+							if(!player.controller.playing){
+						    	player.controller.initRemotePlayer({meshName:data.players[i].meshName, movement:data.players[i].movement, skin:data.players[i].skin});
+						    }else{
+
+						    	player.controller.updateRemote({
+						    		pos:data.players[i].position, 
+						    		rot:data.players[i].rotation, 
+						    		killCount:data.players[i].killCount, 
+						    		animationObject:data.players[i].animationObject,
+						    		name:data.players[i].name,
+						    		spineRot:data.players[i].camRotation
+						    	})
+						    }
+						}
+					}  
+			    }else{ //is local
+			    	if(appGlobal.localPlayer != null){
+			    		appGlobal.controller.updateKillCount(data.players[i].killCount);
+			    	}	
+			    }
+			}
+			
+		}
+		
+	});
+
+	socket.on('playerDisconnect', (data) => {
+		const player = appGlobal.globalHelperFunctions.getRemotePlayerById(data)
+		if(player != null){
+			appGlobal.remotePlayers[player.index].kill();
+			appGlobal.remotePlayers.splice(player.index,1);
+		}
+	});
+
+	socket.on('resetGame', (data) => {
+		
+		for(let i = 0; i<appGlobal.remotePlayers.length;i++){
+			appGlobal.remotePlayers[i].killRemotePlayer();
+		}
+		
+		document.getElementById("debug").innerHTML = data.state;
+		appGlobal.random = new Math.seedrandom(""+data.seed+"");
+		appGlobal.gameState = data.state;
+		appGlobal.globalHelperFunctions.playerReset(socket.id, false);
+		
+		resetHelper();
+		overlayChildDisplayHelper();
+
+	});
+  
+	socket.on('endGame', (data) => {
+		
+		document.getElementById("debug").innerHTML = data.state;
+		appGlobal.gameState = data.state;
+
+		if(checkIfWinnerId(socket.id, data.winners)){
+			document.getElementById("game-over-text").innerHTML = "VICTORY!";
+		}else{
+			document.getElementById("game-over-text").innerHTML = "DEFEAT";
+		}
+
+		if(window.logged.in){
+			for(let i = 0;i<data.endGamePackage.length; i++){
+				if(socket.id == data.endGamePackage[i].id){
+					
+					const xpAdd =       data.endGamePackage[i].xpAdd;
+					const deathCount =  data.endGamePackage[i].deathCount;
+					const killCount =   data.endGamePackage[i].killCount;
+					
+					// $.get("/endgame?xpAdd="+xpAdd+"&deathCount="+deathCount+"&killCount="+killCount, function(OBJ) {
+					// 	//if(OBJ.xpAdd && OBJ.xpTotal )
+					// 	//console.log(OBJ)
+					// 	document.getElementById("xp-bar").style.display = "inline-block";
+					// 	document.getElementById("game-over-stats").style.display = "block";
+						
+					// 	document.getElementById("xp-add").innerHTML =   parseInt(OBJ.xpAdd);
+					// 	document.getElementById("xp-total").innerHTML = parseInt(OBJ.xpTotal);
+					// 	let kdMatch = 0;
+					// 	if(parseInt(OBJ.deathAdd) != 0){
+					// 		kdMatch = parseInt(OBJ.killAdd) / parseInt(OBJ.deathAdd);
+					// 	}
+						
+					// 	document.getElementById("kd-match").innerHTML =   ( kdMatch ).toFixed(2);
+						
+					// 	let kdTotal = 0;
+					// 	if(parseInt(OBJ.deathTotal) != 0){
+					// 		kdTotal = parseInt(OBJ.killTotal) / parseInt(OBJ.deathTotal);
+					// 	}
+					// 	document.getElementById("kd-total").innerHTML = (kdTotal).toFixed(2);
+
+					// })
+					document.getElementById("xp-bar").style.display = "none";
+					document.getElementById("game-over-stats").style.display = "none";
+					document.getElementById("xp-error").style.display = "none";
+						
+					fetch("/endgame",{
+						method:"POST",
+						headers:{
+							"Content-Type":"application/json",
+							"Accept":"application/json"
+						},
+						body:JSON.stringify({
+							xpAdd:xpAdd,
+							deathCount:deathCount,
+							killCount:killCount
+						})
+					}).then( res => {
+						if(res.ok) {
+							return res.json()
+						}else{
+							return res.json().then(json => Promise.reject(json))
+						}
+					}).then( data => {
+						if(data.error!=null){
+							document.getElementById("xp-bar").style.display = "none";
+							document.getElementById("game-over-stats").style.display = "none";
+							document.getElementById("xp-error").style.display="block";
+							document.getElementById("xp-error").innerHTML = data.error;
+						}else{
+				
+							document.getElementById("xp-bar").style.display = "inline-block";
+							document.getElementById("game-over-stats").style.display = "block";
+							document.getElementById("xp-error").style.display="none";
+							
+							document.getElementById("xp-add").innerHTML =   parseInt(data.xpAdd);
+							document.getElementById("xp-total").innerHTML = parseInt(data.xpTotal);
+							
+							let kdMatch = 0;
+							if(parseInt(data.deathAdd) != 0){
+								kdMatch = parseInt(data.killAdd) / parseInt(data.deathAdd);
+							}
+							
+							document.getElementById("kd-match").innerHTML =   ( kdMatch ).toFixed(2);
+							
+							let kdTotal = 0;
+							if(parseInt(data.deathTotal) != 0){
+								kdTotal = parseInt(data.killTotal) / parseInt(data.deathTotal);
+							}
+
+							document.getElementById("kd-total").innerHTML = (kdTotal).toFixed(2);
+
+							document.getElementById("hc-total").innerHTML = parseInt(data.bux);
+							document.getElementById("hc-match").innerHTML = parseInt(data.buxAdd);
+						}
+						
+
+					}).catch(e => {
+						
+						document.getElementById("xp-bar").style.display = "none";
+						document.getElementById("game-over-stats").style.display = "none";
+						document.getElementById("xp-error").style.display="block";
+						document.getElementById("xp-error").innerHTML = "there was an error retrieving your data ;/";
+
+					})		
+				}
+			}
+		}else{
+			document.getElementById("xp-bar").style.display = "none";
+			document.getElementById("game-over-stats").style.display = "none";
+		}
+
+		appGlobal.globalHelperFunctions.playerReset(socket.id, false);
+		document.exitPointerLock();
+		overlayChildDisplayHelper();
+		
+	});
+
+	socket.on('startGame', (data) => {
+		document.getElementById("debug").innerHTML = data.state;
+		appGlobal.gameState = data.state;
+	});
+
+	socket.on('serverKillItem', (data) => {
+		appGlobal.itemHandler.killItem(data.index);
+		if(appGlobal.localPlayer !=null ){
+			if(data.id == appGlobal.localPlayer.id){
+				appGlobal.localPlayer.heal(data);
+			}
+		}
+		if(data.id != socket.id){
+			const dist = appGlobal.globalHelperFunctions.getDistanceForSound(new THREE.Vector3().copy(data.position) );
+	    	appGlobal.soundHandler.playSoundByName({name:data.sound, dist:dist});
+		}
+	});
+
+	socket.on('serverPlaySoundAtPosition', (data) => {
+		if(data.id != socket.id){
+			const dist = appGlobal.globalHelperFunctions.getDistanceForSound(new THREE.Vector3().copy(data.position) );
+			appGlobal.soundHandler.playSoundByName({name:data.sound, dist:dist});
+		}
+	});
+	
+
+	socket.on('serverAbilityVisual', (data) => {
+		if(data.id != socket.id){
+			const player = appGlobal.globalHelperFunctions.getRemotePlayerById(data.id);
+		    if(player != null){
+		    	const dist = appGlobal.globalHelperFunctions.getDistanceForSound(new THREE.Vector3().copy(data.position) );
+				appGlobal.soundHandler.playSoundByName({name:data.sound, dist:dist});
+		    	player.player.handleRemoteAbility({abilityName:data.abilityName})
+		    }
+		}
+	});
+
+	socket.on('serverSwitchGames', (data) => {
+		if(data.id == socket.id){
+
+			for(let i = 0; i<appGlobal.remotePlayers.length;i++){
+				appGlobal.remotePlayers[i].killRemotePlayer();
+			}
+			
+			document.getElementById("debug").innerHTML = data.state;
+			appGlobal.random = new Math.seedrandom(""+data.seed+"");
+			appGlobal.gameState = data.state;
+			appGlobal.globalHelperFunctions.playerReset(socket.id, false);
+			appGlobal.roomName = data.roomName;
+			updateURL();
+			resetHelper();
+			overlayChildDisplayHelper();
+			//appGlobal.servers.updateServerInfo({info:data.info})
+
+		}
+	});
+
+	socket.on('serverCantJoinGame', (data) => {
+		if(data.id == socket.id){
+			document.getElementById("error").style.display = "block";
+			document.getElementById("close-error-btn").addEventListener("click", function(){
+				document.getElementById("error").style.display = "none";
+				document.getElementById("servers").style.display = "block";
+			})
+		}
+	});
+
+});
 
 function checkIfWinnerId(socketid, winnersArray){
 	for(let i = 0; i<winnersArray.length; i++){
@@ -1260,10 +1484,6 @@ function checkIsInArr(arr,id){
 	return false;
 }
 
-
-function nullHelper(){
-
-}
 
 function updateURL(){
 	const params = new URLSearchParams(location.search);

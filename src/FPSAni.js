@@ -64,6 +64,7 @@ class FPSAni {
 		this.adsTarg = 0;
 		this.rotTarg = new Vector3();
 		const skin =  appGlobal.skinsHandler.getCurrentSkinOnCharacter(OBJ.model);
+		console.log(OBJ.model)
 		appGlobal.skinsHandler.changeSwatchOnMesh({meshes:[this.mesh], name:OBJ.model}, skin);
 
 		const emissive = self.getMaterialByName("emissive", this.mesh);
@@ -80,7 +81,7 @@ class FPSAni {
 		
 		this.reloading = false;
 		this.adsing = false;
-
+		this.player = OBJ.player;
 		
 	}
 
@@ -91,6 +92,13 @@ class FPSAni {
 			}
 		}
 		return false;
+	}
+
+	hide(){
+		this.mesh.visible = false;
+	}
+	show(){
+		this.mesh.visible = true;
 	}
 	
 	update(){
@@ -147,13 +155,13 @@ class FPSAni {
 				this.adsTarg = 1;
 				this.idleTarg = 0;
 				this.boostTarg = 0;
-				if(this.weaponName=="sniper")
+				if(this.weaponName=="sniper" && !this.player.emoting)
 					this.mesh.visible = false;
 			}else{
 				this.adsTarg = 0;
 				this.idleTarg = 1;
 				this.boostTarg = 0;
-				if(this.weaponName=="sniper")
+				if(this.weaponName=="sniper" && !this.player.emoting)
 					this.mesh.visible = true;
 			}
 		}
@@ -168,12 +176,12 @@ class FPSAni {
 			if(this.adsing){
 				this.adsTarg = 1;
 				this.idleTarg = 0;
-				if(this.weaponName=="sniper")
+				if(this.weaponName=="sniper" && !this.player.emoting)
 					this.mesh.visible = false;
 			}else{ 
 				this.adsTarg = 0;
 				this.idleTarg = 1;
-				if(this.weaponName=="sniper")
+				if(this.weaponName=="sniper" && !this.player.emoting)
 					this.mesh.visible = true;
 			}
 			this.boostTarg = 0;

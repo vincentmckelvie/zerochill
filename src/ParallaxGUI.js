@@ -20,13 +20,13 @@ class ParallaxGUI {
 		this.y += (this.targY-this.y)*(appGlobal.deltaTime*30);
 		this.parallaxIt("title", 160);
 		this.parallaxIt("planet-switching-select-title", 160);
-		this.parallaxIt("class-select-title", 100);
-		this.parallaxIt("instructions", 60);
-		this.parallaxIt("all-classes", 160);
-		this.parallaxIt("player-select-character", 160);
+		this.parallaxIt("class-select-title", 160);
+		//this.parallaxIt("instructions", 60);
+		this.parallaxIt("all-classes", 120);
+		this.parallaxIt("player-select-character", 120);
 		this.parallaxIt("movement-select-holder", 120);
 		this.parallaxIt("play-holder", 60);
-		this.parallaxIt("player-skins", 60);
+		this.parallaxIt("player-skins", 120);
 	}
 
 	kill(){

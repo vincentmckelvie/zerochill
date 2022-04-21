@@ -4,12 +4,17 @@ class Settings {
     const self = this;
     //self.killCookies();
     this.localCookies = document.cookie;
-    this.localParams = appGlobal.settingsParams;
+    this.localParams = window.settingsParams;
     
     if(this.localCookies == null || this.localCookies == ""){
       self.updateCookies();
     }
     self.parseCookies();
+
+
+    if(this.localParams["showInstructions"] == "true"){
+      document.getElementById("instructions-modal").style.display = "block";
+    }
 
     document.getElementById("settings-btn").addEventListener("click", function (){
       document.getElementById("settings").style.display = "block";
@@ -26,7 +31,7 @@ class Settings {
         fnl = 3
       if(fnl<0.01)
         fnl = 0.01;
-      appGlobal.settingsParams["mouseSens"] = fnl;
+      window.settingsParams["mouseSens"] = fnl;
       self.localParams["mouseSens"]  = fnl;
       self.updateCookies();
     });
@@ -37,13 +42,13 @@ class Settings {
       if(fnl<0)
         fnl = 0;
 
-      appGlobal.settingsParams["volume"] = fnl;
+      window.settingsParams["volume"] = fnl;
       self.localParams["volume"] = fnl;
       self.updateCookies();
     });
     document.getElementById('cross-hair-col').addEventListener('change', function(e){
-      appGlobal.settingsParams["crossHairColor"] = ""+e.target.value+"";
-      document.getElementById('recticle').style.background = "#"+appGlobal.settingsParams["crossHairColor"]+""; 
+      window.settingsParams["crossHairColor"] = ""+e.target.value+"";
+      document.getElementById('recticle').style.background = "#"+window.settingsParams["crossHairColor"]+""; 
       self.updateCookies();
     });
     document.getElementById('settings-ads-sense-mult').addEventListener('change', function(e){
@@ -52,7 +57,7 @@ class Settings {
         fnl = 3
       if(fnl<0.01)
         fnl = 0.01;
-      appGlobal.settingsParams["adsMouseSenseMult"] = fnl;
+      window.settingsParams["adsMouseSenseMult"] = fnl;
       self.localParams["adsMouseSenseMult"] = fnl;
       self.updateCookies();
     });
@@ -62,7 +67,7 @@ class Settings {
         str = "true";
       }
       
-      appGlobal.settingsParams["gamePad"] = str;      
+      window.settingsParams["gamePad"] = str;      
       self.localParams["gamePad"] = str;
       
       appGlobal.gamePad.canDiscoverGamePad = e.target.checked;
@@ -89,16 +94,22 @@ class Settings {
     if(enable){
       str = "true";
     }
-    appGlobal.settingsParams["gamePad"] = str;
+    window.settingsParams["gamePad"] = str;
     this.localParams["gamePad"] = str;
     this.updateCookies();
     this.updateDom("gamePad");
   }
 
+  handleInstructionsClose(){
+      window.settingsParams["showInstructions"] = "false";      
+      this.localParams["showInstructions"] = "false";
+      this.updateCookies();
+  }
+
   updateCookies(){
     
-    for (const key in appGlobal.settingsParams) {
-      let str = `${key}=${appGlobal.settingsParams[key]}`;
+    for (const key in window.settingsParams) {
+      let str = `${key}=${window.settingsParams[key]}`;
       str += ";";
       str += "path=/";
       document.cookie = str;
@@ -123,25 +134,28 @@ class Settings {
     switch(key){
       case "mouseSens":
         document.getElementById('mouse-sens').placeholder = this.localParams["mouseSens"]; 
-        appGlobal.settingsParams["mouseSens"] = this.localParams["mouseSens"];
+        window.settingsParams["mouseSens"] = this.localParams["mouseSens"];
       break;
       case "volume":
         document.getElementById('settings-vol').placeholder = this.localParams["volume"]; 
-        appGlobal.settingsParams["volume"] = this.localParams["volume"];
+        window.settingsParams["volume"] = this.localParams["volume"];
       break;
       case "crossHairColor":
         document.getElementById('recticle').style.background = "#"+this.localParams["crossHairColor"]+""; 
         document.getElementById('cross-hair-col').placeholder = this.localParams["crossHairColor"]; 
-        appGlobal.settingsParams["crossHairColor"] = this.localParams["crossHairColor"];
+        window.settingsParams["crossHairColor"] = this.localParams["crossHairColor"];
       break;
       case "adsMouseSenseMult":
         document.getElementById('settings-ads-sense-mult').placeholder = this.localParams["adsMouseSenseMult"]; 
-        appGlobal.settingsParams["adsMouseSenseMult"] = this.localParams["adsMouseSenseMult"];
+        window.settingsParams["adsMouseSenseMult"] = this.localParams["adsMouseSenseMult"];
       break;
       case "gamePad":
-        
         document.getElementById('gamepad-checkbox').checked = this.localParams["gamePad"]==="true"; 
-        appGlobal.settingsParams["gamePad"] = this.localParams["gamePad"];
+        window.settingsParams["gamePad"] = this.localParams["gamePad"];
+      break;
+      case "showInstructions":
+        //document.getElementById('gamepad-checkbox').checked = this.localParams["gamePad"]==="true"; 
+        window.settingsParams["showInstructions"] = this.localParams["showInstructions"];
       break;
     }
   }
@@ -153,6 +167,7 @@ class Settings {
     document.cookie = "crossHairColor=fff; path=/";
     document.cookie = "adsMouseSenseMult=1; path=/";
     document.cookie = "gamePad=false; path=/";
+    document.cookie = "showInstructions=true; path=/";
   }
 
   // Restricts input for the given textbox to the given inputFilter.

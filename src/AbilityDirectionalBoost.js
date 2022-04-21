@@ -24,7 +24,7 @@ class AbilityDirectionalBoost extends Abilities {
 	init(){
 		super.init(this);
 		appGlobal.localPlayer.directionalBoostMult = 1;
-		appGlobal.localPlayer.abilityMult = .75;
+		appGlobal.localPlayer.abilityMult = 1.8;
 	}
   	
 }

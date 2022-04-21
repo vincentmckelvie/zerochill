@@ -123,7 +123,7 @@ class AutoBullet {
 					if(id.headShot){
 						this.damage *= 1.5;
 					}
-					console.log(id.headShot)
+					//console.log(id.headShot)
 					appGlobal.remotePlayers[id.id].receiveDamage({headShot:id.headShot, position:this.startPos, health:this.damage})
 				}
 				

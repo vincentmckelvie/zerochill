@@ -23,7 +23,7 @@ class BotBullet {
 		this.alivetime = 2000;
 		
 		const rad = .2;
-		const sphereGeometry = new SphereGeometry( rad, 6, 6 );
+		const sphereGeometry = new SphereGeometry( rad*2, 6, 6 );
 		//const sphereMaterial = new MeshStandardMaterial( {color:0x37ff79, roughness:.1} );
 		const sphereMaterial = new MeshStandardMaterial( {color:0xf74ba8, roughness:.1} );
 		

@@ -36,6 +36,7 @@ class Abilities {
 		this.abilityKey = OBJ.abilityKey;
 		this.initedAbility = false;
 		this.timerHelper = false;
+
 		if(this.cooldownUI){
 
 			this.dom = document.createElement("div");
@@ -57,6 +58,7 @@ class Abilities {
 			this.dom.append(name);
 
 		}else{
+			
 			if(OBJ.name!="bot"){
 				this.dom = document.createElement("div");
 				this.dom.className = "passive";
@@ -68,15 +70,9 @@ class Abilities {
 	}
 
 	update(){
-		//console.log("parent update");
-		// switch(this.type){
-		// 	case "press":
-		// 	break;
-		// 	// case "hold":
-		// 	// 	if(this.doingAbility)
-		// 	// 		this.doAbility();
-		// 	// break;
-		// }
+	}
+
+	updateLooped(){
 	}
 
 	

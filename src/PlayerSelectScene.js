@@ -49,8 +49,15 @@ class PlayerSelectScene {
 
 		this.scene = new Scene();
 		//this.scene.background = new Color( 0x88ccff );
-		this.w = 400;
-		this.h = 250;
+		this.container = document.getElementById( 'player-select-character' );
+		this.skins = document.getElementById("player-skins");
+		this.w = 600;
+		this.h = window.innerHeight*.4;
+		this.container.style.width = this.w+"px";
+		this.container.style.height = this.skins.style.height = this.h+"px";
+
+
+
 		this.renderer = new WebGLRenderer( { antialias: false, alpha:true } );
 		//this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( this.w, this.h );
@@ -59,10 +66,11 @@ class PlayerSelectScene {
 
 		this.camera = new PerspectiveCamera( 26, this.w / this.h, 0.1, 1000 );
 		this.camera.position.z = 2.8;
+
 		
-		const container = document.getElementById( 'player-select-character' );
-		container.appendChild( this.renderer.domElement );
-		this.controls = new OrbitControls( this.camera,  container);
+		this.container.appendChild( this.renderer.domElement );
+		this.controls = new OrbitControls( this.camera,  this.container);
+
 		//this.controls.listenToKeyEvents( window ); // optional
 
 		//controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
@@ -150,6 +158,8 @@ class PlayerSelectScene {
 		
 		//this.weapon.position.y = -.5;
 		this.holder.position.y = -.55;
+		//this.holder.position.x = -.25;
+		
 		this.characters = [];
 		
 		const cahAssault =    new CharacterAnimationHandler({meshes:[assault, assaultBoost, assaultDirectional, assaultTeleport],               animations:appGlobal.loadObjs[0].model.animations, name:"assault"})
@@ -302,14 +312,14 @@ class PlayerSelectScene {
 			
 
 			const nitroGun = submachine.getObjectByName("Plane001");
-			const nitroFoot = submachine.getObjectByName("foot_l");
+			const nitroFoot = submachine.getObjectByName("hand_l");
 			const nitroBoostHolder = submachineBoost.getObjectByName("boost-part011");
 			const nitroDirectionalHolder = submachineDirectional.getObjectByName("boost-part009");
 			const nitroTeleportHolder = submachineTeleport.getObjectByName("boost-part010");
 
 			const nitroText = new PlayerSelectInfoText({text:"submachine gun",                    parent:nitroGun,                offset:new Vector3(-.7, 1.2, .6),      font:font, distanceMult:300,  scale:.022, rot:new Euler(0,0,0)});
 			self.infoTexts.push(nitroText);
-			const nitroAbility = new PlayerSelectInfoText({text:"[SHIFT + A,S,D] to dash",        parent:nitroFoot,               offset:new Vector3(-.2, .2, -.2), font:font, distanceMult:300, scale:.0032, rot:new Euler( -Math.PI/2, 0, Math.PI/2 )});
+			const nitroAbility = new PlayerSelectInfoText({text:"[Q] throw nade",        parent:nitroFoot,               offset:new Vector3(.3, .1, .04), font:font, distanceMult:300, scale:.0032, rot:new Euler( -Math.PI/2, Math.PI/4, -Math.PI/1.75 )});
 			self.infoTexts.push(nitroAbility);
 			const nitroPlanetSwitchText = new PlayerSelectInfoText({text:"[E] to switch planets", parent:nitroBoostHolder,        offset:new Vector3(.4, .3, 0), font:font, distanceMult:350,  scale:.0032, rot:new Euler(0,0,0)});
 			self.infoTexts.push(nitroPlanetSwitchText);
@@ -338,14 +348,14 @@ class PlayerSelectScene {
 
 
 			const launcherGun = launcher.getObjectByName("Cube043");
-			const launcherFoot = launcher.getObjectByName("foot_l");
+			const launcherFoot = launcher.getObjectByName("hand_l");
 			const launcherBoostHolder = launcherBoost.getObjectByName("boost-part001");
 			const launcherDirectionalHolder = launcherDirectional.getObjectByName("boost-part002");
 			const launcherTeleportHolder = launcherTeleport.getObjectByName("boost-part000");
 
 			const launcherText = new PlayerSelectInfoText({text:"rocket launcher",                   parent:launcherGun,                offset:new Vector3(-1, 1, 2),     font:font, distanceMult:400,  scale:.022, rot:new Euler(0,0,0)});
 			self.infoTexts.push(sniperText);
-			const launcherAbility = new PlayerSelectInfoText({text:"[SPACE] to double jump",         parent:launcherFoot,               offset:new Vector3(-.2, .2, -.2), font:font, distanceMult:300, scale:.0032, rot:new Euler( -Math.PI/2, 0, Math.PI/2 )});
+			const launcherAbility = new PlayerSelectInfoText({text:"[Q] throw jump pad",         parent:launcherFoot,                offset:new Vector3(.1, -.2, .24), font:font, distanceMult:300, scale:.0032, rot:new Euler( -Math.PI/3, Math.PI/4.5, Math.PI/1.35 + Math.PI)});
 			self.infoTexts.push(launcherAbility);
 			const launcherPlanetSwitchText = new PlayerSelectInfoText({text:"[E] to switch planets", parent:launcherBoostHolder,        offset:new Vector3(.4, .3, 0), font:font, distanceMult:350,  scale:.0032, rot:new Euler(0,0,0)});
 			self.infoTexts.push(launcherPlanetSwitchText);
@@ -357,14 +367,14 @@ class PlayerSelectScene {
 
 
 			const sixgunGun = sixgun.getObjectByName("Sphere067");
-			const sixgunFoot = sixgun.getObjectByName("head");
+			const sixgunFoot = sixgun.getObjectByName("hand_l");
 			const sixgunBoostHolder = sixgunBoost.getObjectByName("boost-part005");
 			const sixgunDirectionalHolder = sixgunDirectional.getObjectByName("boost-part003");
 			const sixgunTeleportHolder = sixgunTeleport.getObjectByName("boost-part004");
 
 			const sixgunText = new PlayerSelectInfoText({text:"revolver",                          parent:sixgunGun,                offset:new Vector3(8, 6, -6),     font:font, distanceMult:300,  scale:.12, rot:new Euler(0,Math.PI,0)});
 			self.infoTexts.push(sixgunText);
-			const sixgunAbility = new PlayerSelectInfoText({text:"[Q] for wall hacks",             parent:sixgunFoot,               offset:new Vector3(.4, .2, .2), font:font, distanceMult:300, scale:.0032, rot:new Euler( 0, Math.PI/2, 0 )});
+			const sixgunAbility = new PlayerSelectInfoText({text:"[Q] throw slowing AOE",             parent:sixgunFoot,            offset:new Vector3(-.3, .1, -.14), font:font, distanceMult:300, scale:.0032, rot:new Euler( -Math.PI/2, -Math.PI/2, Math.PI/1.75 )});
 			self.infoTexts.push(sixgunAbility);
 			const sixgunPlanetSwitchText = new PlayerSelectInfoText({text:"[E] to switch planets", parent:sixgunBoostHolder,        offset:new Vector3(.4, .3, 0), font:font, distanceMult:350,  scale:.0032, rot:new Euler(0,0,0)});
 			self.infoTexts.push(sixgunPlanetSwitchText);
@@ -467,6 +477,16 @@ class PlayerSelectScene {
 		for(let i = 0; i<this.characters.length; i++){
 			this.characters[i].cah.update();
 		}		
+	}
+
+	updateWindowSize(){
+		console.log("sdf")
+		this.h = window.innerHeight*.4;
+		this.container.style.height = this.skins.style.height = this.h+"px";
+		this.renderer.setSize(this.w, this.h);
+		this.camera.aspect = this.w / this.h;
+		this.camera.updateProjectionMatrix();
+		
 	}
 
 	kill(){

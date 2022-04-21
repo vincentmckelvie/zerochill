@@ -49,8 +49,12 @@ class Weapon {
 	
 	update(){
 		if(window.appGlobal.mouse.down){
+			if(this.player.emoting){
+				this.player.killEmoting();
+				return;
+			}
 			if(this.canShoot && !this.player.boosting && this.abilityCanShoot){
-				
+
 				if(this.currentAmmo != 0){
 					this.shoot();
 				}
@@ -84,6 +88,7 @@ class Weapon {
 	}
 
 	reload(){
+		
 		if(this.currentAmmo < this.ammoAmount){
 			this.canShoot = false;
 			this.player.fps.reloadAnimation(this.reloadCooldown/1000);

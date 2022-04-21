@@ -31,14 +31,14 @@ class TitleScene {
 		this.scene = new Scene();
 
 		//this.scene.background = new Color( 0x88ccff );
-		this.w = 500;
-		this.h = 170;
+		this.w = 700;
+		this.h = 200;
 		this.renderer = new WebGLRenderer( { antialias: false, alpha:true } );
 		//this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( this.w, this.h );
 		
 		this.camera = new PerspectiveCamera( 50, this.w / this.h, 0.1, 1000 );
-		this.camera.position.z = 1.5;
+		this.camera.position.z = 1.2;
 		
 		const pmremGenerator = new PMREMGenerator( this.renderer );
 		this.scene.environment = pmremGenerator.fromScene( new RoomEnvironment(), 0.01 ).texture;

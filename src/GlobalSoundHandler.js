@@ -133,7 +133,7 @@ class GlobalSoundHandler {
 		const source = this.context.createBufferSource();
 		source.buffer = OBJ.sample.sample;
 		const gainNode = this.context.createGain()
-		gainNode.gain.value = OBJ.dist *  (.5 * appGlobal.settingsParams["volume"]); // 10 %
+		gainNode.gain.value = OBJ.dist *  (.1 * window.settingsParams["volume"]); // 10 %
 		//source.playbackRate.value = note;
 
 

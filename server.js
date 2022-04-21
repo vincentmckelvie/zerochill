@@ -7,7 +7,11 @@ const passport = require('passport');
 const localStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcrypt');
 const stripe = require('stripe')(process.env.STRIPEKEY)
+const compression = require("compression");
 app.use(express.json());
+
+app.use(compression());
+
 //console.log(process.env.MONGOUSER);
 //console.log(process.env.MONGOPW);
 //console.log(process.env.CONNECTSECRET);
@@ -114,7 +118,7 @@ const user = mongoose.model("User", userSchema);
 
 app.set('view-engine','ejs');
 
-app.use(express.static(__dirname+'/public'));
+app.use(express.static(__dirname+'/src'));
 
 app.use(session({
   secret: ""+process.env.CONNECTSECRET+"",

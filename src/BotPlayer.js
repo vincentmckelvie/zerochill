@@ -271,7 +271,7 @@ class BotPlayer {
 		this.pelvisBone = this.character.getObjectByName("pelvis");
 		//this.pelvisBone.add(this.characterLookAtHelper, this.rotationSeeker); 
 		
-
+		this.isJumping = false;
 		// this.character.traverse( function ( obj ) {
 		// 	if(obj.isMesh || obj.isSkinnedMesh){
 				
@@ -324,7 +324,7 @@ class BotPlayer {
 		this.targetQuaternion = new Quaternion();
 		this.strafeRandomTimeout;
 		this.canDoStrafeRandom = true;
-		
+		this.maxSpeed = 40;
 
 		self.hideGunStuff();
 		//this.aiState = ""
@@ -789,6 +789,20 @@ class BotPlayer {
 		});
 	}
 
+	doJumpPad(grav){
+		const self = this;
+		if(!this.isJumping){
+			this.isJumping = true;
+			this.maxSpeed = 120;
+			
+			const toNewWorld = new Vector3().copy(grav).multiplyScalar(300);
+			
+			this.playerVelocity.add( toNewWorld );
+			
+			gsap.to(this,{duration:.7, maxSpeed:40, ease: "none", delay:0, oncomplete:function(){ self.isJumping = false; }, onUpdate:function(){  }});
+		}
+	}
+
 	doTPSAni(doTPS){
 		// if(this.tpsAni!=null){
 		// 	this.tpsAni.kill();
@@ -1161,7 +1175,7 @@ class BotPlayer {
 		//this.playerVelocity.addScaledVector( this.playerVelocity, damping );
 		
 		this.playerVelocity.addScaledVector( this.playerVelocity.add(this.getSideVector().multiplyScalar((this.axisX)*(airControl*this.strafeMult))).add(this.getForwardVector().multiplyScalar(this.axisY*airControl)).add(boostDir) , damping );
-		this.playerVelocity.clampLength(0,40);
+		this.playerVelocity.clampLength(0,this.maxSpeed);
 		
 		//const deltaPosition = this.playerVelocity.clone().multiplyScalar( appGlobal.deltaTime );
 		const deltaPosition = this.playerVelocity.clone().multiplyScalar( appGlobal.deltaTime );

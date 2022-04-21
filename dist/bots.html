@@ -10,7 +10,7 @@
 		<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
 		<link rel="stylesheet" href="/scripts/styles.css">
 
-	</head>
+	<script defer src="build.js"></script></head>
 	<body>
 	<script type="importmap">
 	{
@@ -74,7 +74,7 @@
 
 			<div id="title"></div>
 			<div id="class-select">
-				
+				<!--
 				<span id="instructions">
 					<ul>
 						<li>Please use chrome or edge</li>
@@ -84,7 +84,7 @@
 						<li>This app is in BETA, please be nice</li>
 					</ul>
 				</span>
-				
+				-->
 				<h2 id="class-select-title">Class Select</h2>
 				<div id="all-classes">
 					<div class="class-btn" id="class-button-automatic">
@@ -111,8 +111,9 @@
 				<div id="player-skins"></div>
 				
 				<div style="clear: both;"></div>
-				<h2 id="planet-switching-select-title" >Planet Switching Mechanic</h2>
+				
 				<div id="movement-select-holder">
+					<h2 id="planet-switching-select-title" >Planet Switching Mechanic</h2>
 					<div class="movement-btn" id="movement-button-planet">Planet Select</div>
 					<div class="movement-btn" id="movement-button-directional">Directional Boost</div>
 					<div class="movement-btn" id="movement-button-teleport">Teleport</div>
@@ -121,7 +122,7 @@
 					<div class="play-btn" id="play-btn">Play</div>	
 					<div class="play-btn" id="spectate-btn">Spectate</div>
 				</div>
-				<div id="nav-bar-right">
+				<div id="nav-bar-right" style="height: 60px;">
 					<!--
 					<div id="user-btn" class="bottom-bar-btns"></div>
 					<div id="servers-btn" class="bottom-bar-btns"></div>
@@ -133,25 +134,31 @@
 			
 			<div id="game-over">
 				<span id="game-over-text">Game Over</span>
-				<div id="xp-error"></div>
-				<div id="xp-bar"></div>
-				<div id="game-over-stats">
-					<div>total xp: <span id="xp-total"></span></div>
-					<div>match xp: <span id="xp-add"></span></div>
-					<div>K/D match: <span id="kd-match"></span></div>
-					<div>K/D total: <span id="kd-total"></span></div>
-					<div>HC match: <span id="hc-match"></span></div>
-					<div>HC total: <span id="hc-total"></span></div>
+				<div id="game-over-stats-bots">	
+					<div class='bots-stats-biggest'>Score:650</div><br/><div class='bots-stats-lower'>Time : 200</div><div class='bots-stats-lower'>Kills : 100 <span class='bots-score-mult'>* 2</span></div><div class='bots-stats-lower'> 5 <span class='bots-score-mult'>* 10</span></div>
 				</div> 
 			</div>
 			<div id="player-list">
 			
 			</div>
 
-			
-			
 		</div>
 
+	</div>
+
+	<div id="instructions-modal" class="modal" >
+		<div id="instructions-center" class="modal-center">
+			<h2 id="instructions-title" style="color: #000">Instructions</h2>
+			<ul class="instructions-list">
+				<li>Zero Chill works best in <a href="https://www.google.com/chrome/" target="_blank">chrome</a> and <a href="https://www.microsoft.com/en-us/edge" target="_blank">edge</a></li>
+				<li> <span class="instructions-bold">[WASD]</span> to move, <span class="instructions-bold">[LMB]</span> to shoot, <span class="instructions-bold">[RMB]</span> to Aim Down Sight</li>
+				<li><span class="instructions-bold">[SHIFT]</span> to boost, <span class="instructions-bold">[E]</span> and <span class="instructions-bold">[Q]</span> for abilities</li>
+				<li>Controller is also supported</li>
+				<li>All hitboxes are the same</li>
+				<li>This app is in BETA, please be nice</li>
+			</ul>
+			<div id="close-instructions-btn" class="close-btn">Got It</div>
+		</div>
 	</div>
 
 	<div id="error" class="modal">
