@@ -9,7 +9,7 @@ import {
 	AnimationObjectGroup,
 	AnimationMixer,
 	LoopOnce
-} from 'three';
+} from './build/three.module.js';
 import { clone } from "./scripts/jsm/utils/SkeletonUtils.js";
 import { WeaponEmissiveHandler } from "./WeaponEmissiveHandler.js";
 

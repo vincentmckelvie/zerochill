@@ -1,6 +1,9 @@
-import * as THREE from 'three';
+
+
+import * as THREE from './build/three.module.js';
 import Stats from './scripts/jsm/libs/stats.module.js';
 import { GLTFLoader } from './scripts/jsm/loaders/GLTFLoader.js';
+
 import { Octree } from './scripts/jsm/math/Octree.js';
 import { Capsule } from './scripts/jsm/math/Capsule.js';
 

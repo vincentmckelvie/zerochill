@@ -7,7 +7,7 @@ import {
   Scene,
   Color,
   DoubleSide
-} from 'three';
+} from './build/three.module.js';
 import { Skin } from './Skin.js';
 import { Swatches } from './Swatches.js';
 

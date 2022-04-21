@@ -11,7 +11,7 @@ import {
 	RepeatWrapping,
 	ClampToEdgeWrapping,
 	LinearFilter
-} from 'three';
+} from './build/three.module.js';
 
 import { ParticleEmitter } from './ParticleEmitter.js';
 import { CharacterAnimationHandler } from './CharacterAnimationHandler.js';

@@ -1,6 +1,6 @@
 import {		
 	//PerspectiveCamera
-} from 'three';
+} from './build/three.module.js';
 import { RemotePlayer } from './RemotePlayer.js';
 
 class RemoteController {

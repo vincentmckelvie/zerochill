@@ -1,0 +1,11 @@
+/*!
+ * Socket.IO v4.4.1
+ * (c) 2014-2022 Guillermo Rauch
+ * Released under the MIT License.
+ */
+
+/**
+ * @license
+ * Copyright 2010-2022 Three.js Authors
+ * SPDX-License-Identifier: MIT
+ */

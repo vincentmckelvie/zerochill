@@ -18,7 +18,7 @@ import {
 	PerspectiveCamera,
 	Object3D,
 	PMREMGenerator
-} from 'three';
+} from './build/three.module.js';
 import { RoomEnvironment } from './scripts/jsm/environments/RoomEnvironment.js';
 
 //import { clone } from "./scripts/jsm/utils/SkeletonUtils.js"

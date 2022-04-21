@@ -13,7 +13,7 @@ import {
 	LinearFilter,
 	CylinderGeometry,
 	Sphere
-} from 'three';
+} from './build/three.module.js';
 
 import { clone } from "./scripts/jsm/utils/SkeletonUtils.js";
 

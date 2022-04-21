@@ -7,7 +7,7 @@ import {
 	Quaternion,
 	Sphere,
 	Vector2
-} from 'three';
+} from './build/three.module.js';
 import { Abilities } from './Abilities.js';
 import { StickyBullet } from './StickyBullet.js';
 

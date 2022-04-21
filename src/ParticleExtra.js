@@ -8,7 +8,7 @@ import {
 	Quaternion,
 	Sphere,
 	Color
-} from 'three';
+} from './build/three.module.js';
 
 
 class ParticleExtra {

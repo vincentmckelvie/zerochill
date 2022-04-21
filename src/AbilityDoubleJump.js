@@ -7,7 +7,7 @@
 // 	Quaternion,
 // 	Sphere,
 // 	Vector2
-// } from 'three';
+// } from './build/three.module.js';
 import { Abilities } from './Abilities.js';
 
 class AbilityDoubleJump extends Abilities {

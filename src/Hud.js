@@ -6,7 +6,7 @@
 // 	Vector3,
 // 	Vector2,
 // 	Quaternion,
-// } from 'three';
+// } from './build/three.module.js';
 // import { GlobalParticleHandler } from './GlobalParticleHandler.js';
 
 

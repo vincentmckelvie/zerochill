@@ -1,6 +1,6 @@
 // import {
 // 	PositionalAudio
-// } from 'three';
+// } from './build/three.module.js';
 
 class GlobalSoundHandler {
 	//{aliveTime:aliveTime, bullet:bullet};

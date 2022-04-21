@@ -9,7 +9,7 @@ import {
 	Vector2,
 	Euler,
 	Matrix4
-} from 'three';
+} from './build/three.module.js';
 import { Capsule } from './scripts/jsm/math/Capsule.js';
 import { Weapon } from './Weapon.js';
 import { Hud } from './Hud.js';

@@ -7,7 +7,7 @@ import {
 	Quaternion,
 	Sphere,
 	Euler
-} from 'three';
+} from './build/three.module.js';
 
 import { Item } from './Item.js';
 

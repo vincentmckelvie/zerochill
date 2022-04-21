@@ -14,7 +14,7 @@ import {
 	DoubleSide,
 	SphereGeometry,
 	FlatShading
-} from 'three';
+} from './build/three.module.js';
 
 class Item {
 	//{scene:scene, worldScale:worldScale};

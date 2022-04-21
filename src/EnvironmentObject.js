@@ -7,7 +7,7 @@ import {
 	Color,
 	Object3D,
 	CylinderGeometry
-} from 'three';
+} from './build/three.module.js';
 
 
 class EnvironmentObject {

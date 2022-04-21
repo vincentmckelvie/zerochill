@@ -8,7 +8,7 @@ import {
 	AnimationObjectGroup,
 	AnimationMixer,
 	LoopOnce
-} from 'three';
+} from './build/three.module.js';
 class CharacterAnimationHandler{
 	constructor(OBJ){
 		this.contains = [ 

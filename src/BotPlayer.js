@@ -1,3 +1,5 @@
+
+//from '../../../build/three.module.js';
 import {
 	Object3D,
 	BoxGeometry,
@@ -11,7 +13,7 @@ import {
 	TextureLoader,
 	Color,
 	SphereGeometry
-} from 'three';
+} from './build/three.module.js';
 import { Capsule } from './scripts/jsm/math/Capsule.js';
 import { BotWeapon } from './BotWeapon.js';
 // import { Hud } from './Hud.js';

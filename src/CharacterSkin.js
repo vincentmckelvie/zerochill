@@ -4,7 +4,7 @@ import {
   Mesh,
   Scene,
   Color
-} from 'three';
+} from './build/three.module.js';
 
 //import { Swatches } from './Swatches.js';
 

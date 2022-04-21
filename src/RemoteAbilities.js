@@ -11,7 +11,7 @@ import {
 	AdditiveBlending,
 	DoubleSide
 	
-} from 'three';
+} from './build/three.module.js';
 import { ParticleEmitter } from './ParticleEmitter.js';
 
 class RemoteAbilities {

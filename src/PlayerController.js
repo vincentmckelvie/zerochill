@@ -1,6 +1,6 @@
 import {		
 	PerspectiveCamera
-} from 'three';
+} from './build/three.module.js';
 import { Player } from './Player.js';
 import { OrbitControls } from './scripts/jsm/controls/OrbitControls.js';
 

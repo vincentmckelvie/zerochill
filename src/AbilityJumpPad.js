@@ -7,7 +7,7 @@ import {
 	Quaternion,
 	Sphere,
 	Vector2
-} from 'three';
+} from './build/three.module.js';
 import { Abilities } from './Abilities.js';
 import { AbilityBullet } from './AbilityBullet.js';
 import { JumpPad } from './JumpPad.js';

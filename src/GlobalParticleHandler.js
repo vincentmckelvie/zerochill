@@ -6,7 +6,7 @@ import {
 	Vector3,
 	Quaternion,
 	Sphere
-} from 'three';
+} from './build/three.module.js';
 
 import { ParticleEmitter } from './ParticleEmitter.js';
 

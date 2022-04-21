@@ -7,7 +7,7 @@ import {
 	Sphere,
 	CanvasTexture,
 	ClampToEdgeWrapping,
-} from 'three';
+} from './build/three.module.js';
 import { ImprovedNoise } from './scripts/jsm/math/ImprovedNoise.js';
 
 class WorldMaterialGenerator {

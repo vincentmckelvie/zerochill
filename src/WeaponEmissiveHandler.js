@@ -4,7 +4,7 @@ import {
 	RepeatWrapping,
 	Color,
 	AdditiveBlending,
-} from 'three';
+} from './build/three.module.js';
 
 
 class WeaponEmissiveHandler {

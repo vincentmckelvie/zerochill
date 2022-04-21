@@ -10,7 +10,7 @@ import {
 	MeshStandardMaterial,
 	Color,
 	AdditiveBlending 
-} from 'three';
+} from './build/three.module.js';
 import { Abilities } from './Abilities.js';
 
 class AbilityTeleport extends Abilities {

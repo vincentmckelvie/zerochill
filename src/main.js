@@ -1,5 +1,5 @@
-
-import * as THREE from 'three';
+	
+import * as THREE from './build/three.module.js';
 import Stats from './scripts/jsm/libs/stats.module.js';
 import { GLTFLoader } from './scripts/jsm/loaders/GLTFLoader.js';
 import { Octree } from './scripts/jsm/math/Octree.js';
@@ -36,7 +36,7 @@ import { SkinsHandler } from './SkinsHandler.js';
 
 import { Servers } from './Servers.js';
 import { GamePad } from './GamePad.js';
-import { io } from "https://cdn.socket.io/4.4.1/socket.io.esm.min.js";
+import { io } from "./socket.io.esm.min.js";
 
 const abilities = {
 	planetSwitch:{

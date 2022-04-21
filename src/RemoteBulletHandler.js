@@ -6,7 +6,7 @@ import {
 	Vector3,
 	Quaternion,
 	Sphere
-} from 'three';
+} from './build/three.module.js';
 import { StickyBullet } from './StickyBullet.js';
 import { RocketBullet } from './RocketBullet.js';
 import { AutoBullet } from './AutoBullet.js';

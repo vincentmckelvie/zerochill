@@ -7,7 +7,7 @@ import {
 	Quaternion,
 	Sphere,
 	Vector2
-} from 'three';
+} from './build/three.module.js';
 import { Abilities } from './Abilities.js';
 
 class AbilityPlanetSwitch extends Abilities {

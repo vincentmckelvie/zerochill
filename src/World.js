@@ -7,7 +7,7 @@ import {
 	Vector3,
 	Sphere,
 	Color
-} from 'three';
+} from './build/three.module.js';
 //import { WorldMaterialGenerator } from './WorldMaterialGenerator.js';
 import { EnvironmentObject } from './EnvironmentObject.js';
 

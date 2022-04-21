@@ -31,7 +31,7 @@ import {
 	MeshBasicMaterial,
 	DoubleSide,
 	Euler
-} from 'three';
+} from './build/three.module.js';
 import { OrbitControls } from './scripts/jsm/controls/OrbitControls.js';
 import { clone } from "./scripts/jsm/utils/SkeletonUtils.js"
 import { CharacterAnimationHandler } from './CharacterAnimationHandler.js';

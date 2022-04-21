@@ -22,7 +22,7 @@ import {
 	AdditiveBlending,
 	Points,
 	Object3D,
-} from 'three';
+} from './build/three.module.js';
 import { Octree } from './scripts/jsm/math/Octree.js';
 
 

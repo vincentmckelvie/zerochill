@@ -8,7 +8,7 @@ import {
 	Sphere,
 	BoxGeometry,
 	DoubleSide
-} from 'three';
+} from './build/three.module.js';
 
 class SniperBullet {
 	//{aliveTime:aliveTime, bullet:bullet};
