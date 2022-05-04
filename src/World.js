@@ -6,7 +6,9 @@ import {
 	IcosahedronGeometry,
 	Vector3,
 	Sphere,
-	Color
+	Color,
+	BackSide,
+	MeshBasicMaterial
 } from './build/three.module.js';
 //import { WorldMaterialGenerator } from './WorldMaterialGenerator.js';
 import { EnvironmentObject } from './EnvironmentObject.js';
@@ -21,6 +23,7 @@ class World {
 		this.worldDecrease = 1;
 
 		this.mesh;
+		this.outline;
 		//this.hue = appGlobal.random();
 		this.hue = appGlobal.hue + 0.1 + ( -.1+appGlobal.random()*.2 ); 
 		this.color  = new Color().setHSL((this.hue)%1.0, .4, .5);
@@ -50,17 +53,24 @@ class World {
 
 	initMesh(OBJ){
 		const sphereMaterial = new MeshStandardMaterial({color:this.color});
+		const sphereOutline = new MeshBasicMaterial({color:0xffffff, side:BackSide, visible:false});
+		
 		//const sphereGeometryWorld = new SphereGeometry( OBJ.scale, 62, 62 );
 		const sphereGeometryWorld = new IcosahedronGeometry( OBJ.scale, 3 );
+		const sphereGeometryOutline = new IcosahedronGeometry( OBJ.scale+.2, 3 );
 		
 		this.mesh = new Mesh( sphereGeometryWorld, sphereMaterial );
+		this.outline = new Mesh( sphereGeometryOutline, sphereOutline );
+
 		this.mesh.castShadow = false;
+		this.outline.castShadow = false;
 		this.mesh.worldIndex = OBJ.index;
 			//this.mesh.receiveShadow = true;
 		this.mesh.position.copy(OBJ.position);
-		
+		//this.mesh.add()
+		this.outline.position.copy(this.mesh.position)
+		appGlobal.scene.add(this.outline);
 		appGlobal.worldsHolder.add(this.mesh);
-		
 		appGlobal.hitScanArray.push(this.mesh);
 		appGlobal.grappleMeshes.push(this.mesh);
 	}
@@ -86,6 +96,7 @@ class World {
 		for ( let i = 0; i <this.envObjs.length; i ++ ) {
 			this.envObjs[i].kill();
 		}
+
 		
 	}
 
@@ -95,6 +106,7 @@ class World {
 		this.sizeEz = 1;
 		this.envObjs = [];
 		this.initEnvironment();
+		this.outline.material.visible = false;
 		// for ( let i = 0; i < this.envObjAmount; i ++ ) {
 		// 	const env = new EnvironmentObject({i:i, parent:this.mesh, scale:this.scale});
 		// 	this.envObjs.push(env);

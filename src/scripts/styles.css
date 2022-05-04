@@ -6,6 +6,13 @@ body{
 	*/
 	font-family: 'Bebas Neue', sans-serif;
 	background: #000;
+	-webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
 }
 
 .bots-stats-biggest{
@@ -514,13 +521,13 @@ body{
 }
 #hud-bottom-left-holder{
 	position: absolute;
-	bottom: 40px;
-	left: 40px;
+	bottom: 60px;
+	left: 80px;
 }
 #hud-bottom-right-holder{
 	position: absolute;
-	bottom: 40px;
-	right: 40px;
+	bottom: 60px;
+	right: 80px;
 }
 #hud-top-right-holder{
 	position: absolute;
@@ -531,21 +538,22 @@ body{
 
 #health-outline{
 	position: absolute;
-	bottom: 27px;
-	width: 150px;
-	height: 24px;
+	bottom: 33px;
+	width: 187px;
+	height: 30px;
 	background-image: url("../assets/ui/health-outline-LOW.png");
-	background-size: 150px 24px;
+	/*background-size: 150px 24px;*/
+	background-size: 187px 30px;
 }
 
 #health-fill{
 	position: absolute;
-	bottom: 27px;
+	bottom: 33px;
 	left: 0px;
-	width: 150px;
-	height: 24px;
+	width: 187px;
+	height: 30px;
 	background-image: url("../assets/ui/health-fill-LOW.png");
-	background-size: 150px 24px;
+	background-size: 187px 30px;
 	overflow-x: hidden;
 }
 
@@ -553,63 +561,67 @@ body{
 	position: absolute;
 	bottom: 0px;
 	left: 0px;
-	width: 150px;
-	height: 24px;
+	width: 187px;
+	height: 30px;
 	background-image: url("../assets/ui/boost-outline-LOW.png");
-	background-size: 150px 24px;
+	/*background-size: 150px 24px;*/
+	background-size: 187px 30px;
 }
 
 #boost-fill{
 	position: absolute;
 	bottom: 0px;
 	left: 0px;
-	width: 150px;
-	height: 24px;
+	width: 187px;
+	height: 30px;
 	background-image: url("../assets/ui/boost-fill-LOW.png");
-	background-size: 150px 24px;
+	/*background-size: 150px 24px;*/
+	background-size: 187px 30px;
 }
 
 #abilities-holder{
 	position: absolute;
-	bottom: -10px;
-	left: 165px;
-	width:300px;
+	bottom: 0px;
+	left: 205px;
+	width:390px;
 	height: 60px;
 	color: white;
 	text-align: right;
 }
 .ability-outline{
-	width: 80px;
-	height: 39px;
+	width: 100px;
+	height: 55px;
 	top: 0px;
+
 	background: url("../assets/ui/abilities-tall-LOW.png");
-	background-size: 80px 39px;
+	background-size: 100px 55px;
 	text-align: center;
-	padding-top: 5px;
-	font-size: 20px;
+	padding-top: 8px;
+		font-size: 30px;
 	background-repeat: no-repeat;
 
 }
 .ability-fill{
 	position: absolute;
-	width: 80px;
-	height: 39px;
+	width: 100px;
+	height: 55px;
 	top: 0px;
+
 	background: url("../assets/ui/abilities-fill-tall-LOW.png");
-	background-size: 80px 38px;
+	background-size: 100px 55px;
 	transform-origin: 50% 100%;
 }
 .ability{
 	width: 80px;
 	height: 80px;
 	float: left;
-	margin-right: 12px;
+	margin-right: 35px;
 }
 
 .ability-name{
 	width: 80px;
 	text-align: center;
-	font-size: 10px;
+	font-size: 16px;
 }
 .passive{
 	height: 10px;
@@ -621,15 +633,15 @@ body{
 	left: 0px;
 	width: 150px;
 	height: 20px;
-	font-size: 12px;
+	font-size: 16px;
 	text-align:center;
 	color: #fff;
 }
 
 #health-number{
 	position: absolute;
-	bottom: 45px;
-	left: -10px;
+	bottom: 60px;
+	left: -30px;
 	width: 80px;
 	height: 48px;
 	color: white;
@@ -642,7 +654,7 @@ body{
 	height: 48px;
 	margin-left: 65px;
 	margin-top: 20px;
-	font-size: 15px;
+	font-size: 20px;
 }
 #current-health{
 	position: absolute;
@@ -650,7 +662,7 @@ body{
 	width: 75px;
 	height: 48px;
 	color: white;
-	font-size: 35px;
+	font-size: 40px;
 	text-align: right;
 }
 
@@ -666,6 +678,7 @@ body{
 	font-size: 25px;
 	display: none;
 }
+
 /*
 #weapon-icon{
 	position: absolute;
@@ -681,7 +694,7 @@ body{
 #weapon-icon{
 	position: absolute;
 	bottom: -10px;
-	right: 100px;
+	right: 120px;
 	width: 169px;
 	height: 78px;
 	background-image: url("../assets/ui/weapon-LOW.png");
@@ -690,30 +703,27 @@ body{
 
 #ammo-amount-holder{
 	position: absolute;
-	bottom: 20px;
+	bottom: -20px;
 	right: 0px;
-	width: 130px;
-	height: 60px;
+	width: 200px;
+	height: 80px;
 	color: white;
 }
 
 #ammo-amount{
 	position: absolute;
-	bottom: 0px;
-	right: 58px;
-	width: 60px;
-	height: 35px;
-	font-size: 35px;
+	bottom: 5px;
+	right: 63px;
+	font-size: 60px;
 	text-align: right;
 }
 
 #ammo-amount-total{
 	position: absolute;
-	bottom: 0px;
-	right: 15px;
-	width: 40px;
-	height: 20px;
-	font-size: 17px;
+	bottom: 20px;
+	right: 20px;
+
+	font-size: 30px;
 }
 
 #overlay{
@@ -766,6 +776,7 @@ h2{
 	float: left;
 	margin-top: 20px;
 }
+
 #instructions{
 	display: inline-block;
 	text-align: left;
@@ -802,14 +813,14 @@ h2{
 	height: 60px;
 	margin-left: 2px;
 	margin-top: 2px;
-	border: none;
-	border-radius: 30px;
+	border-radius: 50% 50%;
+	border:1px solid black;
+
 	margin-bottom: 8px;
-	outline: 1px solid black;
 	background-size: 100%;
 }
 .swatch-btn-active{
-	outline: 1px solid white;
+	border: 1px solid white;
 }
 
 .skins-non-interactive{
@@ -986,6 +997,10 @@ h2{
 	background: url("/assets/nongameui/settings.svg") ;
 	background-size: 40px 40px;
 }
+#question-btn{
+	background: url("/assets/nongameui/alert-circle.svg") ;
+	background-size: 40px 40px;
+}
 #user-btn{
 	background: url("/assets/nongameui/user-white.svg") ;
 	background-size: 40px 40px;
@@ -1084,3 +1099,235 @@ h2{
 	background: rgba(0,0,0,0);
 }
 
+.mobile-hud{
+	display: none;
+}
+.mobile-hud-btn{
+	display: block;
+	position: fixed;
+	width: 80px;
+	height: 80px;
+	background-color: rgba(255,255,255,.5);
+	border-radius: 50% 50%;
+	border: solid medium white;
+	background-size: 50px 50px;
+	background-repeat: no-repeat;
+  background-position: center;
+}
+
+#mobile-run-bottom{
+	width: 130px;
+	height: 130px;
+	border: none;
+	background-size: 130px 130px;
+	background-image: url("../assets/mobile/joy-bottom.svg");
+	left: 90px;
+	bottom: 100px;
+}
+#mobile-run-top{
+	left: 130px;
+	bottom: 140px;
+	width: 50px;
+	height: 50px;
+	background-size: 50px 50px;
+	pointer-events: none;
+	background-image: url("../assets/mobile/joy-top.svg");
+}
+
+#mobile-boost{
+	left: 120px;
+	bottom: 220px;
+	width: 70px;
+	height: 70px;
+
+	background-image: url("../assets/mobile/chevron-up.svg");
+	background-color: rgba(0,0,0,0);
+	border: none;
+}
+
+#mobile-jump{
+	left: 120px;
+	bottom: 15px;
+	width: 70px;
+	height: 70px;
+
+	background-image: url("../assets/mobile/jump.svg");
+	/*background-color: rgba(0,0,0,0);*/
+	/*border: none;*/
+}
+
+
+
+#mobile-reload{
+	right: 50px;
+	bottom: 270px;
+	background-image: url("../assets/mobile/reload.svg");
+}
+
+#mobile-ability-e{
+	right: 50px;
+	bottom: 170px;
+	background-image: url("../assets/mobile/planet-switch.svg");
+}
+#mobile-ability-q{
+	right: 50px;
+	bottom: 70px;
+	background-image: url("../assets/mobile/ability.svg");
+}
+
+
+
+#mobile-rotate{
+	right: 270px;
+	bottom: 70px;
+	background-image: url("../assets/mobile/rotate.svg");
+}
+
+#mobile-shoot{
+	right: 270px;
+	bottom: 170px;
+	background-image: url("../assets/mobile/rotate-shoot.svg");
+}
+
+#mobile-ads{
+	right: 270px;
+	bottom: 270px;
+	background-image: url("../assets/mobile/ads.svg");
+}
+
+
+
+
+#credits{
+	display: block;
+}
+
+#three{
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+}
+
+@media (pointer:none), (pointer:coarse) {
+	#credits{
+		display: none;
+	}
+	.mobile-hud{
+		display: block;
+		position: fixed;
+	}
+
+/*
+	arrow-up-circle.svg
+	battery.svg
+	battery-charging.svg
+	joy-bottom.svg
+	joy-top.svg
+	star.svg
+	sun.svg
+	underline.svg
+*/
+
+
+	#kills-bots{
+		position: fixed;
+		top: 60px;
+		right: 50%;
+		margin-right: -20px;
+		font-size: 20px;
+		text-align: left;
+		color: #fff;
+	}
+
+	#title{
+		display: none;
+	}
+	
+	#player-select-character{
+		position: fixed;
+		left: 50%;
+		right: auto;
+		height: 75vh;
+		top: 50%;
+		bottom: auto;
+		margin-top:  -37vh;
+		margin-left: -300px;
+		width: 600px;
+	}
+
+	#class-select{
+		height: 100vh;
+		margin-left: 0px;
+		margin-top: 0px;
+		left: 20px;
+		top: 0px;
+		padding: 0px;
+	}
+	#all-classes{
+		top: 20px;
+		position: fixed;
+		overflow-y: auto;
+		height: 90vh;
+	}
+	#class-select-title{
+		position: fixed;
+		left: 50vw;
+		margin-left: -200px;
+		width: 400px;
+		
+	}
+	#player-skins{
+		position: fixed;
+		overflow-y: auto;
+		height: 90vh;
+		margin-top: 20px;
+		right: 90px;
+		top: ;
+	}
+
+	.class-btn, .class-btn-active{
+		width: 120px;
+	}
+
+	#movement-select-holder{
+		position: fixed;
+		width: 120px;
+		left: 160px;
+		top: 10px;
+		text-align: center;
+	}
+	.movement-btn, .movement-btn-active{
+		display: block;
+		float: none;
+		width: 300px;
+		margin-top: 0px;
+		max-width: 80px;
+
+	}
+	#planet-switching-select-title{
+		font-size: 25px;
+		margin-top: 20px;
+	}
+	#play-holder{
+		width: 30vw;
+		left: 50%;
+		margin-left: -15vw;
+	}
+	#hud-bottom-left-holder{
+		bottom:auto;/* calc(100vh - 70px); */
+		top: 100px;
+		transform: scale(.9) translate(-60px, 0px);
+	}
+	#hud-bottom-right-holder{
+
+		bottom: auto;/*calc(100vh - 70px);*/
+		top: 80px;
+		transform: scale(.9) translate(60px, 0px);
+	}
+	#game-over{
+	
+		margin-top: 50px;
+	}
+}

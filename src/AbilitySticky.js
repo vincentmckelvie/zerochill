@@ -41,21 +41,36 @@ class AbilitySticky extends Abilities {
 			if(!this.throw.killed){
 				this.throw.update();
 			}else{
-				super.confirmAbility();
+				const dist = appGlobal.globalHelperFunctions.getDistanceForSound(this.throw.collider.center);
+    			appGlobal.soundHandler.playSoundByName({name:"bliz", dist:dist});
 				this.sticky = new StickyAOE({worldPosition:this.throw.world.collider.center, position:this.throw.collider.center}) 
-				this.throw = null;	
 			}
 		}
 
 		if(this.sticky){
 			if(!this.sticky.killed){
 				this.sticky.update();	
+				this.throw = null;	
 			}
 		}
 			 	
 	}
 	
 	doAbility(){
+		if(appGlobal.localPlayer!=null){
+			const self = this;
+			appGlobal.localPlayer.fps.throw();
+			//appGlobal.soundHandler.playSoundByName({name:"throw", dist:1});
+			setTimeout(function(){
+				if(self.throw==null)
+					self.throwHelper();
+			},200);
+			
+		}
+		super.confirmAbility();
+	}
+
+	throwHelper(){
 		if(appGlobal.localPlayer!=null){
 
 			this.id = appGlobal.localPlayer.id;
@@ -94,7 +109,7 @@ class AbilitySticky extends Abilities {
 				worldPosition:this.worldPos,
 			}
 
-			appGlobal.soundHandler.playSoundByName({name:"rocket2", dist:1});
+			
 			
 			// if(window.socket !=null ){
 			// 	socket.emit('shoot', {
@@ -105,8 +120,6 @@ class AbilitySticky extends Abilities {
 			// }
 			this.throw = new AbilityBullet(obj, true); 
 		}
-
-
 	}
 
 	deactivateAbility(){

@@ -233,6 +233,10 @@ class Player {
 
 	doJumpPad(grav){
 		if(!this.isDoingJumpPad){
+			
+			const dist = appGlobal.globalHelperFunctions.getDistanceForSound(this.playerCollider.start);
+    		appGlobal.soundHandler.playSoundByName({name:"jump-pad-bounce", dist:dist});
+
 			const self = this;
 			this.isDoingJumpPad = true;
 			this.maxSpeed = 120;
@@ -577,8 +581,8 @@ class Player {
 		appGlobal.keyStates[ 'KeyS' ] = this.keys.S = OBJ.s;
 		appGlobal.keyStates[ 'KeyA' ] = this.keys.A = OBJ.a;
 		appGlobal.keyStates[ 'KeyD' ] = this.keys.D = OBJ.d;
-
 		appGlobal.keyStates[ 'ShiftLeft' ] = OBJ.boost;
+		
 		if(OBJ.boost){
 			this.handleBlinkKeyPress();
 		}
@@ -1116,7 +1120,7 @@ class Player {
 		}
 		
 		const max = 1.5;
-		if(this.camera.rotation.x<-max)this.camera.rotation.x = -max;
+		if(this.camera.rotation.x<-max*.95)this.camera.rotation.x = -max*.95;
 		if(this.camera.rotation.x>max)this.camera.rotation.x = max;
 		this.playerRotationHelper.rotation.y = this.camera.rotation.y;
 	}

@@ -31,7 +31,13 @@ class GlobalSoundHandler {
 			"kill-2",
 			"slime",
 			"splat",
-			"slime-thud"
+			"slime-thud",
+			"nade-hit-2",
+			"nade",
+			"bliz",
+			"jump-pad-bounce",
+			"jump-pad-land",
+			"unloved"
 		]
 		this.repeatHandlerDeath = new SoundRepeatHandler({name:"kill-2",timeout:200});
 		this.repeatHandlerDink = new SoundRepeatHandler({name:"dink",timeout:200});
@@ -46,7 +52,12 @@ class GlobalSoundHandler {
 		this.samples = [];
 		
 		const self = this;
-		self.init();
+		if(!appGlobal.mobile.isMobile )
+			self.init();
+
+		this.mainAudioSource;
+		this.mainAudioGainNode;
+
 		//console.log(PositionalAudio)
 	}
 	
@@ -69,7 +80,6 @@ class GlobalSoundHandler {
 			this.load({url:"assets/sounds/"+this.audioFiles[i]+".mp3", index:i, name:this.audioFiles[i]});
 		}
 		
-		
 	}
 
 	load(OBJ){
@@ -86,6 +96,8 @@ class GlobalSoundHandler {
 			self.context.decodeAudioData(buffer, function(decodedData) {
 				const obj = {sample:decodedData, name:name, index:index};
 				self.samples.push(obj);
+				if(name=="unloved")
+					self.playSong({name:name});
 			});
 	  	});
 
@@ -102,11 +114,13 @@ class GlobalSoundHandler {
 		}
 		
 	}
+	
+
 
 	playSoundByNameHelper(OBJ){
 		const sample = this.getSampleByName(OBJ.name);
-			const obj = {sample:sample, dist:OBJ.dist, note:this.getKey(true)}
-			this.playAudio(obj);
+		const obj = {sample:sample, dist:OBJ.dist, note:this.getKey(true)}
+		this.playAudio(obj);
 	}
 
 	checkIfRepeatSound(OBJ){
@@ -128,6 +142,8 @@ class GlobalSoundHandler {
 		return false;
 	}
 
+
+
 	playAudio(OBJ){
 		
 		const source = this.context.createBufferSource();
@@ -136,11 +152,33 @@ class GlobalSoundHandler {
 		gainNode.gain.value = OBJ.dist *  (.1 * window.settingsParams["volume"]); // 10 %
 		//source.playbackRate.value = note;
 
-
 		source.playbackRate.value = 2 ** ((OBJ.note - 60) / 12);
 		source.connect(gainNode);
 		gainNode.connect(this.context.destination);
 		source.start(0);
+	}
+
+	updateGainNode(){
+		if(this.mainAudioGainNode!=null)
+			this.mainAudioGainNode.gain.value = 1 *  (.1 * window.settingsParams["musicVolume"]); // 10 %
+	}
+
+	playSong(OBJ){
+		const sample = this.getSampleByName(OBJ.name);
+		const obj = {sample:sample, dist:1, note:this.getKey(false)}
+		this.playSongHelper(obj);
+	}
+	
+	playSongHelper(OBJ){
+		this.mainAudioSource = this.context.createBufferSource();
+		this.mainAudioSource.buffer = OBJ.sample.sample;
+		this.mainAudioGainNode = this.context.createGain();
+		this.mainAudioGainNode.gain.value = 1 *  (.1 * window.settingsParams["musicVolume"]); // 10 %
+		
+		this.mainAudioSource.loop = true;
+		this.mainAudioSource.connect(this.mainAudioGainNode);
+		this.mainAudioGainNode.connect(this.context.destination);
+		this.mainAudioSource.start(0);
 	}
 
 	getKey(shouldDoRandom){

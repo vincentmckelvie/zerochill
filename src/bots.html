@@ -2,23 +2,23 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!--<meta name="viewport" content="width=device-width, initial-scale=1">-->
 		<title>zer0 chill</title>
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=.7, maximum-scale=.7, initial-scale=.7">
 		<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
 		<link rel="stylesheet" href="/scripts/styles.css">
 
 	</head>
 	<body>
-	<script type="importmap">
-	{
-		"imports": {
-			"three": "./build/three.module.js"
-		}
-	}
-	</script>
+	
+	<div id="mobile-rotate-msg" class="modal">
+		<div id="settings-center" class="modal-center">
+			<h2 id="settings-top">Please Rotate Your Phone</h2>
+		</div>
+	</div>
+	
 	<div class="top-right-info" id="kills-bots">
 		
 	</div>
@@ -27,6 +27,21 @@
 	<div id="container"></div>
 
 	<div id="hud">
+		<div class="mobile-hud">
+			
+			<div class="mobile-hud-btn" id="mobile-run-bottom"></div>
+			<div class="mobile-hud-btn" id="mobile-run-top"></div>
+			<div class="mobile-hud-btn" id="mobile-boost"></div>
+			<div class="mobile-hud-btn" id="mobile-jump"></div>
+			
+			<div class="mobile-hud-btn" id="mobile-reload"></div>
+			<div class="mobile-hud-btn" id="mobile-ads"></div>
+			<div class="mobile-hud-btn" id="mobile-ability-e"></div>
+			<div class="mobile-hud-btn" id="mobile-ability-q"></div>
+			<div class="mobile-hud-btn" id="mobile-rotate"></div>
+			<div class="mobile-hud-btn" id="mobile-shoot"></div>	
+		</div>
+		
 		<div id="timer">00:00</div>
 		<div id="recticle"></div>
 		
@@ -122,12 +137,13 @@
 					<div class="play-btn" id="play-btn">Play</div>	
 					<div class="play-btn" id="spectate-btn">Spectate</div>
 				</div>
-				<div id="nav-bar-right" style="height: 60px;">
+				<div id="nav-bar-right" style="height: 120px;">
 					<!--
 					<div id="user-btn" class="bottom-bar-btns"></div>
 					<div id="servers-btn" class="bottom-bar-btns"></div>
 					-->
-					<div id="settings-btn" class="bottom-bar-btns" style="margin-top: 0px;"></div>
+					<div id="question-btn" class="bottom-bar-btns"></div>
+					<div id="settings-btn" class="bottom-bar-btns"></div>
 				</div>
 				
 			</div>
@@ -150,13 +166,24 @@
 		<div id="instructions-center" class="modal-center">
 			<h2 id="instructions-title" style="color: #000">Instructions</h2>
 			<ul class="instructions-list">
+				<li>This is a <span class="instructions-bold">PVE</span> version of the game, the <span class="instructions-bold">PVP</span> version of this game will be released June 2022</li>
 				<li>Zero Chill works best in <a href="https://www.google.com/chrome/" target="_blank">chrome</a> and <a href="https://www.microsoft.com/en-us/edge" target="_blank">edge</a></li>
 				<li> <span class="instructions-bold">[WASD]</span> to move, <span class="instructions-bold">[LMB]</span> to shoot, <span class="instructions-bold">[RMB]</span> to Aim Down Sight</li>
 				<li><span class="instructions-bold">[SHIFT]</span> to boost, <span class="instructions-bold">[E]</span> and <span class="instructions-bold">[Q]</span> for abilities</li>
+				<li><span class="instructions-bold">[F11]</span> to full screen</li>
 				<li>Controller is also supported</li>
 				<li>All hitboxes are the same</li>
 				<li>This app is in BETA, please be nice</li>
 			</ul>
+
+			<div id="credits"> 
+				by Scuffed Games <br/>
+				design, programming and art by <a href="https://twitter.com/strugggggs" target="_blank">Vince Mckelvie</a><br/>
+				some design and modeling from <a href="https://twitter.com/wheniamonline" target="_blank">Sam Newell</a> and <a href="https://twitter.com/nicjuister" target="_blank">Nic Juister </a><br/>
+				song and some sound fx by <a href="https://www.instagram.com/trevoryasuda/?hl=en" target="_blank">Trevor Yasuda</a><br/>
+			</div>
+
+
 			<div id="close-instructions-btn" class="close-btn">Got It</div>
 		</div>
 	</div>
@@ -187,10 +214,18 @@
 				</div>
 				<div style="clear:both"></div>
 			</div>
-
 			<div class="settings-sub">
 				<div class="settings-left" id="settings-label"> 
-					volume : 
+					music volume : 
+				</div> 
+				<div class="settings-right" class="settings-input-holder">
+					<input type="text" id="settings-music-vol" class="settings-input-number" placeholder="1"/>
+				</div>
+				<div style="clear:both"></div>
+			</div>
+			<div class="settings-sub">
+				<div class="settings-left" id="settings-label"> 
+					game volume : 
 				</div> 
 				<div class="settings-right" class="settings-input-holder">
 					<input type="text" id="settings-vol" class="settings-input-number" placeholder="1"/>

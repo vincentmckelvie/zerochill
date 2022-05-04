@@ -88,7 +88,6 @@ class CharacterAnimationHandler{
 		const gunAniSniper =  this.getAniByName(this.animations,"sniper-idle");
 		const adsAniSniper =  this.getAniByName(this.animations,"sniper-ads");
 
-		
 		this.parseAnimation(idleAni, true);
 		this.parseAnimation(runRAni, true);
 		this.parseAnimation(runLAni, true);
@@ -269,7 +268,6 @@ class CharacterAnimationHandler{
 
 			this.adsIdle.weight += (this.adsTarg-this.adsIdle.weight)*(appGlobal.deltaTime*90)
 			this.gunIdle.weight += (this.gunTarg-this.gunIdle.weight)*(appGlobal.deltaTime*90)
-			
 		
 			this.idle.weight    +=  (this.idleTarg-this.idle.weight)      *(appGlobal.deltaTime*150)
 			this.forward.weight +=  (this.forwardTarg-this.forward.weight)*(appGlobal.deltaTime*150)
@@ -277,7 +275,6 @@ class CharacterAnimationHandler{
 			this.right.weight   +=  (this.rightTarg-this.right.weight)    *(appGlobal.deltaTime*150)
 			this.back.weight    +=  (this.backTarg-this.back.weight)      *(appGlobal.deltaTime*150)
 			this.jump.weight    +=  (this.jumpTarg-this.jump.weight)      *(appGlobal.deltaTime*150)
-
 
 			// this.idle.weight    =  this.idleTarg
 			// this.forward.weight =  this.forwardTarg

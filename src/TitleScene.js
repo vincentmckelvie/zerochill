@@ -17,9 +17,12 @@ import {
 	FogExp2,
 	PerspectiveCamera,
 	Object3D,
-	PMREMGenerator
+	PMREMGenerator,
+	sRGBEncoding
 } from './build/three.module.js';
-import { RoomEnvironment } from './scripts/jsm/environments/RoomEnvironment.js';
+import { RGBELoader   } from './scripts/jsm/loaders/RGBELoader.js';
+
+//import { RoomEnvironment } from './scripts/jsm/environments/RoomEnvironment.js';
 
 //import { clone } from "./scripts/jsm/utils/SkeletonUtils.js"
 
@@ -36,20 +39,32 @@ class TitleScene {
 		this.renderer = new WebGLRenderer( { antialias: false, alpha:true } );
 		//this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( this.w, this.h );
-		
+		this.renderer.outputEncoding = sRGBEncoding;
 		this.camera = new PerspectiveCamera( 50, this.w / this.h, 0.1, 1000 );
 		this.camera.position.z = 1.2;
-		
-		const pmremGenerator = new PMREMGenerator( this.renderer );
-		this.scene.environment = pmremGenerator.fromScene( new RoomEnvironment(), 0.01 ).texture;
-
-
 		this.title = self.getModelByName("title").scene;
-		this.title.traverse( function ( obj ) {
-			if(obj.isMesh){
-				obj.material.environmentMap = self.scene.environment;
-			}
+			
+		//const pmremGenerator = new PMREMGenerator( this.renderer );
+		//this.scene.environment = pmremGenerator.fromScene( new RoomEnvironment(), 0.01 ).texture;
+		this.pmremGenerator = new PMREMGenerator( this.renderer );
+		this.pmremGenerator.compileEquirectangularShader();
+		new RGBELoader()
+		.setPath( './assets/textures/' )
+		.load( 'dorb.hdr', function ( texture ) {
+
+			//const radianceMap = pmremGenerator.fromEquirectangular( texture ).texture;
+			const reflectionMap = self.pmremGenerator.fromEquirectangular( texture ).texture;
+			self.pmremGenerator.dispose();
+			self.title.traverse( function ( obj ) {
+				if(obj.isMesh){
+					obj.material.envMap = reflectionMap;
+					obj.material.roughness = .06;
+					obj.material.metalness = 1;
+				}
+			});
 		});
+
+		
 		const s = .07;
 		this.title.scale.set(s,s,s);
 		//title.position.x-=.5;

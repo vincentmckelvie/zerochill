@@ -25,7 +25,6 @@ import {
 } from './build/three.module.js';
 import { Octree } from './scripts/jsm/math/Octree.js';
 
-
 import { EffectComposer } from './scripts/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from './scripts/jsm/postprocessing/RenderPass.js';
 import { ShaderPass } from './scripts/jsm/postprocessing/ShaderPass.js';
@@ -38,7 +37,7 @@ class CustomScene {
 
 	//constructor( i = 0, parent = null, worldScale=20 ) {
 	constructor() {
-
+		this.mult = .25;
 		this.clock = new Clock();
 		this.STEPS_PER_FRAME = 5;
 		
@@ -46,10 +45,11 @@ class CustomScene {
 		//this.scene.background = new Color( 0x88ccff );
 		
 		this.renderer = new WebGLRenderer( { antialias: false } );
-		//this.renderer.setPixelRatio( .9 );
+		this.renderer.setPixelRatio( 1 );
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
-		this.renderer.shadowMap.enabled = true;
-		this.renderer.shadowMap.type = VSMShadowMap;
+		this.renderer.domElement.id = "three";
+		//this.renderer.shadowMap.enabled = true;
+		//this.renderer.shadowMap.type = VSMShadowMap;
 
 		this.composer;
 		this.outlinePass; 
@@ -76,10 +76,10 @@ class CustomScene {
 		this.renderPass = new RenderPass( this.scene, appGlobal.controller.playerCamera );
 		this.composer.addPass( this.renderPass );
 		
-		this.outlinePass = new OutlinePass( new Vector2( window.innerWidth, window.innerHeight*.5 ), this.scene, appGlobal.controller.playerCamera );
+		this.outlinePass = new OutlinePass( new Vector2( window.innerWidth*this.mult, window.innerHeight*this.mult ), this.scene, appGlobal.controller.playerCamera );
 		this.composer.addPass( this.outlinePass );
 
-		this.characterOutlinePass = new OutlinePass( new Vector2( window.innerWidth, window.innerHeight ), this.scene, appGlobal.controller.playerCamera );
+		this.characterOutlinePass = new OutlinePass( new Vector2( window.innerWidth*this.mult, window.innerHeight*this.mult ), this.scene, appGlobal.controller.playerCamera );
 		this.characterOutlinePass.visibleEdgeColor = new Color(0xff0000);
 		this.composer.addPass( this.characterOutlinePass );
 		
@@ -138,9 +138,9 @@ class CustomScene {
 			appGlobal.remotePlayers[i].update();	
 		}
 
-		if(this.composer && appGlobal.playing)
-			this.composer.render();
-		else
+		// if(this.composer && appGlobal.playing)
+		// 	this.composer.render();
+		// else
 			this.renderer.render( this.scene, appGlobal.controller.camera );
 	}
 
@@ -215,9 +215,9 @@ class CustomScene {
 		this.scene.remove(obj);
 	}
 	updateWindowSize(){
-		appGlobal.controller.updateWindowSize();
+		appGlobal.controller.updateWindowSize();		
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
-		this.composer.setSize( window.innerWidth, window.innerHeight );
+		//this.composer.setSize( window.innerWidth, window.innerHeight );
 		if(appGlobal.playerSelectScene!=null)
 			appGlobal.playerSelectScene.updateWindowSize();
 		//this.effectFXAA.uniforms[ 'resolution' ].value.set( 1 / window.innerWidth, 1 / window.innerHeight );

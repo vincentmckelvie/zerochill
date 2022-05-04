@@ -154,7 +154,7 @@ class Abilities {
 		if(this.cooldown > 0){
 
 			if(this.cooldownFill!=null){
-				gsap.to(this.cooldownFill, {duration:(this.cooldown/1000)+.5, height:39, delay:(this.abilityTime/1000)+.5});	
+				gsap.to(this.cooldownFill, {duration:(this.cooldown/1000)+.5, height:55, delay:(this.abilityTime/1000)+.5});	
 			}
 			
 			this.cooldownTimeout = setTimeout(function(){
@@ -180,7 +180,7 @@ class Abilities {
 
 		if(this.killOnLand && this.timerHelper){
 			if(this.cooldownFill!=null)
-				this.cooldownFill.style.height= "39px" ;
+				this.cooldownFill.style.height= "55px" ;
 			//this.canSetClosestWorld = true;
 			this.reset();
 			this.timerHelper = false;

@@ -1,17 +1,58 @@
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin')
+const WebpackObfuscator = require('webpack-obfuscator');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const TerserPlugin = require("terser-webpack-plugin");
 
 module.exports = {
   mode:"production",
-  entry: path.resolve(__dirname,"src/main.js"),
+  entry: {
+    main: path.resolve(__dirname,"src/main.js"),
+    bots: path.resolve(__dirname,"src/bots.js"),
+  },
   output:{
     path: path.resolve(__dirname,"dist"),
-    filename:"main.js"
-  },
-  
+    filename:"[name].js"
+  },optimization: {
+    minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        minify: TerserPlugin.uglifyJsMinify,
+        // `terserOptions` options will be passed to `uglify-js`
+        // Link to options - https://github.com/mishoo/UglifyJS#minify-options
+        terserOptions: {},
+      }),
+    ],
+  }
 };
 
 /*
+
+
+
+
+
+,module:{
+    rules: [
+      {
+          test: /\.js$/,
+          enforce: 'post',
+          use: { 
+              loader: WebpackObfuscator.loader, 
+              options: {
+                  rotateStringArray: true
+              }
+          }
+      }
+    ],
+  },
+  plugins: [
+    new WebpackObfuscator({
+        rotateStringArray: true
+    }, [])
+  ]
+
+
+
 
 
 plugins: [

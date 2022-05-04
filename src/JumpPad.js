@@ -15,7 +15,7 @@ import {
 	Sphere
 } from './build/three.module.js';
 
-import { clone } from "./scripts/jsm/utils/SkeletonUtils.js";
+//import { clone } from "./scripts/jsm/utils/SkeletonUtils.js";
 
 class JumpPad {
 	//{scene:scene, worldScale:worldScale};
@@ -25,13 +25,20 @@ class JumpPad {
 		this.collider = new Sphere( new Vector3( 0, 0, 0 ), 1.5 );
 		
 		this.holder = new Object3D();
-		const geometry = new CylinderGeometry( 3, 3, 2, 12 );
-		const material = new MeshStandardMaterial( {color: 0x00ff00} );
-		this.mesh = new Mesh( geometry, material );
+		// const geometry = new CylinderGeometry( 3, 3, 2, 12 );
+		// const material = new MeshStandardMaterial( {color: 0x00ff00} );
+		// this.mesh = new Mesh( geometry, material );
 		
+		this.mesh = self.getModelByName("jump-pad").scene.clone();///.clone();
+		const s = 0;
+		this.mesh.scale.set(s,s,s);
+		gsap.to(this.mesh.scale,{duration:.3, x:3, y:3, z:3, ease: "back.out(5)", delay:0, onComplete:function(){
+			//self.kill(false);
+		}});
 		this.look = new Object3D();
-		this.mesh.rotation.x+=Math.PI/2
-		this.look.add(this.mesh);
+		//this.mesh.rotation.x += Math.PI/2;
+		this.mesh.rotation.x -= Math.PI/2;
+		this.look.add(/*this.mesh,*/ this.mesh);
 		this.holder.add(this.look);
 		this.collider.center.copy(OBJ.position);
 		this.holder.position.copy(this.collider.center);
@@ -44,6 +51,14 @@ class JumpPad {
 			self.kill();
 		}, 5000);
 		this.isJumping = false;
+	}
+
+	getModelByName(NAME){
+		for(let i = 0; i<appGlobal.loadObjs.length;i++){
+			if(appGlobal.loadObjs[i].name==NAME)
+				return appGlobal.loadObjs[i].model;	
+		}
+		
 	}
 
 	update(){
@@ -134,9 +149,7 @@ class JumpPad {
   			appGlobal.localPlayer.maxSpeed=40;
   		}
   		this.killed = true;
-  		this.mesh.geometry.dispose();
-  		this.mesh.material.dispose();
-  		this.holder.remove(this.mesh);
+  		appGlobal.globalHelperFunctions.tearDownObject(this.holder);
   		appGlobal.scene.remove(this.holder);
   	}
 }

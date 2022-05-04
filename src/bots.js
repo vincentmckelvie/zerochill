@@ -44,6 +44,7 @@ import { SkinsHandler } from './SkinsHandler.js';
 
 import { Servers } from './Servers.js';
 import { GamePad } from './GamePad.js';
+import { Mobile } from './Mobile.js';
 
 const abilities = {
 	planetSwitch:{
@@ -79,7 +80,7 @@ const abilities = {
 			name:"jump pad",
 			abilityTime:0,
 			cooldownUI:true,
-			sound:"wall-hack",
+			sound:"nade",
 	},sticky:{
 			class:AbilitySticky,
 			type:"press",
@@ -90,7 +91,7 @@ const abilities = {
 			name:"sticky",
 			abilityTime:0,
 			cooldownUI:true,
-			sound:"wall-hack",
+			sound:"nade",
 	},
 	nade:{
 			class:AbilityNade,
@@ -102,7 +103,7 @@ const abilities = {
 			name:"nade",
 			abilityTime:0,
 			cooldownUI:true,
-			sound:"wall-hack",
+			sound:"nade",
 	},
 	directionalBoost:{
 			class:AbilityDirectionalBoost,
@@ -481,6 +482,9 @@ const globalHelperFunctions = {
 			for(let i = 0; i<appGlobal.remotePlayers.length; i++){
 				appGlobal.remotePlayers[i].kill();
 			}
+			for(let i = 0; i<appGlobal.worlds.length; i++){
+				appGlobal.worlds[i].outline.material.visible = false;
+			}
 			
 			if(clockInterval!=null){
 				clearInterval(clockInterval);
@@ -494,13 +498,18 @@ const globalHelperFunctions = {
 			if(resetFromKill){
 				setTimeout(function(){
 					//if(appGlobal.gameState=="game"){
-					document.exitPointerLock();
+					if(document.exitPointerLock!=null)
+						document.exitPointerLock();
+					
 					overlayChildDisplayHelper();
 					toggleOverlay(true);
 					setTimeout(function(){
 						//if(appGlobal.gameState=="game"){
 						appGlobal.gameState = "game";
-						document.exitPointerLock();
+						
+						if(document.exitPointerLock!=null)
+							document.exitPointerLock();
+						
 						overlayChildDisplayHelper();
 						toggleOverlay(true);
 						//}
@@ -606,14 +615,22 @@ const globalHelperFunctions = {
 			appGlobal.playing = true;
 			appGlobal.gameState = "game";
 		  	overlayChildDisplayHelper();
+		  
 			toggleOverlay(false);
 			
-			document.body.requestPointerLock();
+			if(!appGlobal.mobile.isMobile){
+				if(document.body.requestPointerLock !=null )
+					document.body.requestPointerLock();
+			}
 
+			for(let i = 0; i<appGlobal.worlds.length; i++){
+				appGlobal.worlds[i].outline.material.visible = false;
+			}
+			
 			appGlobal.globalHelperFunctions.setUserName();
 			appGlobal.controller.initPlayer({ weapon: currentSelectWeapon, movement:currentMovement,  name:appGlobal.user});	
 			appGlobal.localPlayer = appGlobal.controller.player;
-			
+		
 			if(clockInterval!=null){
 				clearInterval(clockInterval);
 			}
@@ -629,12 +646,19 @@ const globalHelperFunctions = {
 			window.timeIncrease.planetSwitchCheck = 0
 			window.timeIncrease.planetSwitchMovementThreshold = 0;
 			
+			setTimeout(function(){
+				console.log("init mobile dom")
+				appGlobal.mobile.initDom();
+			},200);
+			
 			clockInterval = setInterval(function(){
 				let min = Math.floor(clockTime/60);
 				let sec = Math.floor(clockTime%60);
 				document.getElementById('timer').innerHTML = pad(min,2)+":"+pad(sec, 2);
-				
-				clockTime ++;
+				if(appGlobal.focused){
+					clockTime ++;
+				}
+
 				if(clockTime%30==0){
 					window.timeIncrease.damage += 2;
 					window.timeIncrease.impulse += 10;
@@ -647,8 +671,6 @@ const globalHelperFunctions = {
 
 			},1000);
 
-			
-			
 			// socket.emit('startPlaying', {
 			// 	id:socket.id,
 			// 	meshName:currMeshName,
@@ -710,9 +732,9 @@ const globalHelperFunctions = {
 
 }
 
-
 const settings = {
 	"mouseSens":1,
+	"musicVolume":1,
 	"volume":1,
 	"crossHairColor":"fff",
 	"adsMouseSenseMult":1,
@@ -796,6 +818,8 @@ const appGlobal = {
 		{name:"sniper-boost",      model:null, loaded:false, url:"models/sniper/default/boost.glb"  },
 		{name:"sniper-directional",model:null, loaded:false, url:"models/sniper/default/directional.glb"  },
 		{name:"sniper-teleport",   model:null, loaded:false, url:"models/sniper/default/teleport.glb"  },
+		{name:"fps-throw",         model:null, loaded:false, url:"models/fps-throw.glb"  },
+		{name:"jump-pad",         model:null, loaded:false, url:"models/jump-pad.glb"  },
 	],
 	initedThree:false,
 	playerSelectScene:null,
@@ -812,6 +836,8 @@ const appGlobal = {
 	parallax:new ParallaxGUI(),
 	skinsHandler:new SkinsHandler(),
 	bots:[],
+	focused:true,
+	mobile:null,
 };
 
 
@@ -829,7 +855,7 @@ const planetSwitchBot = {
 	abilityTime:0,
 	cooldownUI:false,
 	sound:"planet-switch",
-}
+}	
 
 const botWeapon = {
 
@@ -922,6 +948,7 @@ function initBots(){
 		const bot = new BotPlayer({name:rndName, id:i, movement:"boost", ability:planetSwitchBot, weapon:botWeapon });
 		appGlobal.remotePlayers.push(bot);
 	}
+	
 }
 
 function initPickups(){
@@ -979,9 +1006,12 @@ function initThree(){
 	appGlobal.controller = new PlayerController({id:100, user:appGlobal.user});
 	appGlobal.remoteBullets = new RemoteBulletHandler();
 	appGlobal.itemHandler = new ItemHandler();
+	appGlobal.mobile = new Mobile();
 	appGlobal.soundHandler = new GlobalSoundHandler();
+	
 	appGlobal.playerSelectScene = new PlayerSelectScene();
 	appGlobal.titleScene = new TitleScene();
+
 	
 	appGlobal.scene.reset();
 
@@ -989,11 +1019,12 @@ function initThree(){
 	
 	const container = document.getElementById( 'container' );
 	container.appendChild( appGlobal.scene.renderer.domElement );
-
-	stats = new Stats();
-	stats.domElement.style.position = 'absolute';
-	stats.domElement.style.top = '0px';
-	container.appendChild( stats.domElement );
+	if(!appGlobal.mobile.isMobile){
+		stats = new Stats();
+		stats.domElement.style.position = 'absolute';
+		stats.domElement.style.top = '0px';
+		container.appendChild( stats.domElement );
+	}
 	
 	appGlobal.initedThree = true;
 	
@@ -1045,6 +1076,19 @@ function resetHelper(){
 	//appGlobal.world = new World();
 }
 
+
+function onBlur() {
+  appGlobal.focused = false;
+}
+
+function onFocus() {
+  appGlobal.focused = true;
+}
+
+const log = document.getElementById('log');
+
+window.addEventListener('blur', onBlur);
+window.addEventListener('focus', onFocus);
 
 document.addEventListener( 'keydown', ( event ) => {
 	if(appGlobal.globalHelperFunctions.checkPlaying()){
@@ -1103,7 +1147,8 @@ document.addEventListener( 'mousedown', (event) => {
 	if(appGlobal.globalHelperFunctions.checkPlaying()){
 		event.preventDefault();
 		if(event.button==0){
-			document.body.requestPointerLock();
+			if(!appGlobal.mobile.isMobile && document.body.requestPointerLock !=null )
+				document.body.requestPointerLock();
 			appGlobal.mouse.down = true;
 		}else if(event.button == 2){
 			appGlobal.localPlayer.ads(true);
@@ -1150,7 +1195,7 @@ document.body.addEventListener( 'mousemove', ( event ) => {
 				appGlobal.parallax.updateMouseMove(event);
 		}
 	}
-} );
+});
 
 window.addEventListener( 'resize', function(){
 	if(appGlobal.scene){
@@ -1159,26 +1204,21 @@ window.addEventListener( 'resize', function(){
 });
 
 function animate() {
-	
-	if(!appGlobal.playing){
-		appGlobal.playerSelectScene.update();
-		appGlobal.titleScene.update();
-		appGlobal.parallax.update();
-	}
-
-	// for(let i = 0; i<appGlobal.bots.length;i++){
-	// 	appGlobal.bots[i].update();
-	// }
 
 	appGlobal.gamePad.update();
-	appGlobal.scene.update();
-	
-	
-	// for(let i = 0; i<appGlobal.remotePlayers.length; i++){
-	// 	appGlobal.remotePlayers[i].update();	
-	// }
+	appGlobal.mobile.update();
 
-	stats.update();
+	if(appGlobal.focused){
+		appGlobal.scene.update();
+		if(!appGlobal.playing){ 
+			appGlobal.playerSelectScene.update();
+			appGlobal.titleScene.update();
+			appGlobal.parallax.update();
+		}
+	}
+	if(stats){
+		stats.update();
+	}
 	requestAnimationFrame( animate );
 
 }
@@ -1194,6 +1234,10 @@ function toggleOverlay(showOverlay){
 		document.getElementById("overlay").style.display="none";
 	}
 }
+document.getElementById("question-btn").addEventListener("click", function (){
+	
+	document.getElementById("instructions-modal").style.display = "block";
+});
 
 document.getElementById("class-button-sticky").addEventListener("click", function (){
 	//handleInitPlaying(appGlobal.weapons.sticky);
@@ -1242,6 +1286,7 @@ document.getElementById("movement-button-directional").addEventListener("click",
 	//handleInitPlaying(appGlobal.weapons.sixgun);
 	currMovementName = "directional";
 	currentMovement = abilities.directionalBoost;
+
 	handleSwitchClass(document.getElementById("movement-button-directional"), "movement-btn-active", "movement-btn", {type:"movement", name:"directional"});
 });
 document.getElementById("movement-button-teleport").addEventListener("click", function (){
@@ -1251,11 +1296,10 @@ document.getElementById("movement-button-teleport").addEventListener("click", fu
 	handleSwitchClass(document.getElementById("movement-button-teleport"), "movement-btn-active", "movement-btn", {type:"movement", name:"teleport"});
 });
 
-document.getElementById("play-btn").addEventListener("click", function (){
+document.getElementById("play-btn").addEventListener("click", function (event){
 	appGlobal.globalHelperFunctions.handleInitPlaying();
-	// overlayChildDisplayHelper();
-	// toggleOverlay(false);
-	// document.getElementById("hud").style.display="none";
+	if( appGlobal.mobile.isMobile )
+		appGlobal.soundHandler.init();
 });
 
 document.getElementById("spectate-btn").addEventListener("click", function (){

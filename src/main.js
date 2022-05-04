@@ -30,10 +30,8 @@ import { RemoteController } from './RemoteController.js';
 import { PlayerSelectScene } from './PlayerSelectScene.js';
 import { TitleScene } from './TitleScene.js';
 import { ParallaxGUI } from './ParallaxGUI.js';
-
 import { Settings } from './Settings.js';
 import { SkinsHandler } from './SkinsHandler.js';
-
 import { Servers } from './Servers.js';
 import { GamePad } from './GamePad.js';
 import { io } from "./socket.io.esm.min.js";
@@ -711,6 +709,7 @@ const appGlobal = {
 		{name:"sniper-boost",      model:null, loaded:false, url:"models/sniper/default/boost.glb"  },
 		{name:"sniper-directional",model:null, loaded:false, url:"models/sniper/default/directional.glb"  },
 		{name:"sniper-teleport",   model:null, loaded:false, url:"models/sniper/default/teleport.glb"  },
+		{name:"fps-throw",         model:null, loaded:false, url:"models/fps-throw.glb"  },
 	],
 	initedThree:false,
 	playerSelectScene:null,

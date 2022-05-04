@@ -30,6 +30,7 @@ import {
 	ShapeGeometry,
 	MeshBasicMaterial,
 	DoubleSide,
+	FrontSide,
 	Euler
 } from './build/three.module.js';
 import { OrbitControls } from './scripts/jsm/controls/OrbitControls.js';
@@ -51,10 +52,14 @@ class PlayerSelectScene {
 		//this.scene.background = new Color( 0x88ccff );
 		this.container = document.getElementById( 'player-select-character' );
 		this.skins = document.getElementById("player-skins");
-		this.w = 600;
+		this.w = 600;//window.innerHeight*.4
 		this.h = window.innerHeight*.4;
+		if(appGlobal.mobile.isMobile)
+			this.h = window.innerHeight*.75;
+			
 		this.container.style.width = this.w+"px";
-		this.container.style.height = this.skins.style.height = this.h+"px";
+		this.container.style.height = this.h+"px"; 
+		//this.skins.style.height = this.h+"px";
 
 
 
@@ -246,9 +251,18 @@ class PlayerSelectScene {
 			tipObject.visible = false;
 			
 			self.initCAH(this.characters[i]);
+
 			for(let k = 0; k<this.characters[i].attach.length; k++){
+				
 				this.characters[i].attach[k].obj.visible = false;
 				
+				this.characters[i].object.traverse(function(obj){
+					if(obj.name.includes("outline")){
+						obj.material = new MeshBasicMaterial({color:0xff0000, side:FrontSide})
+						obj.material.visible = false;
+					}
+				});
+
 				this.characters[i].attach[k].obj.traverse( function ( obj ) {
 					if(obj.name.includes("boost-part")){
 						obj.material.transparent = true;
@@ -258,6 +272,7 @@ class PlayerSelectScene {
 						obj.material.emissive = new Color(0xffbf80);
 						//self.boostObjs.push(obj);
 					}
+
 				});
 
 				//sentence.includes(word)	
@@ -319,7 +334,7 @@ class PlayerSelectScene {
 
 			const nitroText = new PlayerSelectInfoText({text:"submachine gun",                    parent:nitroGun,                offset:new Vector3(-.7, 1.2, .6),      font:font, distanceMult:300,  scale:.022, rot:new Euler(0,0,0)});
 			self.infoTexts.push(nitroText);
-			const nitroAbility = new PlayerSelectInfoText({text:"[Q] throw nade",        parent:nitroFoot,               offset:new Vector3(.3, .1, .04), font:font, distanceMult:300, scale:.0032, rot:new Euler( -Math.PI/2, Math.PI/4, -Math.PI/1.75 )});
+			const nitroAbility = new PlayerSelectInfoText({text:"[Q] throw nade",        		  parent:nitroFoot,               offset:new Vector3(.3, .1, .04), font:font, distanceMult:300, scale:.0032, rot:new Euler( -Math.PI/2, Math.PI/4, -Math.PI/1.75 )});
 			self.infoTexts.push(nitroAbility);
 			const nitroPlanetSwitchText = new PlayerSelectInfoText({text:"[E] to switch planets", parent:nitroBoostHolder,        offset:new Vector3(.4, .3, 0), font:font, distanceMult:350,  scale:.0032, rot:new Euler(0,0,0)});
 			self.infoTexts.push(nitroPlanetSwitchText);
@@ -480,9 +495,12 @@ class PlayerSelectScene {
 	}
 
 	updateWindowSize(){
-		console.log("sdf")
+	
+		this.w = 600;//window.innerHeight*.4
 		this.h = window.innerHeight*.4;
-		this.container.style.height = this.skins.style.height = this.h+"px";
+		if(appGlobal.mobile.isMobile)
+			this.h = window.innerHeight*.75;
+		//this.skins.style.height = this.h+"px";
 		this.renderer.setSize(this.w, this.h);
 		this.camera.aspect = this.w / this.h;
 		this.camera.updateProjectionMatrix();

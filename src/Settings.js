@@ -20,6 +20,7 @@ class Settings {
       document.getElementById("settings").style.display = "block";
       //document.getElementById("settings-btn").style.display = "none";
     });
+    
     document.getElementById("close-settings-btn").addEventListener("click", function (){
       //document.getElementById("settings-btn").style.display = "block";
       document.getElementById("settings").style.display = "none";
@@ -35,6 +36,7 @@ class Settings {
       self.localParams["mouseSens"]  = fnl;
       self.updateCookies();
     });
+    
     document.getElementById('settings-vol').addEventListener('change', function(e){
       let fnl = parseFloat(e.target.value); 
       if(fnl>1.5)
@@ -46,11 +48,29 @@ class Settings {
       self.localParams["volume"] = fnl;
       self.updateCookies();
     });
+    
+    document.getElementById('settings-music-vol').addEventListener('change', function(e){
+      let fnl = parseFloat(e.target.value); 
+      if(fnl>1.5)
+        fnl = 1.5;
+      if(fnl<0)
+        fnl = 0;
+
+      window.settingsParams["musicVolume"] = fnl;
+      self.localParams["musicVolume"] = fnl;
+
+      if(appGlobal.soundHandler)
+        appGlobal.soundHandler.updateGainNode();
+    
+      self.updateCookies();
+    });
+
     document.getElementById('cross-hair-col').addEventListener('change', function(e){
       window.settingsParams["crossHairColor"] = ""+e.target.value+"";
       document.getElementById('recticle').style.background = "#"+window.settingsParams["crossHairColor"]+""; 
       self.updateCookies();
     });
+    
     document.getElementById('settings-ads-sense-mult').addEventListener('change', function(e){
       let fnl = parseFloat(e.target.value); 
       if(fnl>3)
@@ -73,6 +93,7 @@ class Settings {
       appGlobal.gamePad.canDiscoverGamePad = e.target.checked;
       
       self.updateCookies();
+
     });
     
     self.setInputFilter(document.getElementById("settings-ads-sense-mult"), function(value) {
@@ -136,6 +157,10 @@ class Settings {
         document.getElementById('mouse-sens').placeholder = this.localParams["mouseSens"]; 
         window.settingsParams["mouseSens"] = this.localParams["mouseSens"];
       break;
+      case "musicVolume":
+        document.getElementById('settings-music-vol').placeholder = this.localParams["musicVolume"]; 
+        window.settingsParams["musicVolume"] = this.localParams["musicVolume"];
+      break;
       case "volume":
         document.getElementById('settings-vol').placeholder = this.localParams["volume"]; 
         window.settingsParams["volume"] = this.localParams["volume"];
@@ -163,6 +188,7 @@ class Settings {
 
   killCookies(){
     document.cookie = "mouseSens=1; path=/";
+    document.cookie = "musicVolume=1; path=/";
     document.cookie = "volume=1; path=/";
     document.cookie = "crossHairColor=fff; path=/";
     document.cookie = "adsMouseSenseMult=1; path=/";

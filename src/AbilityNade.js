@@ -37,7 +37,8 @@ class AbilityNade extends Abilities {
 		if(!this.canDoAbility){ // doing ability
 
 			if(this.firstThrow != null && this.firstThrow.killed){
-
+				const dist = appGlobal.globalHelperFunctions.getDistanceForSound(this.firstThrow.collider.center);
+    			appGlobal.soundHandler.playSoundByName({name:"nade-hit-2", dist:dist});
 				for(let i = 0; i<5; i++){
 					const dir = new Vector3().copy(this.firstThrow.grav).multiplyScalar(.3);
 					
@@ -69,7 +70,7 @@ class AbilityNade extends Abilities {
 						worldPosition:this.worldPos,
 					}
 
-					appGlobal.soundHandler.playSoundByName({name:"rocket2", dist:1});
+					//appGlobal.soundHandler.playSoundByName({name:"rocket2", dist:1});
 					
 					if(window.socket !=null ){
 						// socket.emit('shoot', {
@@ -89,6 +90,7 @@ class AbilityNade extends Abilities {
 
 		}
 	}
+
 	updateLooped(){
 		super.updateLooped();
 		
@@ -103,6 +105,20 @@ class AbilityNade extends Abilities {
 	
 	doAbility(){
 		if(appGlobal.localPlayer!=null){
+			appGlobal.localPlayer.fps.throw();
+			const self = this;
+			//appGlobal.soundHandler.playSoundByName({name:"nade", dist:1});
+			setTimeout(function(){
+				self.throwNadeHelper();
+			},200);
+		}
+		
+		super.confirmAbility();
+	}
+
+	throwNadeHelper(){
+		if(appGlobal.localPlayer!=null){
+			
 			this.id = appGlobal.localPlayer.id;
 			this.worldPos.copy(appGlobal.world.worldPosition);
 			const dir = new Vector3();
@@ -120,8 +136,10 @@ class AbilityNade extends Abilities {
 			dir.multiplyScalar(.5);
 			
 			//const cross = new Vector3().crossVectors(appGlobal.localPlayer.grav, dir);
-			const pos = new Vector3().copy( appGlobal.localPlayer.playerCollider.end ).addScaledVector( dir, appGlobal.localPlayer.playerCollider.radius * 1.5 );//.add(cross);
-			//pos = appGlobal.localPlayer.fps.tipPosition;
+			//const pos = new Vector3().copy( appGlobal.localPlayer.playerCollider.end ).addScaledVector( dir, appGlobal.localPlayer.playerCollider.radius * 1.5 );//.add(cross);
+			
+			const pos = new Vector3().copy(appGlobal.localPlayer.fps.leftHandPos);
+			
 			const kp = {
 				pos:new Vector3(), 
 				distance:10, 
@@ -139,8 +157,6 @@ class AbilityNade extends Abilities {
 				worldPosition:this.worldPos,
 			}
 
-			appGlobal.soundHandler.playSoundByName({name:"rocket2", dist:1});
-			
 			if(window.socket !=null ){
 				socket.emit('shoot', {
 					obj: obj,
@@ -151,9 +167,6 @@ class AbilityNade extends Abilities {
 			this.firstThrow = new StickyBullet(obj, true); 
 			this.arr.push(this.firstThrow);
 		}
-
-		
-		super.confirmAbility();
 	}
 
 	deactivateAbility(){
@@ -162,7 +175,6 @@ class AbilityNade extends Abilities {
 
 	kill(){
 		super.kill();
-
 	}
 	
   	

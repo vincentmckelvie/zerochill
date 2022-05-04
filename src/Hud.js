@@ -20,9 +20,9 @@ class Hud {
 		this.recticle =  document.getElementById( 'recticle' );
 		this.hitMarker =  document.getElementById( 'hit-marker' );
 		this.healthBar =  document.getElementById( 'health-fill' );
-		this.healthBarWidth = 150;
+		this.healthBarWidth = 187;
 		this.boostBar =  document.getElementById( 'boost-fill' );
-		this.boostBarWidth =  150;
+		this.boostBarWidth =  187;
 		this.reload =  document.getElementById( 'reloading' );
 		this.ammo =  document.getElementById( 'ammo-amount' );
 		this.ammoTotal =  document.getElementById( 'ammo-amount-total' );

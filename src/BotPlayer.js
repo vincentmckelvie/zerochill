@@ -12,7 +12,9 @@ import {
 	Euler,
 	TextureLoader,
 	Color,
-	SphereGeometry
+	SphereGeometry,
+	MeshBasicMaterial,
+	FrontSide
 } from './build/three.module.js';
 import { Capsule } from './scripts/jsm/math/Capsule.js';
 import { BotWeapon } from './BotWeapon.js';
@@ -69,7 +71,6 @@ class BotPlayer {
 		const end = new Vector3().copy(pos);
 		pos.multiplyScalar(appGlobal.worldScale*6);
 
-		
 		this.grav = new Vector3().copy(pos).sub(new Vector3()).normalize();
 		const n = new Vector3().copy(pos).add( this.grav.multiplyScalar(this.playerHeight) );
 		
@@ -188,6 +189,13 @@ class BotPlayer {
 		
 		//this.movement  = clone( self.getModelByName(OBJ.name+"-"+OBJ.movement).scene );
 		this.character = clone( self.getModelByName("body-"+OBJ.name).scene );
+
+		this.character.traverse(function(obj){
+			if(obj.name.includes("outline")){
+				obj.material = new MeshBasicMaterial({color:0xff0000, side:FrontSide})
+				//obj.material.visible = false;
+			}
+		});
 
 		const skel = ["spine_01", "spine_02", "neck_01", "head", "clavicle_l", "clavicle_r", "upperarm_r", "upperarm_l","lowerarm_r", "pelvis", "thigh_l", "calf_r", "hand_l"];
 		for(let k =0; k<12; k++){
@@ -349,7 +357,8 @@ class BotPlayer {
 			"Sphere068",//fatty
 			"Plane001",//sub
 			"Sphere070",//sniper
-			"Sphere073"//assault
+			"Sphere073",//assault
+			"outline-gun001"
 		]
 		for(let i = 0; i<gunNames.length; i++){
 			const gun = this.character.getObjectByName(gunNames[i]); 
@@ -527,7 +536,10 @@ class BotPlayer {
 			case "chasing":
 				
 				this.xRot.rotateOnAxis(new Vector3(0,1,0), Math.sin(this.aiInc)*.02)
-				this.axisY = 1;
+				if(this.playerOnFloor)
+					this.axisY = 1;
+				else
+					this.axisY = 0;
 				this.axisX = 0;
 				
 				if( dist < this.aiRndDist){
@@ -598,7 +610,9 @@ class BotPlayer {
 		//console.log(this.movementInc)
 		this.currPos.copy(this.playerCollider.start);
 		
-		this.movementSum += this.currPos.distanceTo(this.prevPos);
+		//if(this.playerOnFloor)
+			this.movementSum += this.currPos.distanceTo(this.prevPos)*(appGlobal.deltaTime*1000);
+		
 		if(this.canCheckPlanetSwitch && this.world != appGlobal.world){
 			const self = this;
 			this.canCheckPlanetSwitch = false;
@@ -794,6 +808,10 @@ class BotPlayer {
 	doJumpPad(grav){
 		const self = this;
 		if(!this.isJumping){
+			
+			const dist = appGlobal.globalHelperFunctions.getDistanceForSound(this.playerCollider.start);
+    		appGlobal.soundHandler.playSoundByName({name:"jump-pad-bounce", dist:dist});
+			
 			this.isJumping = true;
 			this.maxSpeed = 120;
 			

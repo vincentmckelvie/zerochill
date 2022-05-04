@@ -53,8 +53,11 @@ class Weapon {
 				this.player.killEmoting();
 				return;
 			}
-			if(this.canShoot && !this.player.boosting && this.abilityCanShoot){
 
+			if(this.canShoot && !this.player.boosting && this.abilityCanShoot){
+				let adsMod = 1;
+				if(this.player.adsing)
+					adsMod = 1.25;
 				if(this.currentAmmo != 0){
 					this.shoot();
 				}
@@ -67,7 +70,7 @@ class Weapon {
 			 	}else{
 			 		this.shootTimeout = setTimeout(function(){
 				 		self.canShoot = true;
-					}, this.shootCooldown);
+					}, this.shootCooldown*adsMod);
 			 	}
 
 			 	this.currentAmmo --;

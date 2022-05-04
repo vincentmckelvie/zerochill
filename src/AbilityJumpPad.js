@@ -41,21 +41,36 @@ class AbilityJumpPad extends Abilities {
 			if(!this.throw.killed){
 				this.throw.update();
 			}else{
-				super.confirmAbility();
-				this.jumpPad = new JumpPad({worldPosition:this.throw.world.collider.center, position:this.throw.collider.center}) 
-				this.throw = null;	
+				const dist = appGlobal.globalHelperFunctions.getDistanceForSound(this.throw.collider.center);
+    			appGlobal.soundHandler.playSoundByName({name:"jump-pad-land", dist:dist});
+				this.jumpPad = new JumpPad({worldPosition:this.throw.world.collider.center, position:this.throw.collider.center}) 	
 			}
 		}
 
 		if(this.jumpPad){
 			if(!this.jumpPad.killed){
 				this.jumpPad.update();	
+				this.throw = null;	
 			}
 		}
 			 	
 	}
 	
 	doAbility(){
+		if(appGlobal.localPlayer!=null){
+			const self = this;
+			appGlobal.localPlayer.fps.throw();
+			//appGlobal.soundHandler.playSoundByName({name:"nade", dist:1});
+			setTimeout(function(){
+				if(this.throw == null)
+					self.throwHelper();
+			},200);
+			
+		}
+		super.confirmAbility();
+	}
+
+	throwHelper(){
 		if(appGlobal.localPlayer!=null){
 
 			this.id = appGlobal.localPlayer.id;
@@ -75,8 +90,8 @@ class AbilityJumpPad extends Abilities {
 			dir.multiplyScalar(.5);
 			
 			//const cross = new Vector3().crossVectors(appGlobal.localPlayer.grav, dir);
-			const pos = new Vector3().copy( appGlobal.localPlayer.playerCollider.end ).addScaledVector( dir, appGlobal.localPlayer.playerCollider.radius * 1.5 );//.add(cross);
-			//pos = appGlobal.localPlayer.fps.tipPosition;
+			//const pos = new Vector3().copy( appGlobal.localPlayer.playerCollider.end ).addScaledVector( dir, appGlobal.localPlayer.playerCollider.radius * 1.5 );//.add(cross);
+			const pos = appGlobal.localPlayer.fps.leftHandPos;
 			const kp = {
 				pos:new Vector3(), 
 				distance:10, 
@@ -94,7 +109,7 @@ class AbilityJumpPad extends Abilities {
 				worldPosition:this.worldPos,
 			}
 
-			appGlobal.soundHandler.playSoundByName({name:"rocket2", dist:1});
+			//appGlobal.soundHandler.playSoundByName({name:"nade", dist:1});
 			
 			if(window.socket !=null ){
 				// socket.emit('shoot', {
@@ -103,10 +118,9 @@ class AbilityJumpPad extends Abilities {
 				// 	name: "jumpPad"
 				// });
 			}
+
 			this.throw = new AbilityBullet(obj, true); 
 		}
-
-
 	}
 
 	deactivateAbility(){
