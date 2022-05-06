@@ -228,9 +228,9 @@ class BotPlayer {
 		}
 			
 
-		appGlobal.characterOutlineMeshes.push(this.character);
+		//appGlobal.characterOutlineMeshes.push(this.character);
 		//appGlobal.characterOutlineMeshes.push(this.movement);
-		appGlobal.scene.characterOutlinePass.selectedObjects = appGlobal.characterOutlineMeshes;
+		//appGlobal.scene.characterOutlinePass.selectedObjects = appGlobal.characterOutlineMeshes;
 		
 		const geo = new BoxGeometry( 2, 2.5, 1.5 );
 		const mat = new MeshStandardMaterial({    color:0x00ff00, visible:false});

@@ -63,6 +63,9 @@ class AbilityPlanetSwitch extends Abilities {
 		if ( intersection.length > 0 ) {
 			
 			if(intersection[0].object.worldIndex != this.worldIndex){
+				for(let i = 0; i<appGlobal.worlds.length; i++){
+					appGlobal.worlds[i].outline.material.visible = false;
+				}
 				this.outlinedPoint.copy(intersection[0].point);
 				this.outlinedWorld = appGlobal.worlds[intersection[0].object.worldIndex];
 				this.outlinedWorld.outline.material.visible = true;
@@ -73,18 +76,14 @@ class AbilityPlanetSwitch extends Abilities {
 				}
 				
 				this.outlinedWorld = null;
-				//appGlobal.scene.updateOutlined([]);
+				
 			}
 			
 		}else{
 			for(let i = 0; i<appGlobal.worlds.length; i++){
 				appGlobal.worlds[i].outline.material.visible = false;
 			}
-			// if(this.outlinedWorld!=null){
-			// 	this.outlinedWorld.outline.material.visible = false;
-			// }
 			this.outlinedWorld = null;
-			//appGlobal.scene.updateOutlined([]);
 		}
 		
 	}

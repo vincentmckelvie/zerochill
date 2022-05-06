@@ -48,8 +48,8 @@ class CustomScene {
 		this.renderer.setPixelRatio( 1 );
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
 		this.renderer.domElement.id = "three";
-		//this.renderer.shadowMap.enabled = true;
-		//this.renderer.shadowMap.type = VSMShadowMap;
+		this.renderer.shadowMap.enabled = true;
+		this.renderer.shadowMap.type = VSMShadowMap;
 
 		this.composer;
 		this.outlinePass; 
@@ -241,7 +241,7 @@ class CustomScene {
 		this.initSkySphere();
 		this.initLights();
 		this.initWorlds();
-		this.initComposer();
+		//this.initComposer();
 		appGlobal.itemHandler.reset();
 	}
 	getBgVertex(){

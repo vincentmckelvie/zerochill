@@ -54,13 +54,15 @@ class PlayerSelectScene {
 		this.skins = document.getElementById("player-skins");
 		this.w = 600;//window.innerHeight*.4
 		this.h = window.innerHeight*.4;
-		if(appGlobal.mobile.isMobile)
+		if(appGlobal.mobile.isMobile){
 			this.h = window.innerHeight*.75;
-			
+		}else{
+			this.skins.style.height = this.h+"px";
+		}
+	
 		this.container.style.width = this.w+"px";
 		this.container.style.height = this.h+"px"; 
-		//this.skins.style.height = this.h+"px";
-
+		
 
 
 		this.renderer = new WebGLRenderer( { antialias: false, alpha:true } );

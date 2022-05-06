@@ -659,7 +659,7 @@ const globalHelperFunctions = {
 					clockTime ++;
 				}
 
-				if(clockTime%30==0){
+				if(clockTime % 30 == 0){
 					window.timeIncrease.damage += 2;
 					window.timeIncrease.impulse += 10;
 					window.timeIncrease.respawnSpeed -= 50;
@@ -793,7 +793,7 @@ const appGlobal = {
 		{name:"fps-submachine",   	model:null, loaded:false, url:"models/submachine/default/fps.glb"  },
 		{name:"fps-assault",      	model:null, loaded:false, url:"models/assault/default/fps.glb"  },
 		
-		{name:"title",      		model:null, loaded:false, url:"zerochill.glb"  },
+		{name:"title",      		model:null, loaded:false, url:"zerochill-2.glb"  },
 		
 		{name:"assault-boost",      model:null, loaded:false, url:"models/assault/default/boost.glb"  },
 		{name:"assault-directional",model:null, loaded:false, url:"models/assault/default/directional.glb"  },

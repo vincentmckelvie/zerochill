@@ -58,7 +58,7 @@ class TitleScene {
 			self.title.traverse( function ( obj ) {
 				if(obj.isMesh){
 					obj.material.envMap = reflectionMap;
-					obj.material.roughness = .06;
+					//obj.material.roughness = .06;
 					obj.material.metalness = 1;
 				}
 			});

@@ -98,6 +98,7 @@ class GlobalSoundHandler {
 				self.samples.push(obj);
 				if(name=="unloved")
 					self.playSong({name:name});
+
 			});
 	  	});
 
@@ -173,12 +174,16 @@ class GlobalSoundHandler {
 		this.mainAudioSource = this.context.createBufferSource();
 		this.mainAudioSource.buffer = OBJ.sample.sample;
 		this.mainAudioGainNode = this.context.createGain();
-		this.mainAudioGainNode.gain.value = 1 *  (.1 * window.settingsParams["musicVolume"]); // 10 %
+		this.mainAudioGainNode.gain.value = 0;
 		
 		this.mainAudioSource.loop = true;
 		this.mainAudioSource.connect(this.mainAudioGainNode);
 		this.mainAudioGainNode.connect(this.context.destination);
 		this.mainAudioSource.start(0);
+		
+		const toVal = 1 *  (.1 * window.settingsParams["musicVolume"]); // 10 %
+		gsap.to(this.mainAudioGainNode.gain,{duration:2.5, value:toVal, ease: "none", delay:1, oncomplete:function(){}, onUpdate:function(){}});
+		
 	}
 
 	getKey(shouldDoRandom){
@@ -194,7 +199,6 @@ class GlobalSoundHandler {
 }
 
 export { GlobalSoundHandler };
-
 
 class SoundRepeatHandler{
 	constructor(OBJ){
