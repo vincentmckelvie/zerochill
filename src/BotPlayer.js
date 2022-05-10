@@ -701,7 +701,8 @@ class BotPlayer {
 			
 			appGlobal.totalKills++;
 			document.getElementById("kills-bots").innerHTML="kills: "+appGlobal.totalKills;
-			
+			appGlobal.controller.killCount =appGlobal.totalKills
+			//appGlobal.globalHelperFunctions.updatePlayerDom({dom:appGlobal.controller.dom ,id:"bot", killCount:appGlobal.totalKills});
 			this.kill();
 		}
 	}
@@ -740,6 +741,8 @@ class BotPlayer {
 			if(this.strafeRandomTimeout!=null)
 				clearInterval(this.strafeRandomTimeout);
 
+			this.targetQuaternion.identity ();
+			this.characterMeshCorrector.quaternion.identity();
 
 			this.canDoStrafeRandom = true;
 			this.canCheckPlanetSwitch = true;

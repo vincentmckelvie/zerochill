@@ -600,6 +600,7 @@ const globalHelperFunctions = {
 		},
 	updatePlayerDom:
 		function(OBJ){
+			console.log("sdfsdf")
 			OBJ.dom.innerHTML = "<span class='player-name'>" + OBJ.id + "</span>    <span class='kill-count'>"+OBJ.killCount+"</span>";
 		},
 	killPlayerDom:
