@@ -54,6 +54,12 @@ class PlayerSelectScene {
 		this.skins = document.getElementById("player-skins");
 		this.w = 600;//window.innerHeight*.4
 		this.h = window.innerHeight*.4;
+
+
+		//record 
+		// this.w = 1200;//window.innerHeight*.4
+		// this.h = window.innerHeight*.8;
+
 		if(appGlobal.mobile.isMobile){
 			this.h = window.innerHeight*.75;
 		}else{
@@ -87,7 +93,9 @@ class PlayerSelectScene {
 		this.controls.enablePan = false;
 		this.controls.enableZoom = false;
 		this.controls.screenSpacePanning = true;
-		this.controls.autoRotate = false;		
+		this.controls.autoRotate = true;		
+		this.controls.autoRotateSpeed = 1; 
+		http://localhost/bots.html?seed=1553
 		this.controls.minPolarAngle = Math.PI/2; // radians
 		this.controls.maxPolarAngle = Math.PI/2; // radians 
 		//this.controls.minDistance = 0;
@@ -401,7 +409,23 @@ class PlayerSelectScene {
 			self.infoTexts.push(sixgunTeleportText);
 			
 		}); 
-
+		
+		// setTimeout(function(){
+		// 	self.handleCharacterSwitch( {class:"sticky", movement:"directional"} );
+		// 	setTimeout(function(){
+		// 		self.handleCharacterSwitch( {class:"launcher", movement:"teleport"} );
+		// 		setTimeout(function(){
+		// 			self.handleCharacterSwitch( {class:"sniper", movement:"boost"} );
+		// 			setTimeout(function(){
+		// 				self.handleCharacterSwitch( {class:"submachine", movement:"directional"} );
+		// 				setTimeout(function(){
+		// 					self.handleCharacterSwitch( {class:"sixgun", movement:"teleport"} );
+		// 				},1700)
+		// 			},1700)
+		// 		},1700)
+		// 	},1700)
+		// },6000);
+		
 	}
 
 	tryCopy(object,parent){
@@ -497,9 +521,14 @@ class PlayerSelectScene {
 	}
 
 	updateWindowSize(){
-	
+		
 		this.w = 600;//window.innerHeight*.4
 		this.h = window.innerHeight*.4;
+
+
+		// this.w = 1200;//window.innerHeight*.4
+		// this.h = window.innerHeight*.8;
+
 		if(appGlobal.mobile.isMobile)
 			this.h = window.innerHeight*.75;
 		//this.skins.style.height = this.h+"px";

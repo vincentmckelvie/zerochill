@@ -89,6 +89,8 @@ class BotBullet {
 			if(this.isLocal){
 
 				this.knockParams.pos = this.mesh.position;
+				this.knockParams.strength += window.timeIncrease.knock;
+				
 				appGlobal.globalHelperFunctions.knockPlayer(this.knockParams);
 				
 				let arr = [];

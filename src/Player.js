@@ -680,7 +680,7 @@ class Player {
 				gsap.to(this.blinkTarg, {duration:.5, x:0, y:0, z:0, ease: "circ.out()", delay:0});
 				this.canBlink = false;
 				for(let i = 0; i<this.abilities.length; i++){
-					if(this.abilities[i].name == "blink"){
+					if(this.abilities[i].name == "dash"){
 						this.abilities[i].confirmAbility();
 					}
 					
@@ -692,7 +692,7 @@ class Player {
 				gsap.to(this.blinkTarg, {duration:.5, x:0, y:0, z:0, ease: "circ.out()", delay:0});
 				this.canBlink = false;
 				for(let i = 0; i<this.abilities.length; i++){
-					if(this.abilities[i].name == "blink"){
+					if(this.abilities[i].name == "dash"){
 						this.abilities[i].confirmAbility();
 					}	
 				}

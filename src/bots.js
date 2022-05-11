@@ -144,23 +144,11 @@ const abilities = {
 	blink:{
 			class:AbilityBlink,
 			type:"none",
-			cooldown:3000,
-			key:"Shift",
-			abilityKey:"Shift",
-			killOnLand:false,
-			name:"blink",
-			abilityTime:.2,
-			cooldownUI:true,
-			sound:"blink",
-	},
-	blink:{
-			class:AbilityBlink,
-			type:"none",
 			cooldown:4000,
 			key:"Shift",
 			abilityKey:"Shift",
 			killOnLand:false,
-			name:"blink",
+			name:"dash",
 			abilityTime:.2,
 			cooldownUI:true,
 			sound:"blink",
@@ -600,7 +588,6 @@ const globalHelperFunctions = {
 		},
 	updatePlayerDom:
 		function(OBJ){
-			console.log("sdfsdf")
 			OBJ.dom.innerHTML = "<span class='player-name'>" + OBJ.id + "</span>    <span class='kill-count'>"+OBJ.killCount+"</span>";
 		},
 	killPlayerDom:
@@ -646,9 +633,9 @@ const globalHelperFunctions = {
 			window.timeIncrease.chasingSwitch = 0
 			window.timeIncrease.planetSwitchCheck = 0
 			window.timeIncrease.planetSwitchMovementThreshold = 0;
+			window.timeIncrease.knock = 0;
 			
 			setTimeout(function(){
-				console.log("init mobile dom")
 				appGlobal.mobile.initDom();
 			},200);
 			
@@ -668,6 +655,10 @@ const globalHelperFunctions = {
 					window.timeIncrease.chasingSwitch += 50;
 					window.timeIncrease.planetSwitchCheck += 40;
 					window.timeIncrease.planetSwitchMovementThreshold += 5;
+					if(window.timeIncrease.knock<40){
+						window.timeIncrease.knock += 5;	
+					}
+					
 				}
 
 			},1000);
@@ -842,7 +833,6 @@ const appGlobal = {
 };
 
 
-
 window.appGlobal = appGlobal;
 
 const planetSwitchBot = {
@@ -867,7 +857,7 @@ const botWeapon = {
 	zoom:80,    
 	adsRandom:.1, 
 	impulse:10, 
-	knockParams:{pos:new THREE.Vector3(), distance:10, strength:40, gravMult:4},
+	knockParams:{pos:new THREE.Vector3(), distance:10, strength:10, gravMult:4},
 	name:"bot",
 	damage:4,
 	sound:"splat",
@@ -906,7 +896,8 @@ const timeIncrease = {
 	respawnSpeed:0,
 	chasingSwitch:0,
 	planetSwitchCheck:0,
-	planetSwitchMovementThreshold:0
+	planetSwitchMovementThreshold:0,
+	knock:0
 }
 window.timeIncrease = timeIncrease;
 //document.getElementById("debug").innerHTML = "game";

@@ -307,6 +307,7 @@ class BotPlayer {
 		
 		this.world = self.getClosestWorld();
 		this.playing = true;
+		this.randomJumpTime = -300+Math.random()*600;
 
 		this.remotePlayer = this;
 		this.radius = .45;
@@ -514,8 +515,6 @@ class BotPlayer {
 					//this.targetQuaternion.copy(quat);
 				//}
 				
-			}else{
-				//targetQuaternion.identity();
 			}
 			//console.log(angle)
 		}else{
@@ -536,7 +535,7 @@ class BotPlayer {
 			case "chasing":
 				
 				this.xRot.rotateOnAxis(new Vector3(0,1,0), Math.sin(this.aiInc)*.02)
-				if(this.playerOnFloor)
+				if(this.animationOnFloor)
 					this.axisY = 1;
 				else
 					this.axisY = 0;
@@ -613,6 +612,9 @@ class BotPlayer {
 		//if(this.playerOnFloor)
 			this.movementSum += this.currPos.distanceTo(this.prevPos)*(appGlobal.deltaTime*1000);
 		
+		let fnlJumpCheckTime = (2000+this.randomJumpTime) - window.timeIncrease.planetSwitchCheck;
+		if(fnlJumpCheckTime<0)fnlJumpCheckTime=0;
+		
 		if(this.canCheckPlanetSwitch && this.world != appGlobal.world){
 			const self = this;
 			this.canCheckPlanetSwitch = false;
@@ -622,19 +624,16 @@ class BotPlayer {
 					if(self.world != appGlobal.world)
 						self.boostToOtherWorld();
 				}
+				this.randomJumpTime = -300+Math.random()*600;
 				//console.log(self.movementSum);
 				self.movementSum = 0;
-			}, 2000 - window.timeIncrease.planetSwitchCheck); // lower means they'll switch planets quicker
+			}, fnlJumpCheckTime); // lower means they'll switch planets quicker
 		}
-		//console.log(this.movementSum)
-		// //if(this.movementInc > this.boostTimer){
-			
-			
-
-		// 	this.movementSum = 0;
-		// 	this.movementInc = 0;
-		// //}
-		
+		if(this.getClosestWorld() != this.world && this.abilitiesCanSelectClosestWorld() &&  this.animationOnFloor){
+			//self.boostToOtherWorld();
+			console.log("hi");
+			this.world = this.getClosestWorld();
+		}
 		this.prevPos.copy(this.playerCollider.start);
 		
 	}
@@ -1017,7 +1016,6 @@ class BotPlayer {
 	playerWorldCollision(world) {
 		//this.playerCollisions();
 
-		
 		const center = this.vector1.addVectors( this.playerCollider.start, this.playerCollider.end ).multiplyScalar( 0.5 );
 
 		const sphere_center = this.world.collider.center;
@@ -1055,6 +1053,7 @@ class BotPlayer {
 			
 			const d2 = this.playerCollider.start.distanceToSquared( sphere_center );
 			//const d2 = this.playerCollider.end.distanceToSquared( sphere_center );
+			//const d2 = start.distanceToSquared( sphere_center );
 			
 			//if ( d2 < r2 ) {
 			
@@ -1079,7 +1078,6 @@ class BotPlayer {
 
 	checkCanSetClosestWorld(){
 		
-	
 		if(this.canSelectClosestWorld && this.boostAndGravWorldCollisionHelper(1.0))
 			return true;
 
@@ -1131,16 +1129,16 @@ class BotPlayer {
 		//console.log(damping);
 
 		const start = new Vector3().copy(this.playerCollider.start);
-		this.currWorld = this.world;
 		
 		//if(this.ability.canSetClosestWorld){
-		if(this.checkCanSetClosestWorld()){
-			this.hitWorldWhenNotChecking = false;
-			//this.playerCollisions();
-			this.world = this.getClosestWorld();
-		}else{
-			//this.boostAndGravSwitchHelper();
-		}
+		// if(this.checkCanSetClosestWorld()){
+		// 	this.hitWorldWhenNotChecking = false;
+		// 	//this.playerCollisions();
+		// 	this.world = this.getClosestWorld();
+		// 	console.log("switch world in update player position and rotation")
+		// }else{
+		// 	//this.boostAndGravSwitchHelper();
+		// }
 		
 		//grav
 		//if(!this.playerOnFloor)
