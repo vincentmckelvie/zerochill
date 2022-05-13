@@ -11,6 +11,7 @@ import { StickyBullet } from './StickyBullet.js';
 import { RocketBullet } from './RocketBullet.js';
 import { AutoBullet } from './AutoBullet.js';
 import { SniperBullet } from './SniperBullet.js';
+import { ThrowBullet } from './ThrowBullet.js';
 
 class RemoteBulletHandler {
 	//{aliveTime:aliveTime, bullet:bullet};
@@ -62,6 +63,61 @@ class RemoteBulletHandler {
 
 	    	shooter.player.handleRemoteShoot();
 
+    	}
+
+    	const b = new bullet(OBJ.obj, false);
+    	this.arr[this.index] = b;
+        this.index++;
+
+        if(this.index == this.max){
+            this.index = 0;
+            this.arrFull = true;	
+        }
+	}
+
+	abilityThrow(OBJ){
+		
+		if(this.arrFull){
+            this.arr[this.index].kill();	
+        }
+     
+        let bullet;
+    	bullet = ThrowBullet;
+    	
+    	const shooter = appGlobal.globalHelperFunctions.getRemotePlayerById(OBJ.id);
+    	if(shooter != null){
+    		
+    		const dist = appGlobal.globalHelperFunctions.getDistanceForSound(shooter.player.offset.position);
+	    	appGlobal.soundHandler.playSoundByName({name:"nade", dist:dist});
+	    	
+
+    	}
+
+    	const b = new bullet(OBJ.obj, false);
+    	this.arr[this.index] = b;
+        this.index++;
+
+        if(this.index == this.max){
+            this.index = 0;
+            this.arrFull = true;	
+        }
+	}
+
+	abilityNadeThrow(OBJ){
+		
+		if(this.arrFull){
+            this.arr[this.index].kill();	
+        }
+     
+        let bullet;
+    	bullet = StickyBullet;
+    	
+    	const shooter = appGlobal.globalHelperFunctions.getRemotePlayerById(OBJ.id);
+    	if(shooter != null){
+    		
+    		const dist = appGlobal.globalHelperFunctions.getDistanceForSound(shooter.player.offset.position);
+	    	appGlobal.soundHandler.playSoundByName({name:"nade", dist:dist});
+	    	
     	}
 
     	const b = new bullet(OBJ.obj, false);

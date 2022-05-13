@@ -43,7 +43,18 @@ class AbilitySticky extends Abilities {
 			}else{
 				const dist = appGlobal.globalHelperFunctions.getDistanceForSound(this.throw.collider.center);
     			appGlobal.soundHandler.playSoundByName({name:"bliz", dist:dist});
-				this.sticky = new StickyAOE({worldPosition:this.throw.world.collider.center, position:this.throw.collider.center}) 
+
+    			const stickyObj = {worldPosition:this.throw.world.collider.center, position:this.throw.collider.center};
+				this.sticky = new StickyAOE(stickyObj);
+				
+				socket.emit('abilityVisual', {
+					  id: socket.id,
+					  abilityName:"slow land",
+					  position:this.throw.collider.center,
+					  sound:"bliz",
+					  extras:stickyObj
+				});
+				 
 			}
 		}
 
@@ -118,6 +129,13 @@ class AbilitySticky extends Abilities {
 			// 		name: "jumpPad"
 			// 	});
 			// }
+			if(window.socket !=null ){
+				socket.emit('abilityExtras', {
+					id: socket.id,
+					obj: obj,
+					name: "throw"  
+				});
+			}
 			this.throw = new AbilityBullet(obj, true); 
 		}
 	}

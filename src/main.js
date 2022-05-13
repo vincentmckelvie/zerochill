@@ -9,6 +9,7 @@ import { World } from './World.js';
 import { PlayerController } from './PlayerController.js';
 import { CustomScene } from './CustomScene.js';
 import { StickyBullet } from './StickyBullet.js';
+import { ThrowBullet } from './ThrowBullet.js';
 import { RocketBullet } from './RocketBullet.js';
 import { AutoBullet } from './AutoBullet.js';
 import { SniperBullet } from './SniperBullet.js';
@@ -34,6 +35,8 @@ import { Settings } from './Settings.js';
 import { SkinsHandler } from './SkinsHandler.js';
 import { Servers } from './Servers.js';
 import { GamePad } from './GamePad.js';
+import { Mobile } from './Mobile.js';
+
 import { io } from "./socket.io.esm.min.js";
 
 const abilities = {
@@ -60,6 +63,28 @@ const abilities = {
 			abilityTime:3000,
 			cooldownUI:true,
 			sound:"wall-hack",
+	},jumpPad:{
+			class:AbilityJumpPad,
+			type:"press",
+			cooldown:13000,
+			key:"KeyQ",
+			abilityKey:"Q",
+			killOnLand:false,
+			name:"jump pad",
+			abilityTime:0,
+			cooldownUI:true,
+			sound:"nade",
+	},sticky:{
+			class:AbilitySticky,
+			type:"press",
+			cooldown:9000,
+			key:"KeyQ",
+			abilityKey:"Q",
+			killOnLand:false,
+			name:"sticky",
+			abilityTime:0,
+			cooldownUI:true,
+			sound:"nade",
 	},
 	nade:{
 			class:AbilityNade,
@@ -69,28 +94,6 @@ const abilities = {
 			abilityKey:"Q",
 			killOnLand:false,
 			name:"nade",
-			abilityTime:0,
-			cooldownUI:true,
-			sound:"wall-hack",
-	},jumpPad:{
-			class:AbilityJumpPad,
-			type:"press",
-			cooldown:9000,
-			key:"KeyQ",
-			abilityKey:"Q",
-			killOnLand:false,
-			name:"nade",
-			abilityTime:0,
-			cooldownUI:true,
-			sound:"wall-hack",
-	},sticky:{
-			class:AbilitySticky,
-			type:"press",
-			cooldown:9000,
-			key:"KeyQ",
-			abilityKey:"Q",
-			killOnLand:false,
-			name:"sticky",
 			abilityTime:0,
 			cooldownUI:true,
 			sound:"wall-hack",
@@ -138,10 +141,10 @@ const abilities = {
 			key:"Shift",
 			abilityKey:"Shift",
 			killOnLand:false,
-			name:"blink",
+			name:"dash",
 			abilityTime:.2,
 			cooldownUI:true,
-			sound:"blink",
+			sound:"dash",
 	},
 	
 }
@@ -266,6 +269,22 @@ const weapons = {
 		model:"sticky",
 		adsMouseSenseMult:0
 	},
+	throw:{
+		shootCooldown:150,    
+		bullet:StickyBullet, 
+		ammoAmount:16,    
+		reloadCooldown:1000,  
+		zoom:80,    
+		adsRandom:.5, 
+		impulse:60 , 
+		knockParams:{pos:new THREE.Vector3(), distance:10, strength:40, gravMult:4},
+		name:"sticky",
+		damage:60,
+		sound:"rocket2",
+		abilities:[abilities.doubleJump],
+		model:"sticky",
+		adsMouseSenseMult:0
+	},
 	launcher:{
 		shootCooldown:300,  
 		bullet:RocketBullet, 
@@ -278,7 +297,7 @@ const weapons = {
 		name:"launcher",
 		damage:60,
 		sound:"rocket",
-		abilities:[abilities.doubleJump],
+		abilities:[abilities.jumpPad],
 		model:"launcher",
 		adsMouseSenseMult:0
 	},
@@ -348,6 +367,7 @@ const weapons = {
 		model:"sixgun",
 		adsMouseSenseMult:0
 	},
+
 }
 
 
@@ -629,6 +649,7 @@ const globalHelperFunctions = {
 
 const settings = {
 	"mouseSens":1,
+	"musicVolume":1,
 	"volume":1,
 	"crossHairColor":"fff",
 	"adsMouseSenseMult":1,
@@ -684,7 +705,7 @@ const appGlobal = {
 		{name:"fps-submachine",   	model:null, loaded:false, url:"models/submachine/default/fps.glb"  },
 		{name:"fps-assault",      	model:null, loaded:false, url:"models/assault/default/fps.glb"  },
 		
-		{name:"title",      		model:null, loaded:false, url:"zerochill.glb"  },
+		{name:"title",      		model:null, loaded:false, url:"zerochill-2.glb"  },
 		
 		{name:"assault-boost",      model:null, loaded:false, url:"models/assault/default/boost.glb"  },
 		{name:"assault-directional",model:null, loaded:false, url:"models/assault/default/directional.glb"  },
@@ -710,6 +731,7 @@ const appGlobal = {
 		{name:"sniper-directional",model:null, loaded:false, url:"models/sniper/default/directional.glb"  },
 		{name:"sniper-teleport",   model:null, loaded:false, url:"models/sniper/default/teleport.glb"  },
 		{name:"fps-throw",         model:null, loaded:false, url:"models/fps-throw.glb"  },
+		{name:"jump-pad",          model:null, loaded:false, url:"models/jump-pad.glb"  },
 	],
 	initedThree:false,
 	playerSelectScene:null,
@@ -725,6 +747,8 @@ const appGlobal = {
 	worldsHolder:null,
 	parallax:new ParallaxGUI(),
 	skinsHandler:new SkinsHandler(),
+	focused:true,
+	mobile:null,
 };
 
 window.appGlobal = appGlobal;
@@ -752,20 +776,7 @@ function initLoading(){
 			handleLoad(ii,gltf);
 		});
 	}
-	/*
-	loader.load( 'character-anis.glb', function ( gltf ) {
-		handleLoad(0,gltf);
-	});
-	loader.load( 'test3.glb', function ( gltf ) {
-		handleLoad(1,gltf);
-	});
-	loader.load( 'test4.glb', function ( gltf ) {
-		handleLoad(2,gltf);
-	});
-	loader.load( 'fps.glb', function ( gltf ) {
-		handleLoad(3,gltf);
-	});
-	*/
+	
 }
 
 
@@ -796,12 +807,12 @@ function initThree(){
 	
 	overlayChildDisplayHelper();
 	
-	//appGlobal.settings = ;
 	appGlobal.scene = new CustomScene();
 	appGlobal.particleHandler = new GlobalParticleHandler();
 	appGlobal.controller = new PlayerController({id:socket.id, user:appGlobal.user});
 	appGlobal.remoteBullets = new RemoteBulletHandler();
 	appGlobal.itemHandler = new ItemHandler();
+	appGlobal.mobile = new Mobile();
 	appGlobal.soundHandler = new GlobalSoundHandler();
 	appGlobal.playerSelectScene = new PlayerSelectScene();
 	appGlobal.titleScene = new TitleScene();
@@ -886,7 +897,7 @@ document.addEventListener( 'keydown', ( event ) => {
 		if( !appGlobal.doingOverlay ){
 			if(appGlobal.gameState == "game" && appGlobal.globalHelperFunctions.checkPlaying()){
 				overlayChildDisplayHelper();
-				toggleOverlay(true)	
+				toggleOverlay(true);
 			}
 		}
 	}
@@ -934,11 +945,6 @@ document.addEventListener( 'mousedown', (event) => {
 
 });
 
-
-// function checkPlaying(){
-// 	return appGlobal.playing && appGlobal.localPlayer != null;
-// }
-
 function checkShoulPreventDefault(){
 	return event.code=="Tab" || event.code=="LeftControl" || event.code == "KeyW" || event.code=="KeyD" || event.code=="KeyS" || event.code=="KeyA"
 }
@@ -968,7 +974,7 @@ document.body.addEventListener( 'mousemove', ( event ) => {
 		if(!appGlobal.playing){
 			if(appGlobal.titleScene!=null)
 				appGlobal.titleScene.updateMouseMove(event);
-				appGlobal.parallax.updateMouseMove(event);
+			appGlobal.parallax.updateMouseMove(event);
 		}
 	}
 } );
@@ -979,23 +985,34 @@ window.addEventListener( 'resize', function(){
 	}
 });
 
+window.addEventListener('blur', onBlur);
+window.addEventListener('focus', onFocus);
+
+function onBlur() {
+  appGlobal.focused = false;
+}
+
+function onFocus() {
+  appGlobal.focused = true;
+}
+
 function animate() {
 	
-	if(!appGlobal.playing){
-		appGlobal.playerSelectScene.update();
-		appGlobal.titleScene.update();
-		appGlobal.parallax.update();
-	}
-
 	appGlobal.gamePad.update();
-	appGlobal.scene.update();
-	
-	
-	// for(let i = 0; i<appGlobal.remotePlayers.length; i++){
-	// 	appGlobal.remotePlayers[i].update();	
-	// }
+	appGlobal.mobile.update();
 
-	stats.update();
+	//if(appGlobal.focused){
+		appGlobal.scene.update();
+		if(!appGlobal.playing){ 
+			appGlobal.playerSelectScene.update();
+			appGlobal.titleScene.update();
+			appGlobal.parallax.update();
+		}
+	//}
+	
+	if(stats){
+		stats.update();
+	}
 	requestAnimationFrame( animate );
 
 }
@@ -1425,7 +1442,16 @@ socket.on('connect', () => {
 		    if(player != null){
 		    	const dist = appGlobal.globalHelperFunctions.getDistanceForSound(new THREE.Vector3().copy(data.position) );
 				appGlobal.soundHandler.playSoundByName({name:data.sound, dist:dist});
-		    	player.player.handleRemoteAbility({abilityName:data.abilityName})
+		    	player.player.handleRemoteAbility({abilityName:data.abilityName, extras:data.extras})
+		    }
+		}
+	});
+
+	socket.on('serverAbilityExtras', (data) => {
+		if(data.id != socket.id){
+			const player = appGlobal.globalHelperFunctions.getRemotePlayerById(data.id);
+		    if(player != null){
+		    	player.player.handleRemoteAbilityExtras(data);
 		    }
 		}
 	});

@@ -13,6 +13,8 @@ import {
 	
 } from './build/three.module.js';
 import { ParticleEmitter } from './ParticleEmitter.js';
+import { JumpPad } from './JumpPad.js';
+import { StickyAOE } from './StickyAOE.js';
 
 class RemoteAbilities {
 	//{scene:scene, worldScale:worldScale};
@@ -30,7 +32,8 @@ class RemoteAbilities {
 		appGlobal.scene.add(this.wallHackSphere)
 		this.wallHackSphere.scale.set(0,0,0);
 		this.blinkTimeout = null;
-
+		this.jumpPadArr = [];
+		this.stickyArr = [];
 	}
 
 	update(){
@@ -40,9 +43,16 @@ class RemoteAbilities {
 				this.blinkParticle.obj.pos.copy(this.remotePlayer.endWorldPosition);
 				this.blinkParticle.emit();
 			}
+
 			this.blinkParticle.update();
 			this.doubleJumpParticle.update();
 			
+			for(let i = 0; i<this.jumpPadArr.length; i++){
+				this.jumpPadArr[i].update();
+			}
+			for(let i = 0; i<this.stickyArr.length; i++){
+				this.stickyArr[i].update();
+			}
 			//this.crouchVal += (this.crouchTarg-this.crouchVal)*(200*appGlobal.deltaTime);
 			//this.crouch.position.y = this.crouchVal;
 		
@@ -50,10 +60,12 @@ class RemoteAbilities {
 			//this.mesh.position.copy(this.targPos)
 		}
 	}
+
 	updateRemote(OBJ){
 		const self = this;
+	
 		switch(OBJ.abilityName){
-			case "blink":
+			case "dash":
 				this.shouldDoBlinkParticle = true;
 				this.blinkTimeout = setTimeout(function(){
 					self.shouldDoBlinkParticle = false;
@@ -69,17 +81,44 @@ class RemoteAbilities {
 				this.doubleJumpParticle.obj.pos.copy(this.remotePlayer.offset.position);
 				this.doubleJumpParticle.emit();
 			break;
+			case "jumppad land":
+				const jumpPad = new JumpPad(OBJ.extras);
+				this.jumpPadArr.push(jumpPad); 
+			break;
+			case "slow land":
+				const sticky = new StickyAOE(OBJ.extras);
+				this.stickyArr.push(sticky); 
+			break;
+
 		}
+
 	}
+
+	updateExtras(OBJ){
+		
+		switch(OBJ.name){
+			case "throw":
+				appGlobal.remoteBullets.abilityThrow(OBJ);
+			break;
+			case "nade-throw":
+				appGlobal.remoteBullets.abilityNadeThrow(OBJ);
+			break;
+		}
+		
+	}
+
   	kill(){
 
   		if(this.blinkTimeout!=null){
   			clearTimeout(this.blinkTimeout);
   		}
 
+  		this.jumpPadArr = [];
+  		this.slowArr = [];
+  		
   		this.blinkParticle.kill();
 		this.doubleJumpParticle.kill();
-  		
+
   		this.killed = true;
   		this.shouldDoBlinkParticle = false;
   		this.wallHackSphere.geometry.dispose();

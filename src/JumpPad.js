@@ -40,12 +40,15 @@ class JumpPad {
 		this.mesh.rotation.x -= Math.PI/2;
 		this.look.add(/*this.mesh,*/ this.mesh);
 		this.holder.add(this.look);
-		this.collider.center.copy(OBJ.position);
-		this.holder.position.copy(this.collider.center);
 		
-		this.look.lookAt(OBJ.worldPosition);
-		appGlobal.scene.add(this.holder); 
-		this.grav = new Vector3().copy(this.collider.center).sub(OBJ.worldPosition).normalize();
+		this.collider.center.set(OBJ.position.x, OBJ.position.y, OBJ.position.z);
+
+		this.holder.position.copy(this.collider.center);
+		const wp = new Vector3().set(OBJ.worldPosition.x, OBJ.worldPosition.y, OBJ.worldPosition.z);
+		
+		this.look.lookAt(wp);
+		appGlobal.scene.add(this.holder);
+		this.grav = new Vector3().copy(this.collider.center).sub(wp).normalize();
 		
 		this.killTimeout = setTimeout(function(){
 			self.kill();
@@ -58,19 +61,20 @@ class JumpPad {
 			if(appGlobal.loadObjs[i].name==NAME)
 				return appGlobal.loadObjs[i].model;	
 		}
-		
 	}
 
 	update(){
-		this.playerSphereCollision();
-		if(window.socket == null ){
-			this.botsCollision();
+		if(!this.killed){
+			this.playerSphereCollision();
+			if(window.socket == null ){
+				this.botsCollision();
+			}
 		}
 	}
 
 	botsCollision(){
+
 		for (let i = 0;i<appGlobal.remotePlayers.length; i++){
-			
 			const start = new Vector3();
 			const end = new Vector3();
 			appGlobal.remotePlayers[i].remotePlayer.start.getWorldPosition(start);
@@ -91,7 +95,6 @@ class JumpPad {
 				}
 		
 			}
-		
 		}
 	}
 
@@ -113,7 +116,6 @@ class JumpPad {
 				const d2 = point.distanceToSquared( this.collider.center );
 				if ( d2 < r2 ) {
 					this.initPlayerJump();
-					
 				}
 			}
 		}
@@ -145,9 +147,9 @@ class JumpPad {
 
 
   	kill(){
-  		if(appGlobal.localPlayer!=null){
-  			appGlobal.localPlayer.maxSpeed=40;
-  		}
+  		// if(appGlobal.localPlayer!=null){
+  		// 	appGlobal.localPlayer.maxSpeed=40;
+  		// }
   		this.killed = true;
   		appGlobal.globalHelperFunctions.tearDownObject(this.holder);
   		appGlobal.scene.remove(this.holder);

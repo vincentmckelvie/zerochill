@@ -24,7 +24,6 @@ class AbilityNade extends Abilities {
 		this.firstThrow;
 		this.id;
 		this.worldPos = new Vector3();
-		
 
 	}
 	
@@ -43,6 +42,7 @@ class AbilityNade extends Abilities {
 					const dir = new Vector3().copy(this.firstThrow.grav).multiplyScalar(.3);
 					
 					const rndMult = .5;
+					//const rndMult = .01;
 					const r = 1;
 					const rx = ((-r*.5)+Math.random()*r)*rndMult;
 					const ry = ((-r*.5)+Math.random()*r)*rndMult;
@@ -73,11 +73,13 @@ class AbilityNade extends Abilities {
 					//appGlobal.soundHandler.playSoundByName({name:"rocket2", dist:1});
 					
 					if(window.socket !=null ){
-						// socket.emit('shoot', {
-						// 	obj: obj,
-						// 	id: socket.id,
-						// 	name: "sticky"
-						// });
+						
+						socket.emit('abilityExtras', {
+							id: socket.id,
+							obj: obj,
+							name: "nade-throw"  
+						});
+				
 					}
 					const nade = new StickyBullet(obj, true); 
 					this.arr.push(nade);
@@ -157,13 +159,22 @@ class AbilityNade extends Abilities {
 				worldPosition:this.worldPos,
 			}
 
-			if(window.socket !=null ){
-				socket.emit('shoot', {
-					obj: obj,
+			// if(window.socket !=null ){
+			// 	socket.emit('shoot', {
+			// 		obj: obj,
+			// 		id: socket.id,
+			// 		name: "sticky"
+			// 	});
+			// }
+
+			if(window.socket != null){
+				socket.emit('abilityExtras', {
 					id: socket.id,
-					name: "sticky"
+					obj: obj,
+					name: "nade-throw"  
 				});
 			}
+
 			this.firstThrow = new StickyBullet(obj, true); 
 			this.arr.push(this.firstThrow);
 		}

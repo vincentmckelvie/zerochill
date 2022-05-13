@@ -118,7 +118,7 @@ const user = mongoose.model("User", userSchema);
 
 app.set('view-engine','ejs');
 
-app.use(express.static(__dirname+'/dist'));
+app.use(express.static(__dirname+'/src'));
 
 app.use(session({
   secret: ""+process.env.CONNECTSECRET+"",

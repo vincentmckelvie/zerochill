@@ -82,7 +82,7 @@ class RemotePlayer {
 		
 		appGlobal.characterOutlineMeshes.push(this.character);
 		appGlobal.characterOutlineMeshes.push(this.movement);
-		appGlobal.scene.characterOutlinePass.selectedObjects = appGlobal.characterOutlineMeshes;
+		//appGlobal.scene.characterOutlinePass.selectedObjects = appGlobal.characterOutlineMeshes;
 		
 		this.character.position.y = this.movement.position.y = -1.25;
 		this.characterHolder.rotation.y += Math.PI;
@@ -177,6 +177,7 @@ class RemotePlayer {
 	}
 
 	update(){
+
 		if(!this.killed){
 
 			this.rotMod += (appGlobal.deltaTime*400);
@@ -200,7 +201,6 @@ class RemotePlayer {
 			}
 			
 			if(this.shouldDoBoostParticle){
-
 				//this.boostParticle.obj.pos.copy(this.offset.position);
 				this.boostTip.getWorldPosition(this.boostTipWorldPosition);
 				this.boostParticle.obj.pos.copy(this.boostTipWorldPosition);
@@ -245,6 +245,10 @@ class RemotePlayer {
 		this.remoteAbilites.updateRemote(OBJ);
 	}
 
+	handleRemoteAbilityExtras(OBJ){
+		this.remoteAbilites.updateExtras(OBJ);
+	}
+
 	updateRemote(OBJ){
 		//console.log(OBJ);
 		this.targPos.set(OBJ.pos.x,OBJ.pos.y, OBJ.pos.z);
@@ -283,7 +287,6 @@ class RemotePlayer {
   		this.shouldDoBoostParticle = false;
   		this.killed = true;
   		
-
 		appGlobal.globalHelperFunctions.tearDownObject(this.character);
 		
 		this.characterHolder.remove(this.character);

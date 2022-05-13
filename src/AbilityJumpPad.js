@@ -35,15 +35,28 @@ class AbilityJumpPad extends Abilities {
 	update(){
 		super.update();
 	}
+	
 	updateLooped(){
 		super.updateLooped();
 		if(this.throw){
 			if(!this.throw.killed){
 				this.throw.update();
 			}else{
-				const dist = appGlobal.globalHelperFunctions.getDistanceForSound(this.throw.collider.center);
+				
+				const pos = new Vector3().copy(this.throw.collider.center);
+				const dist = appGlobal.globalHelperFunctions.getDistanceForSound(pos);
     			appGlobal.soundHandler.playSoundByName({name:"jump-pad-land", dist:dist});
-				this.jumpPad = new JumpPad({worldPosition:this.throw.world.collider.center, position:this.throw.collider.center}) 	
+    			const jumpPadObj = {worldPosition:this.throw.world.collider.center, position:this.throw.collider.center};
+				this.jumpPad = new JumpPad(jumpPadObj) 
+				
+				socket.emit('abilityVisual', {
+					id: socket.id,
+					abilityName:"jumppad land",
+					position:this.throw.collider.center,
+					sound:"jump-pad-land",
+					extras:jumpPadObj
+				});
+
 			}
 		}
 
@@ -112,11 +125,11 @@ class AbilityJumpPad extends Abilities {
 			//appGlobal.soundHandler.playSoundByName({name:"nade", dist:1});
 			
 			if(window.socket !=null ){
-				// socket.emit('shoot', {
-				// 	obj: obj,
-				// 	id: socket.id,
-				// 	name: "jumpPad"
-				// });
+				socket.emit('abilityExtras', {
+					id: socket.id,
+					obj: obj,
+					name: "throw"  
+				});
 			}
 
 			this.throw = new AbilityBullet(obj, true); 

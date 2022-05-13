@@ -38,12 +38,14 @@ class StickyAOE {
 		this.look = new Object3D();
 		this.look.add(this.mesh);
 		this.holder.add(this.look);
-		this.collider.center.copy(OBJ.position);
+		this.collider.center.set(OBJ.position.x, OBJ.position.y, OBJ.position.z);
 		this.holder.position.copy(this.collider.center);
 		
-		this.look.lookAt(OBJ.worldPosition);
-		appGlobal.scene.add(this.holder); 
+		const wp = new Vector3().set(OBJ.worldPosition.x, OBJ.worldPosition.y, OBJ.worldPosition.z);
 		
+		this.look.lookAt(wp);
+		appGlobal.scene.add(this.holder); 
+		this.sticking = false;
 		this.killTimeout = setTimeout(function(){
 			self.kill();
 		}, 7000);
@@ -51,11 +53,13 @@ class StickyAOE {
 	}
 
 	update(){
-		this.playerSphereCollision();
-		if(window.socket == null ){
-			this.botsCollision();
+		if(!this.killed){
+			this.playerSphereCollision();
+			if(window.socket == null ){
+				this.botsCollision();
+			}
+			this.mesh.rotation.z += appGlobal.deltaTime*2;
 		}
-		this.mesh.rotation.z += appGlobal.deltaTime*2;
 		// }else{
 		// 	playerSphereCollision();
 		// }
@@ -79,7 +83,6 @@ class StickyAOE {
 
 				const d2 = point.distanceToSquared( this.collider.center );
 
-				
 				if ( d2 < r2 ) {
 					//appGlobal.remotePlayers[i].remotePlayer.doJumpPad(this.grav);
 					appGlobal.remotePlayers[i].remotePlayer.maxSpeed = 3;
@@ -111,8 +114,10 @@ class StickyAOE {
 				const d2 = point.distanceToSquared( this.collider.center );
 				if(!appGlobal.localPlayer.isDoingJumpPad){
 					if ( d2 < r2 ) {
+						this.sticking = true;
 						appGlobal.localPlayer.maxSpeed = 3;	
 					}else{
+						this.sticking = false;
 						appGlobal.localPlayer.maxSpeed = 40;
 					}
 				}
@@ -123,9 +128,13 @@ class StickyAOE {
 
 
   	kill(){
-  		if(appGlobal.localPlayer!=null){
-  			appGlobal.localPlayer.maxSpeed=40;
+  		if(this.sticking){
+  			if(appGlobal.localPlayer != null){
+  				appGlobal.localPlayer.maxSpeed=40;
+  			}
+  			this.sticking = false;
   		}
+  		
   		this.killed = true;
   		this.mesh.geometry.dispose();
   		this.mesh.material.dispose();

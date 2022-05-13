@@ -126,12 +126,26 @@ class Abilities {
 		if(this.sound!=null){
 			appGlobal.soundHandler.playSoundByName({name:this.sound, dist:1});
 		}
+
+		let extras = {};
+		switch(this.name){
+			case "nade":
+			case "jump pad":
+			case "sticky":
+				extras = {
+					name:"throw"
+				}
+			break;
+		}
+		
+
 		if(window.socket != null){
 			socket.emit('abilityVisual', {
 				  id: appGlobal.localPlayer.id,
 				  abilityName:this.name,
 				  position:appGlobal.localPlayer.playerCollider.end,
-				  sound:this.sound
+				  sound:this.sound,
+				  extras:extras
 			});
 		}
 
