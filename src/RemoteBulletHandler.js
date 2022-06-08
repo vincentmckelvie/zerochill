@@ -52,14 +52,14 @@ class RemoteBulletHandler {
     	bullet = obj.class.bullet;
     	
     	const shooter = appGlobal.globalHelperFunctions.getRemotePlayerById(OBJ.id);
-    	if(shooter != null){
+    	if(shooter != null && shooter.player!=null){
     		
     		const dist = appGlobal.globalHelperFunctions.getDistanceForSound(shooter.player.offset.position);
 	    	appGlobal.soundHandler.playSoundByName({name:obj.class.sound, dist:dist});
-	    	
-	    	OBJ.obj.pos.x = shooter.player.tipPos.x;
-	    	OBJ.obj.pos.y = shooter.player.tipPos.y;
-	    	OBJ.obj.pos.z = shooter.player.tipPos.z;
+	    	OBJ.obj.tipPos = new Vector3().copy(shooter.player.tipPos);
+	    	// OBJ.obj.pos.x = shooter.player.tipPos.x;
+	    	// OBJ.obj.pos.y = shooter.player.tipPos.y;
+	    	// OBJ.obj.pos.z = shooter.player.tipPos.z;
 
 	    	shooter.player.handleRemoteShoot();
 

@@ -42,11 +42,11 @@ const inApps = [
       price:0
     },
     {
-		  name: 'origin skin',
+		  name: 'debug skins',
 		  purchased: false,
-		  description: 'unlock new origin skins.',
+		  description: 'unlock debug skins.',
 		  skew: '0002',
-		  icon: "origin",
+		  icon: "debug",
 		  price:500
 		}
    
@@ -175,6 +175,10 @@ app.get('/signup', function(req, res, next) {
 	res.redirect('/')
 });
 
+app.post('/forgot', function(req, res, next) {
+	res.redirect('/')
+});
+
 
 
 app.post('/signup', async function(req, res, next) {
@@ -234,7 +238,7 @@ app.post('/purchase',  (req, res) => {
 	}).catch(function(){
 		res.json({message:"payment failed :/"});
 		res.status(500).end();
-	})
+	});
 	// try{
 	// 	const session = await stripe.checkout.sessions.create({
 	// 		payment_method_types: ['card'],
@@ -438,7 +442,18 @@ app.get('/mongo', async (req, res) => {
 	
 	
 	//user.updateMany({},{ $set: { "inapppurchases.$[t].description": "new new new" } },{ arrayFilters: [ { "t.skew": "0001" } ], upsert:true })
-	// const rr = user.updateMany({},{ $set: { "inapppurchases.1.description" : "skin by cool artist." } },{upsert:true },  (err, doc)=>{
+
+	/*  UPDATE IN APP PURCHES THINGS */
+
+	// const rr1 = user.updateMany({},{ $set: { "inapppurchases.1.description" : "unlock debug skins." } },{upsert:true },  (err, doc)=>{
+	// 	console.log(err)
+	// })
+
+	// const rr2 = user.updateMany({},{ $set: { "inapppurchases.1.name" : "debug skins" } },{upsert:true },  (err, doc)=>{
+	// 	console.log(err)
+	// })
+
+	// const rr3 = user.updateMany({},{ $set: { "inapppurchases.1.icon" : "debug" } },{upsert:true },  (err, doc)=>{
 	// 	console.log(err)
 	// })
 

@@ -36,7 +36,7 @@ import { SkinsHandler } from './SkinsHandler.js';
 import { Servers } from './Servers.js';
 import { GamePad } from './GamePad.js';
 import { Mobile } from './Mobile.js';
-
+import { WeaponStats } from './WeaponStats.js';
 import { io } from "./socket.io.esm.min.js";
 
 const abilities = {
@@ -188,7 +188,6 @@ const particles = {
 		lookAt:false,
 		lookAtLength:0,
 		sound:null
-
 	},
 	boost:{
 		burst:false,
@@ -259,43 +258,28 @@ const weapons = {
 		ammoAmount:16,    
 		reloadCooldown:1000,  
 		zoom:80,    
-		adsRandom:.5, 
+		adsRandom:.3, 
 		impulse:60 , 
 		knockParams:{pos:new THREE.Vector3(), distance:10, strength:40, gravMult:4},
 		name:"sticky",
-		damage:60,
+		damage:WeaponStats.sticky.damage,
 		sound:"rocket2",
 		abilities:[abilities.doubleJump],
 		model:"sticky",
 		adsMouseSenseMult:0
 	},
-	throw:{
-		shootCooldown:150,    
-		bullet:StickyBullet, 
-		ammoAmount:16,    
-		reloadCooldown:1000,  
-		zoom:80,    
-		adsRandom:.5, 
-		impulse:60 , 
-		knockParams:{pos:new THREE.Vector3(), distance:10, strength:40, gravMult:4},
-		name:"sticky",
-		damage:60,
-		sound:"rocket2",
-		abilities:[abilities.doubleJump],
-		model:"sticky",
-		adsMouseSenseMult:0
-	},
+
 	launcher:{
 		shootCooldown:300,  
 		bullet:RocketBullet, 
 		ammoAmount:12,    
 		reloadCooldown:1000,  
 		zoom:80,    
-		adsRandom:.1, 
+		adsRandom:.2, 
 		impulse:90, 
 		knockParams:{pos:new THREE.Vector3(), distance:10, strength:40, gravMult:4},
 		name:"launcher",
-		damage:60,
+		damage:WeaponStats.launcher.damage,
 		sound:"rocket",
 		abilities:[abilities.jumpPad],
 		model:"launcher",
@@ -311,7 +295,7 @@ const weapons = {
 		impulse:180, 
 		name:"automatic",
 		knockParams:{pos:new THREE.Vector3(), distance:6, strength:25, gravMult:4},
-		damage:13,
+		damage:WeaponStats.automatic.damage,
 		//damage:1,
 		sound:"automatic-2",
 		abilities:[abilities.blink],
@@ -328,7 +312,7 @@ const weapons = {
 		impulse:180, 
 		name:"submachine",
 		knockParams:{pos:new THREE.Vector3(), distance:6, strength:15, gravMult:4},
-		damage:9,
+		damage:WeaponStats.submachine.damage,
 		sound:"sub",
 		abilities:[abilities.nade],
 		model:"submachine",
@@ -345,7 +329,7 @@ const weapons = {
 		contactParticle:particles.shot,
 		name:"sniper",
 		knockParams:{pos:new THREE.Vector3(), distance:8, strength:60, gravMult:8},
-		damage:70,
+		damage:WeaponStats.sniper.damage,
 		sound:"sniper2",
 		abilities:[abilities.walls],
 		model:"sniper",
@@ -361,7 +345,7 @@ const weapons = {
 		impulse:180, 
 		name:"sixgun",
 		knockParams:{pos:new THREE.Vector3(), distance:8, strength:50, gravMult:6},
-		damage:50,
+		damage:WeaponStats.sixgun.damage,
 		sound:"sniper-six2",
 		abilities:[abilities.sticky],
 		model:"sixgun",
@@ -567,7 +551,10 @@ const globalHelperFunctions = {
 		  	overlayChildDisplayHelper();
 			toggleOverlay(false);
 			
-			document.body.requestPointerLock();
+			if(!appGlobal.mobile.isMobile){
+				if(document.body.requestPointerLock !=null )
+					document.body.requestPointerLock();
+			}
 
 			appGlobal.globalHelperFunctions.setUserName();
 			appGlobal.controller.initPlayer({ weapon: currentSelectWeapon, movement:currentMovement,  name:appGlobal.user});	
@@ -792,6 +779,8 @@ function handleLoad(index, gltf){
 		initThree();
 	}
 }
+
+
 function checkLoaded(){
 	for(let i = 0; i<appGlobal.loadObjs.length; i++){
 		if(!appGlobal.loadObjs[i].loaded)
@@ -799,6 +788,7 @@ function checkLoaded(){
 	}
 	return true;
 }
+
 
 function initThree(){
 
@@ -833,6 +823,7 @@ function initThree(){
 	animate();
 }
 
+
 function overlayChildDisplayHelper(){
 
 	document.getElementById("class-select").style.display="none";
@@ -856,6 +847,7 @@ function overlayChildDisplayHelper(){
 		break;
 	}
 }
+
 
 function resetHelper(){
 	for(let i = 0; i<appGlobal.worlds.length; i++){
@@ -935,7 +927,9 @@ document.addEventListener( 'mousedown', (event) => {
 	if(appGlobal.globalHelperFunctions.checkPlaying()){
 		event.preventDefault();
 		if(event.button==0){
-			document.body.requestPointerLock();
+			if(!appGlobal.mobile.isMobile && document.body.requestPointerLock !=null ){
+				document.body.requestPointerLock();
+			}
 			appGlobal.mouse.down = true;
 		}else if(event.button == 2){
 			appGlobal.localPlayer.ads(true);
@@ -1013,6 +1007,7 @@ function animate() {
 	if(stats){
 		stats.update();
 	}
+
 	requestAnimationFrame( animate );
 
 }
@@ -1207,9 +1202,11 @@ socket.on('connect', () => {
 	});
 
 	socket.on('serverShoot',(data)=> {
-		if(data.id!=socket.id){
-			const obj = {id:data.id, name:data.name, obj:data.obj}
-			appGlobal.remoteBullets.shoot(obj);
+		if(appGlobal.remoteBullets != null ){
+			if(data.id!=socket.id){
+				const obj = {id:data.id, name:data.name, obj:data.obj}
+				appGlobal.remoteBullets.shoot(obj);
+			}
 		}
 	});
 
@@ -1334,6 +1331,7 @@ socket.on('connect', () => {
 					// 	document.getElementById("kd-total").innerHTML = (kdTotal).toFixed(2);
 
 					// })
+
 					document.getElementById("xp-bar").style.display = "none";
 					document.getElementById("game-over-stats").style.display = "none";
 					document.getElementById("xp-error").style.display = "none";
@@ -1486,6 +1484,13 @@ socket.on('connect', () => {
 		}
 	});
 
+	socket.on('serverDoTestShooting', (data) => {
+		console.log("hiiii")
+		if(data.id != socket.id){
+			doTestShooting(false);
+		}
+	});
+
 });
 
 function checkIfWinnerId(socketid, winnersArray){
@@ -1522,6 +1527,23 @@ function pad(n, width, z) {
   z = z || '0';
   n = n + '';
   return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+}
+
+let testTimeout;
+window.doTestShooting = function(local){
+	if(local){
+		const obj = {id:socket.id};
+		socket.emit('clientDoTestShooting', obj);	
+	}
+	appGlobal.globalHelperFunctions.handleInitPlaying();
+	if(testTimeout!=null)
+		clearTimeout(testTimeout);
+	
+	testTimeout = setInterval(function(){
+		if(appGlobal.localPlayer!=null){
+			appGlobal.localPlayer.weapon.shoot();
+		}
+	}, 1000/20);
 }
 
 // function switchRooms(){

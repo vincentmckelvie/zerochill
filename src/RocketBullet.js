@@ -11,7 +11,7 @@ import {
 class RocketBullet {
 	//{aliveTime:aliveTime, bullet:bullet};
 	constructor(OBJ, ISLOCAL) {
-		
+		this.weaponName = OBJ.name;
 		this.isLocal = ISLOCAL;
 		this.damage = OBJ.damage;
 		this.id = OBJ.id;
@@ -26,21 +26,31 @@ class RocketBullet {
 		const sphereGeometry = new SphereGeometry( rad, 6, 6 );
 		const sphereMaterial = new MeshStandardMaterial( { color: 0xffffff, roughness: 0.8, metalness: 0.5 } );
 		this.mesh = new Mesh( sphereGeometry, sphereMaterial );
-		this.mesh.castShadow = true;
-		this.receiveShadow = true;
-		appGlobal.scene.add( this.mesh );
+		//this.mesh.castShadow = true;
+		//this.receiveShadow = true;
+		this.holder = new Object3D();
+		this.holder.add(this.mesh);
+		appGlobal.scene.add( this.holder );
 
 		//spheres.push( { mesh: sphere, collider: new THREE.Sphere( new THREE.Vector3( 0, 0, 0 ), SPHERE_RADIUS ), velocity: new THREE.Vector3() } );
 		this.collider = new Sphere( new Vector3( 0, 0, 0 ), rad );
 		const impulse = OBJ.impulse ;
 		this.velocity = new Vector3().copy(OBJ.dir).multiplyScalar( impulse );
-		this.collider.center.copy( OBJ.pos );
+		
 		this.knockParams = OBJ.knockParams;
 		//this.velocity.addScaledVector( this.player.playerVelocity, 2 );
 		this.contactParticle = appGlobal.particles.explosion;
 		this.killed = false;
 		const self = this;
 		this.startPos = new Vector3().copy( OBJ.pos );
+
+		if(OBJ.tipPos != null){
+			const sub = new Vector3().copy(OBJ.tipPos).sub(this.startPos);
+			this.mesh.position.copy(sub);
+			gsap.to(this.mesh.position,{duration:.3, x:0, y:0, z:0, delay:0});
+		}
+
+		this.collider.center.copy( this.startPos );
 
 		this.killTimeout = setTimeout(function(){
 			self.kill();
@@ -73,7 +83,7 @@ class RocketBullet {
 			}
 		}
 
-		this.mesh.position.copy( this.collider.center );
+		this.holder.position.copy( this.collider.center );
 
 	}
 	
@@ -84,7 +94,7 @@ class RocketBullet {
 			clearTimeout(this.killTimeout);
 
 			if(this.isLocal){
-				this.knockParams.pos = this.mesh.position;
+				this.knockParams.pos = this.holder.position;
 				
 				if(!hitPlayer)
 					appGlobal.globalHelperFunctions.knockPlayer(this.knockParams);
@@ -95,8 +105,8 @@ class RocketBullet {
 						const self = this;
 						if(window.socket!=null){
 							const obj = {
+								name:this.weaponName,
 						  		id: arr[i].id,
-						  		damage:self.damage*arr[i].damageMult,
 						  		position:this.startPos,
 						  		headShot:false,
 						  		fromDamageId:socket.id
@@ -104,13 +114,13 @@ class RocketBullet {
 							socket.emit('doDamage', obj);
 							appGlobal.globalHelperFunctions.playerDoDamage(obj);
 						}else{
-							appGlobal.remotePlayers[arr[i].id].receiveDamage({headShot:false, position:this.mesh.position, health:this.damage})
+							appGlobal.remotePlayers[arr[i].id].receiveDamage({headShot:false, position:this.holder.position, health:this.damage})
 						}
 					}			
 				}
 			}
 
-			this.contactParticle.pos = this.mesh.position;
+			this.contactParticle.pos = this.holder.position;
 			appGlobal.particleHandler.createEmitter(this.contactParticle);
 
     		const dist = appGlobal.globalHelperFunctions.getDistanceForSound(this.collider.center);
@@ -119,7 +129,8 @@ class RocketBullet {
 			this.killed = true;
 			this.mesh.geometry.dispose();
 			this.mesh.material.dispose();
-			window.appGlobal.scene.remove(this.mesh);
+			this.holder.remove(this.mesh);
+			appGlobal.scene.remove(this.holder);
 		}
 	}
 

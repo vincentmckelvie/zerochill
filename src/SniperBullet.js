@@ -13,7 +13,7 @@ import {
 class SniperBullet {
 	//{aliveTime:aliveTime, bullet:bullet};
 	constructor(OBJ, ISLOCAL) {
-
+		this.weaponName = OBJ.name;
 		//this.player = window.appGlobal.localPlayer;
 		//this.weapon = OBJ.weapon;
 		this.isLocal = ISLOCAL;
@@ -49,9 +49,9 @@ class SniperBullet {
 			if(OBJ.hitId != null){
 				if(window.socket != null){
 					const obj = {
+						name:this.weaponName,
 				  		id: OBJ.hitId,
-				  		damage:this.damage,
-						position:this.startPos,
+				  		position:this.startPos,
 						headShot:OBJ.headShot,
 						fromDamageId:socket.id
 					}	

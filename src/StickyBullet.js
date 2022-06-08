@@ -11,7 +11,7 @@ import {
 class StickyBullet {
 	//{aliveTime:aliveTime, bullet:bullet};
 	constructor(OBJ, ISLOCAL) {
-		
+		this.weaponName = OBJ.name;
 		this.isLocal = ISLOCAL;
 		this.damage = OBJ.damage;
 		this.id = OBJ.id;
@@ -25,22 +25,32 @@ class StickyBullet {
 		//this.worldPosition = OBJ.worldPosition; 
 
 		this.alivetime = 2000;
-		
+			
 		const rad = .2;
 		const sphereGeometry = new SphereGeometry( rad, 6, 6 );
 		const sphereMaterial = new MeshStandardMaterial( { color: 0xffffff, roughness: 0.8, metalness: 0.5 } );
 		this.mesh = new Mesh( sphereGeometry, sphereMaterial );
-		this.mesh.castShadow = true;
-		this.receiveShadow = true;
-		appGlobal.scene.add( this.mesh );
+		// this.mesh.castShadow = true;
+		// this.receiveShadow = true;
+		
+		this.holder = new Object3D();
+		this.holder.add(this.mesh);
+		appGlobal.scene.add( this.holder );
 
 		//spheres.push( { mesh: sphere, collider: new THREE.Sphere( new THREE.Vector3( 0, 0, 0 ), SPHERE_RADIUS ), velocity: new THREE.Vector3() } );
 		this.collider = new Sphere( new Vector3( 0, 0, 0 ), rad );
 		const impulse = OBJ.impulse ;
 		this.velocity = new Vector3().copy(OBJ.dir).multiplyScalar( impulse );
-		this.collider.center.copy( OBJ.pos );
+		
 		this.velocityMult = 1;
 		this.startPos = new Vector3().copy(OBJ.pos)
+
+		if(OBJ.tipPos != null){
+			const sub = new Vector3().copy(OBJ.tipPos).sub(this.startPos);
+			this.mesh.position.copy(sub);
+			gsap.to(this.mesh.position,{duration:.3, x:0, y:0, z:0, delay:0});
+		}
+		this.collider.center.copy( this.startPos );
 		//this.velocity.addScaledVector( this.player.playerVelocity, 2 );
 		this.stuck = false;
 		this.killed = false;
@@ -86,7 +96,7 @@ class StickyBullet {
 			}
 		}
 		
-		this.mesh.position.copy( this.collider.center );
+		this.holder.position.copy( this.collider.center );
 		
 	}
 
@@ -108,7 +118,7 @@ class StickyBullet {
 		if(!this.killed){
 			
 			if(this.isLocal){
-				this.knockParams.pos = this.mesh.position;
+				this.knockParams.pos = this.holder.position;
 				if(!hitPlayer){
 					appGlobal.globalHelperFunctions.knockPlayer(this.knockParams);
 				}
@@ -119,8 +129,8 @@ class StickyBullet {
 						const self = this;
 						if(window.socket != null){
 							const obj = {
+								name:this.weaponName,
 						  		id: arr[i].id,
-						  		damage:self.damage*arr[i].damageMult,
 						  		position:appGlobal.localPlayer.playerCollider.start,
 						  		headShot:false,
 						  		fromDamageId:socket.id
@@ -128,14 +138,14 @@ class StickyBullet {
 							socket.emit('doDamage', obj);
 							appGlobal.globalHelperFunctions.playerDoDamage(obj);
 						}else{
-							appGlobal.remotePlayers[arr[i].id].receiveDamage({headShot:false, position:this.mesh.position, health:this.damage})
+							appGlobal.remotePlayers[arr[i].id].receiveDamage({headShot:false, position:this.holder.position, health:this.damage})
 						}
 
 					}			
 				}
 			}
 			
-			this.contactParticle.pos = this.mesh.position;
+			this.contactParticle.pos = this.holder.position;
 			appGlobal.particleHandler.createEmitter(this.contactParticle);
 			
     		const dist = appGlobal.globalHelperFunctions.getDistanceForSound(this.collider.center);
@@ -144,7 +154,8 @@ class StickyBullet {
 			this.killed = true;
 			this.mesh.geometry.dispose();
 			this.mesh.material.dispose();
-			appGlobal.scene.remove(this.mesh);
+			this.holder.remove(this.mesh);
+			appGlobal.scene.remove(this.holder);
 		}
 	}
 	playerSphereCollision() {

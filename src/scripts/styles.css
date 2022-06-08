@@ -832,7 +832,6 @@ h2{
 	
 }
 
-
 .class-btn, .class-btn-active{
 	cursor: pointer;
 	width: 208px;
@@ -920,12 +919,16 @@ h2{
 
 #player-list{
 	width: 600px;
-	margin: 250px auto;
+	margin:250px auto;
 	display: none;
 	background: rgba(0,0,0,.4);
 	padding: 20px;
 }
 
+#player-list.player-list-multiplayer{
+	margin:20px auto;
+
+}
 
 .player-info{
 	font-size: 20px;

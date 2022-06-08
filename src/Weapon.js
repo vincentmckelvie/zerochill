@@ -181,6 +181,7 @@ class Weapon {
 					};
 				}
 				obj = {
+					name:this.name,
 					pos:pos,
 					impulse:this.impulse,
 					dir:dir,
@@ -239,6 +240,7 @@ class Weapon {
 				}
 				
 				obj = {
+					name:this.name,
 					hit:hit,
 					hitPoint:hitPoint,
 					pos:pos,

@@ -1139,8 +1139,9 @@ document.addEventListener( 'mousedown', (event) => {
 	if(appGlobal.globalHelperFunctions.checkPlaying()){
 		event.preventDefault();
 		if(event.button==0){
-			if(!appGlobal.mobile.isMobile && document.body.requestPointerLock !=null )
+			if(!appGlobal.mobile.isMobile && document.body.requestPointerLock !=null ){
 				document.body.requestPointerLock();
+			}
 			appGlobal.mouse.down = true;
 		}else if(event.button == 2){
 			appGlobal.localPlayer.ads(true);

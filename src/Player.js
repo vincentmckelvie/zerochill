@@ -55,9 +55,9 @@ class Player {
 		this.boosting = false;
 		this.directionalBoostMult = 0;
 		const pos = new Vector3();
-		//pos.x = -1+Math.random()*2;
-		//pos.y = -1+Math.random()*2;
-		//pos.z = -1+Math.random()*2;
+		pos.x = -1+Math.random()*2;
+		pos.y = -1+Math.random()*2;
+		pos.z = -1+Math.random()*2;
 		pos.y = 1;
 		const end = new Vector3().copy(pos);
 		pos.multiplyScalar(appGlobal.worldScale*6);

@@ -1,6 +1,7 @@
 import {
 	Object3D,
 	BoxGeometry,
+	SphereGeometry,
 	MeshBasicMaterial,
 	Mesh,
 	Vector3,
@@ -11,28 +12,51 @@ import {
 class AutoBullet {
 	//{aliveTime:aliveTime, bullet:bullet};
 	constructor(OBJ, ISLOCAL) {
-		
+		this.weaponName = OBJ.name;
 		this.isLocal = ISLOCAL;
 		this.damage = OBJ.damage;
 		this.id = OBJ.id;
 		this.knockParams = OBJ.knockParams;
 		
-		this.worldPosition = new Vector3().copy(OBJ.worldPosition); 
+		this.worldPosition = new Vector3().copy(OBJ.worldPosition);
 		
+		// if(OBJ.tipPos != null){
+		// 	this.worldPosition.copy(OBJ.tipPos);
+		// }
+
 		const rad = .09;
 		const sphereGeometry = new BoxGeometry( rad, rad, rad );
 		const sphereMaterial = new MeshBasicMaterial( { color: 0xffffff } );
 		this.mesh = new Mesh( sphereGeometry, sphereMaterial );
-		this.mesh.castShadow = true;
-		this.receiveShadow = true;
-		appGlobal.scene.add( this.mesh );
+		
+		//const testGeo = new SphereGeometry( rad*2, 8, 8 );
+		//const testMat = new MeshBasicMaterial( { color: 0xff0000, opacity:.4 } );
+		//this.testMesh = new Mesh( testGeo, testMat );
 
+		//this.mesh.castShadow = true;
+
+		this.receiveShadow = true;
+		this.holder = new Object3D();
+		this.holder.add(this.mesh);
+		appGlobal.scene.add( this.holder );
+		
+		// if(OBJ.tipPos!=null)
+		// 	this.holder.add(this.testMesh)
+		
+		
 		//spheres.push( { mesh: sphere, collider: new THREE.Sphere( new THREE.Vector3( 0, 0, 0 ), SPHERE_RADIUS ), velocity: new THREE.Vector3() } );
 		this.collider = new Sphere( new Vector3( 0, 0, 0 ), rad );
 		const impulse = OBJ.impulse ;
 		this.velocity = new Vector3().copy(OBJ.dir).multiplyScalar( impulse );
-		this.collider.center.copy( OBJ.pos );
+		
 		this.startPos = new Vector3().copy(OBJ.pos);
+		if(OBJ.tipPos != null){
+			const sub = new Vector3().copy(OBJ.tipPos).sub(this.startPos);
+			this.mesh.position.copy(sub);
+			gsap.to(this.mesh.position,{duration:.3, x:0, y:0, z:0, delay:0});
+		}
+
+		this.collider.center.copy( this.startPos );
 		this.contactParticle = appGlobal.particles.shot;
 		//console.log(OBJ.pos)
 		this.killed = false;
@@ -78,7 +102,7 @@ class AutoBullet {
 			}
 		}
 
-		this.mesh.position.copy( this.collider.center );
+		this.holder.position.copy( this.collider.center );
 
 	}
 	
@@ -86,18 +110,19 @@ class AutoBullet {
 		if(!this.killed){
 			
 			if(this.isLocal && !this.isBulletDoingDamage){
-				this.knockParams.pos = this.mesh.position;
+				this.knockParams.pos = this.holder.position;
 				appGlobal.globalHelperFunctions.knockPlayer(this.knockParams);
 			}
 
-			this.contactParticle.pos = this.mesh.position;
+			this.contactParticle.pos = this.holder.position;
 			appGlobal.particleHandler.createEmitter(this.contactParticle);
 
 			clearTimeout(this.killTimeout);
 			this.killed = true;
 			this.mesh.geometry.dispose();
 			this.mesh.material.dispose();
-			appGlobal.scene.remove(this.mesh);
+			this.holder.remove(this.mesh);
+			appGlobal.scene.remove(this.holder);
 		}
 	}
 
@@ -111,8 +136,8 @@ class AutoBullet {
 				this.isBulletDoingDamage = true;
 				if(window.socket != null){
 					const obj = {
+					  name:this.weaponName,
 					  id: id.id,
-					  damage:self.damage,
 					  position:this.startPos,
 					  headShot:id.headShot,
 					  fromDamageId:socket.id
