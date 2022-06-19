@@ -576,7 +576,7 @@ const globalHelperFunctions = {
 					animationObject:appGlobal.localPlayer.animationObject,
 					pos: appGlobal.localPlayer.playerCollider.start,
 					rot: appGlobal.localPlayer.remoteQuaternion,
-					camRotation:appGlobal.localPlayer.camera.rotation.x, 
+					camRotation:appGlobal.localPlayer.emoteHelperVertical.rotation.x, 
 					//crouching: appGlobal.localPlayer.crouching,
 				})
 			},1000/SERVERFPS);
@@ -678,7 +678,7 @@ const appGlobal = {
 	soundHandler:null,
 	hue:0,
 	loadObjs:[
-		{name:"anis",    	    	model:null, loaded:false, url:"character-anis-3.glb"},
+		{name:"anis",    	    	model:null, loaded:false, url:"character-anis-4.glb"},
 		{name:"body-launcher",  	model:null, loaded:false, url:"models/launcher/default/body.glb"         },
 		{name:"body-sticky",    	model:null, loaded:false, url:"models/sticky/default/body.glb"         },
 		{name:"body-assault",   	model:null, loaded:false, url:"models/assault/default/body.glb"         },
@@ -933,7 +933,7 @@ document.addEventListener( 'mousedown', (event) => {
 			appGlobal.mouse.down = true;
 		}else if(event.button == 2){
 			appGlobal.localPlayer.ads(true);
-			appGlobal.localPlayer.killEmoting();
+			//appGlobal.localPlayer.killEmoting();
 		}
 	}
 

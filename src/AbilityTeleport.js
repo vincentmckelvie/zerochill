@@ -116,6 +116,12 @@ class AbilityTeleport extends Abilities {
 			super.confirmAbility();
 		}
 	}
+
+	kill(){
+		if(this.mesh!=null){
+			this.childKill();
+		}
+	}
 	
   	childKill(){
   		this.mesh.geometry.dispose();

@@ -50,8 +50,8 @@ class Weapon {
 	update(){
 		if(window.appGlobal.mouse.down){
 			if(this.player.emoting){
-				this.player.killEmoting();
-				return;
+				//this.player.killEmoting();
+				//return;
 			}
 
 			if(this.canShoot && !this.player.boosting && this.abilityCanShoot){
@@ -117,7 +117,13 @@ class Weapon {
 	}
 
 	shoot(){
+		
 		this.player.fps.shoot({ammoMax:this.ammoAmount, currAmoo:this.currentAmmo});
+		
+		if(this.player.emoting){
+			this.player.tpsShoot();
+		}
+
 		const name = this.name;
 		
 		const bullet = this.bullet;
@@ -153,19 +159,28 @@ class Weapon {
 			case "launcher":
 			case "submachine":
 				
-				this.player.camera.getWorldDirection( dir );
-				
-				if(this.player.adsing){
-					rndMult = .05;
+				if(!this.player.emoting){
+					this.player.camera.getWorldDirection( dir );
+					
+					if(this.player.adsing){
+						rndMult = .05;
+					}
+					rx = ((-this.adsRandom*.5)+Math.random()*this.adsRandom)*rndMult;
+					ry = ((-this.adsRandom*.5)+Math.random()*this.adsRandom)*rndMult;
+					rz = ((-this.adsRandom*.5)+Math.random()*this.adsRandom)*rndMult;
+					rnd = new Vector3().set( rx,ry,rz );
+					dir.add(rnd);
+				}else{
+					dir.copy(this.getEmotingDir());
 				}
-				rx = ((-this.adsRandom*.5)+Math.random()*this.adsRandom)*rndMult;
-				ry = ((-this.adsRandom*.5)+Math.random()*this.adsRandom)*rndMult;
-				rz = ((-this.adsRandom*.5)+Math.random()*this.adsRandom)*rndMult;
-				rnd = new Vector3().set( rx,ry,rz );
-				dir.add(rnd);
 				
 				//pos = new Vector3().copy( this.player.playerCollider.end ).addScaledVector( dir, this.player.playerCollider.radius * 1.5 );
-				pos = this.player.fps.tipPosition;
+				
+
+
+
+				pos = this.player.tipPositionFinal;
+
 				kp = {
 					pos:new Vector3(), 
 					distance:0, 
@@ -204,7 +219,7 @@ class Weapon {
 				dir.set(rx,ry,rz);
 				
 				//pos = new Vector3().copy( this.player.playerCollider.end ).addScaledVector( dir, this.player.playerCollider.radius * 1.5 );
-				pos = this.player.fps.tipPosition;//new Vector3().copy( this.player.playerCollider.end ).addScaledVector( dir, this.player.playerCollider.radius * 1.5 );
+				pos.copy(this.player.tipPositionFinal);//new Vector3().copy( this.player.playerCollider.end ).addScaledVector( dir, this.player.playerCollider.radius * 1.5 );
 		
 				let hitPoint = new Vector3();
 				let hit = true;
@@ -257,6 +272,32 @@ class Weapon {
 		return obj;
 	}
 
+
+	getEmotingDir(){
+
+		let rndMult = 1;
+		if(this.player.adsing){
+			rndMult = 0.05;
+		}
+				
+		const rx = ((-this.adsRandom*.5)+Math.random()*this.adsRandom)*rndMult;
+		const ry = ((-this.adsRandom*.5)+Math.random()*this.adsRandom)*rndMult;
+		const rz = ((-this.adsRandom*.5)+Math.random()*this.adsRandom)*rndMult;
+		const dir = new Vector3().set(rx,ry,rz);
+
+		const pos = new Vector3().copy(this.player.tipPositionFinal);
+
+		let hitPoint = new Vector3();
+		let hit = true;
+		let distance = 100;
+		const newDir = new Vector2( dir.x, dir.y );
+		const hsl = this.hitScanHelper({dir:newDir});
+		
+		hitPoint.copy(hsl.hitPoint);
+			
+		return new Vector3().copy( hitPoint.sub(pos).normalize() );
+				
+	}
 
 
 	hitScanHelper(OBJ){

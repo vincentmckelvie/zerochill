@@ -50,6 +50,7 @@ class AutoBullet {
 		this.velocity = new Vector3().copy(OBJ.dir).multiplyScalar( impulse );
 		
 		this.startPos = new Vector3().copy(OBJ.pos);
+	
 		if(OBJ.tipPos != null){
 			const sub = new Vector3().copy(OBJ.tipPos).sub(this.startPos);
 			this.mesh.position.copy(sub);
@@ -64,7 +65,7 @@ class AutoBullet {
 		this.isBulletDoingDamage = false;
 		this.killTimeout = setTimeout(function(){
 			self.kill();
-		}, 1000);
+		}, 1500);
 		//sphereIdx = ( sphereIdx + 1 ) % spheres.length;
 	}
 	

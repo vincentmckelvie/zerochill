@@ -46,14 +46,15 @@ class AbilitySticky extends Abilities {
 
     			const stickyObj = {worldPosition:this.throw.world.collider.center, position:this.throw.collider.center};
 				this.sticky = new StickyAOE(stickyObj);
-				
-				socket.emit('abilityVisual', {
-					  id: socket.id,
-					  abilityName:"slow land",
-					  position:this.throw.collider.center,
-					  sound:"bliz",
-					  extras:stickyObj
-				});
+				if(window.socket!=null){
+					socket.emit('abilityVisual', {
+						  id: socket.id,
+						  abilityName:"slow land",
+						  position:this.throw.collider.center,
+						  sound:"bliz",
+						  extras:stickyObj
+					});
+				}
 				 
 			}
 		}
@@ -70,7 +71,11 @@ class AbilitySticky extends Abilities {
 	doAbility(){
 		if(appGlobal.localPlayer!=null){
 			const self = this;
-			appGlobal.localPlayer.fps.throw();
+			if(!appGlobal.localPlayer.emoting){
+				appGlobal.localPlayer.fps.throw();
+			}else{
+				appGlobal.localPlayer.throw();
+			}
 			//appGlobal.soundHandler.playSoundByName({name:"throw", dist:1});
 			setTimeout(function(){
 				if(self.throw==null)
@@ -101,7 +106,11 @@ class AbilitySticky extends Abilities {
 			dir.multiplyScalar(.5);
 			
 			//const cross = new Vector3().crossVectors(appGlobal.localPlayer.grav, dir);
-			const pos = new Vector3().copy( appGlobal.localPlayer.playerCollider.end ).addScaledVector( dir, appGlobal.localPlayer.playerCollider.radius * 1.5 );//.add(cross);
+			//const pos = new Vector3().copy( appGlobal.localPlayer.playerCollider.end ).addScaledVector( dir, appGlobal.localPlayer.playerCollider.radius * 1.5 );//.add(cross);
+			const pos = appGlobal.localPlayer.fps.leftHandPos;
+			if(appGlobal.localPlayer.emoting){
+				pos.copy(appGlobal.localPlayer.tipPositionFinal);
+			}
 			//pos = appGlobal.localPlayer.fps.tipPosition;
 			const kp = {
 				pos:new Vector3(), 

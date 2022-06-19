@@ -30,6 +30,7 @@ class AbilityNade extends Abilities {
 	init(){
 
 		super.init(this);
+
 	}
 	update(){
 		super.update();
@@ -95,7 +96,6 @@ class AbilityNade extends Abilities {
 
 	updateLooped(){
 		super.updateLooped();
-		
 
 		for(let i = 0; i<this.arr.length; i++){
 			this.arr[i].update();
@@ -107,7 +107,12 @@ class AbilityNade extends Abilities {
 	
 	doAbility(){
 		if(appGlobal.localPlayer!=null){
-			appGlobal.localPlayer.fps.throw();
+			if(!appGlobal.localPlayer.emoting){
+				appGlobal.localPlayer.fps.throw();
+			}else{
+				appGlobal.localPlayer.throw();
+			}
+			
 			const self = this;
 			//appGlobal.soundHandler.playSoundByName({name:"nade", dist:1});
 			setTimeout(function(){
@@ -119,28 +124,31 @@ class AbilityNade extends Abilities {
 	}
 
 	throwNadeHelper(){
+		
 		if(appGlobal.localPlayer!=null){
 			
 			this.id = appGlobal.localPlayer.id;
 			this.worldPos.copy(appGlobal.world.worldPosition);
+			
 			const dir = new Vector3();
-			appGlobal.localPlayer.camera.getWorldDirection( dir );
-					
-			//if(this.player.adsing){
+			
+			//if(!appGlobal.localPlayer.emoting){
+			
+			appGlobal.localPlayer.camera.getWorldDirection( dir );		
 			const rndMult = .01;
-			//}
 			const r = .3;
 			const rx = ((-r*.5)+Math.random()*r)*rndMult;
 			const ry = ((-r*.5)+Math.random()*r)*rndMult;
 			const rz = ((-r*.5)+Math.random()*r)*rndMult;
 			const rnd = new Vector3().set( rx,ry,rz );
+			
 			dir.add(rnd);
 			dir.multiplyScalar(.5);
-			
-			//const cross = new Vector3().crossVectors(appGlobal.localPlayer.grav, dir);
-			//const pos = new Vector3().copy( appGlobal.localPlayer.playerCollider.end ).addScaledVector( dir, appGlobal.localPlayer.playerCollider.radius * 1.5 );//.add(cross);
-			
+
 			const pos = new Vector3().copy(appGlobal.localPlayer.fps.leftHandPos);
+			if(appGlobal.localPlayer.emoting){
+				pos.copy(appGlobal.localPlayer.tipPositionFinal);
+			}
 			
 			const kp = {
 				pos:new Vector3(), 
@@ -159,14 +167,6 @@ class AbilityNade extends Abilities {
 				worldPosition:this.worldPos,
 			}
 
-			// if(window.socket !=null ){
-			// 	socket.emit('shoot', {
-			// 		obj: obj,
-			// 		id: socket.id,
-			// 		name: "sticky"
-			// 	});
-			// }
-
 			if(window.socket != null){
 				socket.emit('abilityExtras', {
 					id: socket.id,
@@ -179,6 +179,51 @@ class AbilityNade extends Abilities {
 			this.arr.push(this.firstThrow);
 		}
 	}
+
+	// getEmotingDir(){
+
+	// 	const rndMult = 0.01;
+				
+	// 	const rx = ((-this.adsRandom*.5)+Math.random()*this.adsRandom)*rndMult;
+	// 	const ry = ((-this.adsRandom*.5)+Math.random()*this.adsRandom)*rndMult;
+	// 	const rz = ((-this.adsRandom*.5)+Math.random()*this.adsRandom)*rndMult;
+	// 	const dir = new Vector3().set(rx,ry,rz);
+
+	// 	const pos = new Vector3().copy(this.player.tipPositionFinal);
+
+	// 	let hitPoint = new Vector3();
+	// 	let hit = true;
+	// 	let distance = 100;
+	// 	const newDir = new Vector2( dir.x, dir.y );
+	// 	const hsl = this.hitScanHelper({dir:newDir});
+		
+	// 	hitPoint.copy(hsl.hitPoint);
+			
+	// 	return new Vector3().copy( hitPoint.sub(pos).normalize() );
+				
+	// }
+
+	// hitScanHelper(OBJ){
+		
+	// 	let hitPoint = new Vector3();
+	// 	let hitId = null;
+	// 	let isHead = false;
+	// 	appGlobal.raycaster.setFromCamera( new Vector2(OBJ.dir.x,OBJ.dir.y), appGlobal.controller.playerCamera );
+	// 	const intersection = appGlobal.raycaster.intersectObjects( appGlobal.hitScanArray, false );
+
+	// 	if ( intersection.length > 0 ) {
+	// 		hitPoint.copy(intersection[ 0 ].point);
+	// 		if(intersection[0].object.playerId != null){
+	// 			hitId = intersection[0].object.playerId;
+	// 		}
+	// 		if(intersection[0].object.isHead != null){
+	// 			isHead = intersection[0].object.isHead;
+	// 		}
+	// 		return {hit:true, hitPoint:hitPoint, distance:intersection[ 0 ].distance, hitId:hitId, isHead:isHead};
+	// 	}
+	// 	return null;
+		
+	// }
 
 	deactivateAbility(){
 		

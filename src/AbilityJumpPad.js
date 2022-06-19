@@ -48,14 +48,15 @@ class AbilityJumpPad extends Abilities {
     			appGlobal.soundHandler.playSoundByName({name:"jump-pad-land", dist:dist});
     			const jumpPadObj = {worldPosition:this.throw.world.collider.center, position:this.throw.collider.center};
 				this.jumpPad = new JumpPad(jumpPadObj) 
-				
-				socket.emit('abilityVisual', {
-					id: socket.id,
-					abilityName:"jumppad land",
-					position:this.throw.collider.center,
-					sound:"jump-pad-land",
-					extras:jumpPadObj
-				});
+				if(window.socket!=null){
+					socket.emit('abilityVisual', {
+						id: socket.id,
+						abilityName:"jumppad land",
+						position:this.throw.collider.center,
+						sound:"jump-pad-land",
+						extras:jumpPadObj
+					});
+				}
 
 			}
 		}
@@ -72,7 +73,11 @@ class AbilityJumpPad extends Abilities {
 	doAbility(){
 		if(appGlobal.localPlayer!=null){
 			const self = this;
-			appGlobal.localPlayer.fps.throw();
+			if(!appGlobal.localPlayer.emoting){
+				appGlobal.localPlayer.fps.throw();
+			}else{
+				appGlobal.localPlayer.throw();
+			}
 			//appGlobal.soundHandler.playSoundByName({name:"nade", dist:1});
 			setTimeout(function(){
 				if(this.throw == null)
@@ -102,9 +107,11 @@ class AbilityJumpPad extends Abilities {
 			dir.add(rnd);
 			dir.multiplyScalar(.5);
 			
-			//const cross = new Vector3().crossVectors(appGlobal.localPlayer.grav, dir);
-			//const pos = new Vector3().copy( appGlobal.localPlayer.playerCollider.end ).addScaledVector( dir, appGlobal.localPlayer.playerCollider.radius * 1.5 );//.add(cross);
 			const pos = appGlobal.localPlayer.fps.leftHandPos;
+			if(appGlobal.localPlayer.emoting){
+				pos.copy(appGlobal.localPlayer.tipPositionFinal);
+			}
+
 			const kp = {
 				pos:new Vector3(), 
 				distance:10, 

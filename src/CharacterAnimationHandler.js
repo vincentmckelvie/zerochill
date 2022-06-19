@@ -14,7 +14,7 @@ class CharacterAnimationHandler{
 		this.contains = [ 
 			"thigh",
 			"calf", 
-			"spine", 
+			/*"spine",*/ 
 			"pelvis", 
 			"foot",
 			"ball",
@@ -41,6 +41,9 @@ class CharacterAnimationHandler{
 		this.gunFire;
 		this.jump;
 		this.jumpStart;
+		this.throw;
+		this.throwing = false;
+		this.throwTarg = 0;
 		this.ezTime = .2;
 		this.shouldDoAni =  false;
 		this.spineBones = [];
@@ -73,7 +76,8 @@ class CharacterAnimationHandler{
 		const runLAni = this.getAniByName(this.animations,"run_l");
 		const runBAni = this.getAniByName(this.animations,"run_b");
 		const jumpAni = this.getAniByName(this.animations,"jump");
-		
+		const throwAni =  this.getAniByName(this.animations,"throw");
+	
 		const gunAniSubmachine =  this.getAniByName(this.animations,"submachine-idle");
 		const adsAniSubmachine =  this.getAniByName(this.animations,"submachine-ads");
 		
@@ -108,6 +112,7 @@ class CharacterAnimationHandler{
 		this.parseAnimation(adsAniSixGun,      false);
 		this.parseAnimation(gunAniSniper,      false);
 		this.parseAnimation(adsAniSniper,      false);
+		this.parseAnimation(throwAni,          false);
 
 		this.idle = this.mixer.clipAction(     idleAni);  
 		this.idle.timeScale = 1.4;
@@ -115,7 +120,8 @@ class CharacterAnimationHandler{
 		this.left = this.mixer.clipAction(     runLAni);
 		this.forward = this.mixer.clipAction(  runFAni);
 		this.back = this.mixer.clipAction(     runBAni);
-		
+		this.throw = this.mixer.clipAction(   throwAni);
+		this.throw.loop = LoopOnce;
 		switch(this.modelName){
 			case "submachine":
 				const gunIdleSubmachine = this.mixer.clipAction(  gunAniSubmachine);
@@ -174,7 +180,9 @@ class CharacterAnimationHandler{
 		for(let i = 0; i<this.animations.length; i++){
 			this.removeAnimationFromBone(this.animations[i], "spine_01");
 		}
-		//this.jumpStart = this.mixer.clipAction(this.animations[7]);
+		for(let i = 0; i<this.animations.length; i++){
+			this.removeAnimationFromBoneRotation(this.animations[i], "pelvis");
+		}
 		
 		this.idle.play();
 		this.forward.play();
@@ -182,7 +190,7 @@ class CharacterAnimationHandler{
 		this.left.play();
 		this.back.play();
 		this.jump.play();
-		
+
 		
 		this.gunIdle.play();
 		this.adsIdle.play();
@@ -191,11 +199,20 @@ class CharacterAnimationHandler{
 		this.forward.weight = 0;
 		this.right.weight = 0;
 		this.left.weight = 0;
+		this.throw.weight = 0;
 		this.jump.weight = 1;
 		//this.jumpStart.setLoop(LoopOnce);
 		
 		this.shouldDoAni = true;
 		this.deltaMult = 4;
+		
+		const self = this;
+		this.mixer.addEventListener( 'finished', function( e ) { 
+
+			self.throwing = false;
+			self.throw.stop();
+		});
+
 		
 	}
 	
@@ -235,6 +252,8 @@ class CharacterAnimationHandler{
 				}
 			}
 		}
+		
+		this.adsing = OBJ.adsing;
 
 		// if(Math.random() > 0.98){
 		// 	console.log(this.rightTarg)
@@ -257,18 +276,30 @@ class CharacterAnimationHandler{
 
 	update(){
 		if(this.shouldDoAni){
+
 			this.mixer.update(appGlobal.deltaTime*this.deltaMult);
+			
 			if(this.adsing){
 				this.adsTarg = 1;
 				this.gunTarg = 0;
+				this.throwTarg = 0;
 			}else{
 				this.adsTarg = 0;
 				this.gunTarg = 1;
+				this.throwTarg = 0;
 			}
+			if(this.throwing){
+				this.adsTarg = 0;
+				this.gunTarg = 0;
+				this.throwTarg = 1;
+			}
+
 
 			this.adsIdle.weight += (this.adsTarg-this.adsIdle.weight)*(appGlobal.deltaTime*90)
 			this.gunIdle.weight += (this.gunTarg-this.gunIdle.weight)*(appGlobal.deltaTime*90)
+			this.throw.weight += (this.throwTarg-this.throw.weight)*(appGlobal.deltaTime*90)
 		
+
 			this.idle.weight    +=  (this.idleTarg-this.idle.weight)      *(appGlobal.deltaTime*150)
 			this.forward.weight +=  (this.forwardTarg-this.forward.weight)*(appGlobal.deltaTime*150)
 			this.left.weight    +=  (this.leftTarg   -this.left.weight)   *(appGlobal.deltaTime*150)
@@ -285,6 +316,13 @@ class CharacterAnimationHandler{
 			
 		}
 	}
+	
+	initThrow(){
+		console.log("hii")
+		this.throw.play();
+		this.throwing = true;
+	}
+	
 	updateRemote(OBJ){
 		this.adsing = OBJ.adsing;
 		if(this.shouldDoAni){
@@ -327,6 +365,20 @@ class CharacterAnimationHandler{
 	    const split = hierarchyTracks[h].name.split('.');
 	    const check = this.checkContainsAniName([name],split[0]);
 	    if(check){
+	      hierarchyTracks.splice(h, 1);
+	      h--; 
+	    }
+	  }
+
+	}
+
+	removeAnimationFromBoneRotation( animation, name ) {
+
+	  const hierarchyTracks = animation.tracks;
+	  for ( let h = 0; h < hierarchyTracks.length; h ++ ) {
+	  	const split = hierarchyTracks[h].name.split('.');
+	  	const check = this.checkContainsAniName([name],split[0]);
+	    if(check && split[1] == "quaternion"){
 	      hierarchyTracks.splice(h, 1);
 	      h--; 
 	    }

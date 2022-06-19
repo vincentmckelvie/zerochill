@@ -8,7 +8,10 @@ import {
 	PerspectiveCamera,
 	Vector2,
 	Euler,
-	Matrix4
+	Matrix4,
+	Raycaster,
+	MeshBasicMaterial,
+	Color
 } from './build/three.module.js';
 import { Capsule } from './scripts/jsm/math/Capsule.js';
 import { Weapon } from './Weapon.js';
@@ -16,6 +19,7 @@ import { Hud } from './Hud.js';
 import { clone } from "./scripts/jsm/utils/SkeletonUtils.js";
 import { FPSAni } from './FPSAni.js';
 import { CharacterAnimationHandler } from './CharacterAnimationHandler.js';
+import { ParticleEmitter } from './ParticleEmitter.js';
 
 class Player {
 	//{scene:scene, worldScale:worldScale};
@@ -33,7 +37,6 @@ class Player {
 		this.camera.fov = this.defaultFOV;
 		this.camera.updateProjectionMatrix();
 
-		
 		this.boostMult = 1;
 		this.boostMultMax = 1.8;
 		this.speedMult = .8;
@@ -71,6 +74,7 @@ class Player {
 		this.playerDirection = new Vector3();
 		
 		this.tpsAni;
+		this.emoteHelperAni;
 		this.didTpsAni = false;
 		this.firstLand = false;
 		this.boostCamDir = new Vector3();
@@ -94,15 +98,23 @@ class Player {
 		this.mesh.position.z -=5;
 		//this.playerRotationHelper.position.y = -1.5;
 		this.rotOffset.add(this.xRot);
+
+		this.tpsEmpty = new Object3D();
+		this.cameraEmpty = new Object3D();
 		this.emoteHelper = new Object3D();
-		this.emoteHelper.add(appGlobal.controller.playerCamera);
+		this.emoteHelperVertical = new Object3D();
+		this.emoteHelperVertical.add(this.camera, this.cameraEmpty);
+		this.emoteHelper.add(this.emoteHelperVertical, this.tpsEmpty);
 		this.xRot.add(this.emoteHelper);
 		//this.xRot.add(this.mesh);
 		appGlobal.controller.playerCamera.add(this.mesh)
+		
 		this.xRot.add(this.playerRotationHelper)
 
-		this.camDist = 5;
+		this.camDist = 0;
 		OBJ.weapon.player = this;
+		this.adsMinus = 3;
+		
 		this.weapon = new Weapon(OBJ.weapon);
 		//this.ability = new OBJ.weapon.abilities.class(OBJ.weapon.ability);
 		this.abilities = [];
@@ -163,6 +175,7 @@ class Player {
 		}else if(OBJ.movement.name == "teleport"){
 			move = "teleport";
 		}
+
 		this.movement  = clone( self.getModelByName(OBJ.weapon.model+"-"+move).scene );
 
 		const arr = [this.character, this.movement];
@@ -171,28 +184,33 @@ class Player {
 
 		let name = "tip-" + OBJ.weapon.model;
 		this.tipObject = this.character.getObjectByName(name);
+		//this.tipObject.material.color = new Color(0xffd200);
+		//this.tipObject.material.emissive = new Color(0xffd200);
+		//this.tipObject.material = new MeshBasicMaterial({color:0xffd200, transparent:false})
+
 		this.tipObject.visible = false;
+
+		
+		// this.tipObject.material.emissiveIntensity = 1;
+		// this.tipObject.material = new MeshBasicMaterial({color:0xffd200})
+		this.tipPositionFinal = new Vector3();
 
 		this.boostTip;
 		// this.boostTexture = new TextureLoader().load( './assets/textures/boost.png' );
 		// this.boostTexture.wrapS = RepeatWrapping;
 		// this.boostTexture.wrapT =  ClampToEdgeWrapping;
 		// this.boostTexture.magFilter = LinearFilter; 
-
+		this.boostPart;
 		this.movement.traverse( function ( obj ) {
 			if(obj.name.includes("boost-part")){
 				obj.visible = false;
-				// obj.material.transparent = true;
-				// obj.material.map = self.boostTexture;
-				// obj.material.emissiveMap = self.boostTexture;
-				// obj.material.color = new Color(0x000000);
-				// obj.material.emissive = new Color(0xffbf80);
-				// self.boostTip = obj;
+				self.boostPart = obj;
 			}
 		});
 
 		this.characterHolder = new Object3D();
 		this.xRot.add(this.characterHolder);
+		this.characterHolder.rotation.y=-.4;
 		this.characterHolder.add(this.character, this.movement);
 		const s = 3.25;
 		this.characterHolder.position.z = -.2;
@@ -221,7 +239,40 @@ class Player {
 		this.jumpPadTween = null;
 
 		this.emoting = false;
+		this.raycaster = new Raycaster();
+
+		// const thgeo = new BoxGeometry(1,1,1);
+		// const thmat = new MeshBasicMaterial({color:0xff0000});
+		// this.tipHelper = new Mesh(thgeo, thmat)
+		// appGlobal.scene.add(this.tipHelper)
+
+		this.spines = [this.character.getObjectByName( 'spine_01' ), this.movement.getObjectByName( 'spine_01' )];
+
+		this.boostParticle = new ParticleEmitter(appGlobal.particles.boost);
+		// this.rotMod += (appGlobal.deltaTime*400);
+		// if(Math.floor(this.rotMod%10) == 0){
+		// 	this.boostTexture.offset.x += .2+Math.random()*.35;
+		// }
+		this.tpsTipVisTimeout;
+		this.shootRnd = 0;
 	
+	}
+
+	tpsShoot(){
+		if(this.adsing){
+			this.shootRnd = (.1+Math.random()*.3)*.8;
+		}else{
+			this.shootRnd = (.1+Math.random()*.3)*1.4;
+		}
+		if(this.tpsTipVisTimeout!=null)
+			clearTimeout(this.tpsTipVisTimeout)
+		const xRnd = Math.random()*2;
+		this.tipObject.rotation.z += xRnd;
+		this.tipObject.visible = true;
+		const self = this;
+		this.tpsTipVisTimeout = setTimeout(function(){
+			self.tipObject.visible = false;
+		},200);
 	}
 
 	getModelByName(NAME){
@@ -277,20 +328,11 @@ class Player {
 		}
 
 	}
+
 	updateNonLooped(){
-		this.updateFOV();
-		this.fps.update();
 
-		this.animationObject = {
-			yAxis:this.axisY, 
-			xAxis:this.axisX,
-			jump:!this.animationOnFloor,
-			boost:this.boosting,
-			adsing:this.adsing
-		}
-
-		this.cah.update();
-		this.cah.handleAnimationEasing(0,this.animationObject);
+		
+		
 		
 		switch(this.state){
 			case "alive":
@@ -300,6 +342,41 @@ class Player {
 				}
 				this.handleBoost();
 				this.handleADSModify();
+				this.updateFOV();
+				this.handleTPSArm();
+				
+				if(!this.emoting){
+					this.tipPositionFinal.copy(this.fps.tipPosition);
+				}else{
+					this.tipObject.getWorldPosition(this.tipPositionFinal);
+				}
+				
+				this.fps.update();
+
+				this.animationObject = {
+					yAxis:this.axisY, 
+					xAxis:this.axisX,
+					jump:!this.animationOnFloor,
+					boost:this.boosting,
+					adsing:this.adsing
+				}
+				
+				this.cah.update();
+				this.cah.handleAnimationEasing(0,this.animationObject);
+
+				this.boostParticle.update();
+				
+				this.shootRnd += (0 - this.shootRnd)*appGlobal.deltaTime*120;
+				
+				if(this.emoting){
+					for(let i = 0; i<this.spines.length; i++){
+						let spineRotTarg = this.emoteHelperVertical.rotation.x+.2+this.shootRnd;
+						//if(spineRotTarg)
+						if(spineRotTarg<-.5)spineRotTarg=-.5;
+						this.spines[i].rotation.z += ((spineRotTarg)-this.spines[i].rotation.z)*(160*appGlobal.deltaTime); 
+					}
+				}
+			
 			break;
 			case "dead":
 			break;
@@ -312,13 +389,54 @@ class Player {
 				this.initWalkSound();
 			}
 		}
+
+	}
+
+	handleTPSArm(){
 		
+		let distance = this.camDist;
+    	let ez = 0;
+
+		if(this.emoting){
+	  		//const twr =this.threeWayRaycast(); 
+	  		const camPos = new Vector3();
+	  		this.cameraEmpty.getWorldPosition(camPos);
+	  		
+	  		const targetPos = new Vector3();
+			this.emoteHelper.getWorldPosition(targetPos);
+
+	  		this.tpsEmpty.lookAt(camPos)
+	  		this.tpsEmpty.getWorldDirection( this.playerDirection );
+			this.playerDirection.normalize();
+			
+			this.raycaster.set( targetPos, this.playerDirection );
+			//console.log(appGlobal.worldsHolder.children.length)
+			let intersects = this.raycaster.intersectObjects( appGlobal.worldsHolder.children );
+			let twr;
+			
+			if ( intersects && intersects.length ) {
+				twr = intersects;
+			}
+			
+			if(twr!=null){    
+				let space = twr[0].distance;
+				let radius = .5;
+				distance = Math.min( distance, space - radius );
+			}
+
+		}
+		
+	    this.cameraEmpty.position.z = this.camDist;
+		this.camera.position.z += ( distance - this.camera.position.z)*(appGlobal.deltaTime*400);
+		//this.camera.position.z += distance ;
 
 	}
 
 	updateFOV(){
+
 		this.camera.fov += (this.fovTarg - this.camera.fov) * (appGlobal.deltaTime*120);
 		this.camera.updateProjectionMatrix();
+
 	}
 
 	initWalkSound(){
@@ -413,15 +531,23 @@ class Player {
 			for(let i = 0; i<this.abilities.length; i++){
 				this.abilities[i].kill();	
 			}
-			
+
+			this.boostParticle.kill();
 			this.fps.kill();
 			appGlobal.playing = false;
 			
+			if(this.tpsTipVisTimeout!=null)
+				clearTimeout(this.tpsTipVisTimeout)
+
 			if(window.socket!=null){
 				appGlobal.globalHelperFunctions.playerReset(socket.id, true);
 			}else{
 				appGlobal.globalHelperFunctions.playerReset(this.id, true);
 			}
+
+			appGlobal.globalHelperFunctions.tearDownObject(this.character);
+			appGlobal.globalHelperFunctions.tearDownObject(this.movement);
+			
 
 			if(this.stepsTimeout != null){
 				clearInterval(this.stepsTimeout);
@@ -596,18 +722,41 @@ class Player {
 
 	}
 
-	killEmoting(){
-		this.emoteHelper.rotation.y = 0;
+	initEmoting(){
+
+		this.emoting = true;
+		this.character.visible = this.movement.visible = true;
 		
-		if(this.tpsAni!=null){
-			this.tpsAni.kill();
-		}
+		this.fps.hide();
+		
+		this.killEmoteAnis();
+		this.tpsAni = gsap.to(this,{duration:.3, camDist:6, ease: "circ.out()", delay:0});
+		this.emoteHelperAni = gsap.to(this.emoteHelper.position,{duration:.3, x:2, y:2, ease: "circ.out()", delay:0});
+	}
+
+	killEmoting(){
+
+		this.emoting = false; 
+		this.killEmoteAnis();
+		
 		this.character.visible = this.movement.visible = false;
+		
 		const self = this;
 		this.tpsAni = gsap.to(this,{duration:.3, camDist:0, ease: "circ.out()", delay:0, onComplete:function(){ 
 			self.fps.show();
-			self.emoting = false; 
-		}  });
+			
+		}});
+		this.emoteHelperAni = gsap.to(this.emoteHelper.position,{duration:.3, x:0, y:0, ease: "circ.out()", delay:0});
+
+	}
+
+	killEmoteAnis(){
+		if(this.tpsAni!=null){
+			this.tpsAni.kill();
+		}
+		if(this.emoteHelperAni != null){
+			this.emoteHelperAni.kill();
+		}
 	}
 
 	handleKeyDown(key){
@@ -615,49 +764,45 @@ class Player {
 			this.abilities[i].handleKeyDown(key);	
 		}
 		if(key=="KeyC"){
-			if(!this.emoting && (this.axisY==0 && this.axisX==0)){
-				this.emoting = true;
-				this.character.visible = this.movement.visible = true;
-				if(this.tpsAni!=null){
-					this.tpsAni.kill();
-				}
-				this.fps.hide();
-				this.tpsAni = gsap.to(this,{duration:.3, camDist:6, ease: "circ.out()", delay:0});
-				gsap.to(this.camera.rotation,{duration:.3, x:0, ease: "circ.out()", delay:0});
+			//if(!this.emoting && (this.axisY==0 && this.axisX==0)){
+			if(!this.emoting){
+
+				this.initEmoting();
+
 			}else{
 				this.killEmoting();
 			}
 		}
 		if(key=="KeyD"){
-			this.killEmoting();
+			
 			this.axisX = 1;
 			this.keys.D = true;
 		}
 		
 		if(key=="KeyA"){
-			this.killEmoting();
+		
 			this.axisX = -1;
 			this.keys.A = true;
 		}
 		
 		if(key=="KeyW"){
-			this.killEmoting();
+			//this.killEmoting();
 			this.axisY = 1;
 			this.keys.W = true;
 		}
 		
 		if(key=="KeyS"){
-			this.killEmoting();
+			//this.killEmoting();
 			this.axisY = -1;
 			this.keys.S = true;
 		}
 
 		if ( key == 'KeyR') {
-			this.killEmoting();
+			//this.killEmoting();
 			this.handleReloadKeyPress();
 		}
 		if(key == 'ShiftLeft'){
-			this.killEmoting();
+			//this.killEmoting();
 			this.handleBlinkKeyPress();
 		}
 	}
@@ -761,6 +906,13 @@ class Player {
 	handleBoost(){
 
 		if(this.boosting){
+			if(this.emoting){
+				this.boostPart.visible = true;
+				const pos = new Vector3();
+				this.boostPart.getWorldPosition(pos);
+				this.boostParticle.obj.pos.copy(pos);
+				this.boostParticle.emit();
+			}
 			
 			this.boostMeter -= (appGlobal.deltaTime*(1.8*this.abilityMult));
 		
@@ -772,7 +924,7 @@ class Player {
 			}
 
 		}else{
-
+			this.boostPart.visible = false;
 			this.boostMeter += (appGlobal.deltaTime*(1.35));
 			
 			if(this.boostMeter>1){
@@ -994,7 +1146,7 @@ class Player {
 
 	updatePlayerPositionAndRotation() {
 
-		this.camera.position.z = this.camDist;
+		//this.camera.position.z = this.camDist;
 		
 		let damping = Math.exp( - 4 * appGlobal.deltaTime ) - 1;
 		//console.log(damping);
@@ -1113,15 +1265,27 @@ class Player {
 		const adsHelper = 1.0 - (adsValHolder  * this.adsMouseSenseMult);
 		if(!this.emoting){
 			this.xRot.rotation.y   -= OBJ.mx *(0.005*( window.settingsParams["mouseSens"] * adsHelper ));
-			this.camera.rotation.x -= OBJ.my *(0.005*( window.settingsParams["mouseSens"] * adsHelper ));
+			//this.camera.rotation.x -= OBJ.my *(0.005*( window.settingsParams["mouseSens"] * adsHelper ));
+			this.emoteHelperVertical.rotation.x -= OBJ.my *(0.005*( window.settingsParams["mouseSens"] * adsHelper ));
+
 		}else{
-			this.camera.rotation.x = 0;
-			this.emoteHelper.rotation.y  -= OBJ.mx *(0.005*( window.settingsParams["mouseSens"] * adsHelper ));
+			//this.camera.rotation.x = 0;
+			this.xRot.rotation.y   -= OBJ.mx *(0.005*( window.settingsParams["mouseSens"] * adsHelper ));
+			this.emoteHelperVertical.rotation.x -= OBJ.my *(0.005*( window.settingsParams["mouseSens"] * adsHelper ));
+			
+			//this.emoteHelper.rotation.y  -= OBJ.mx *(0.005*( window.settingsParams["mouseSens"] * adsHelper ));
 		}
 		
-		const max = 1.5;
-		if(this.camera.rotation.x<-max*.95)this.camera.rotation.x = -max*.95;
-		if(this.camera.rotation.x>max)this.camera.rotation.x = max;
+		let maxP =  1.5;
+		let maxN = -1.5*.95;
+		if(this.emoting){
+			maxN = -1.7
+			maxP = 1.6
+		}
+		//if(this.camera.rotation.x<-max*.95)this.camera.rotation.x = -max*.95;
+		//if(this.camera.rotation.x>max)this.camera.rotation.x = max;
+		if(this.emoteHelperVertical.rotation.x<maxN)this.emoteHelperVertical.rotation.x = maxN;
+		if(this.emoteHelperVertical.rotation.x>maxP)this.emoteHelperVertical.rotation.x = maxP;
 		this.playerRotationHelper.rotation.y = this.camera.rotation.y;
 	}
 
@@ -1132,6 +1296,35 @@ class Player {
 		this.fps.toggleADS(shouldADS);
 		this.adsing = shouldADS;
 		
+		if(this.emoting){
+			if(this.weapon.name=="sniper"){
+				if(shouldADS){
+					this.character.visible = this.movement.visible = false;
+				}else{
+					this.character.visible = this.movement.visible = true;
+				}
+			}
+			if(shouldADS){
+				let cd = 3;
+				let xpos = 1.5;
+				if(this.weapon.name=="sniper"){
+					cd = 0;
+					xpos = 0;
+				}
+
+				this.killEmoteAnis();
+
+				this.tpsAni = gsap.to(this,{duration:.3, camDist:cd, ease: "circ.out()", delay:0});
+				this.emoteHelperAni = gsap.to(this.emoteHelper.position,{duration:.3, x:xpos, y:0, ease: "circ.out()", delay:0});
+			}else{
+
+				this.killEmoteAnis();
+
+				this.tpsAni = gsap.to(this,{duration:.3, camDist:6, ease: "circ.out()", delay:0});
+				this.emoteHelperAni = gsap.to(this.emoteHelper.position,{duration:.3, x:2, y:2, ease: "circ.out()", delay:0});
+			}
+		}
+
 		if(!this.boosting){
 			
 			//this.adsing = shouldADS;
@@ -1141,6 +1334,10 @@ class Player {
 
 		}
 		
+	}
+
+	throw(){
+		this.cah.initThrow();
 	}
 
 	adsHelper(shouldADS){

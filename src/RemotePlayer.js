@@ -219,6 +219,7 @@ class RemotePlayer {
 			this.remoteAbilites.update();
 		
 		}
+		
 	}
 
 	initWalkSound(){

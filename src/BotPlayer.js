@@ -631,7 +631,6 @@ class BotPlayer {
 		}
 		if(this.getClosestWorld() != this.world && this.abilitiesCanSelectClosestWorld() &&  this.animationOnFloor){
 			//self.boostToOtherWorld();
-			console.log("hi");
 			this.world = this.getClosestWorld();
 		}
 		this.prevPos.copy(this.playerCollider.start);
