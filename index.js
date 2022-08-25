@@ -517,4 +517,4 @@ app.get('/mongo', async (req, res) => {
 // 	});
 // });
 
-app.listen(3000, ()=>{console.log("listening on 3005")});
+app.listen(process.env.PORT||3000, ()=>{console.log("listening on 3005")});
