@@ -4,8 +4,7 @@
   "description": "zero chill",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "build": "webpack"
+    "start": "node index.js"
   },
   "author": "",
   "license": "ISC",
