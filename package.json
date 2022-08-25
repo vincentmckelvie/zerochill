@@ -4,8 +4,7 @@
   "description": "zero chill",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon server.js",
-    "build": "webpack"
+    "start": "index.js"
   },
   "author": "",
   "license": "ISC",
