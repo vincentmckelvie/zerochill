@@ -162,6 +162,7 @@ class FPSAni {
 		// },600)
 	}
 	update(){
+		
 		this.handL.getWorldPosition(this.leftHandPos);
 		this.tipObject.getWorldPosition(this.tipPosition);
 		

@@ -1157,7 +1157,9 @@ function isSocketRoom(name){
 }
 
 
-var socket = io("localhost:3000", function(){} );
+//var socket = io("localhost:3000", function(){} );
+//
+var socket = io("https://zero-chill-game-server.herokuapp.com/", function(){} );
 window.socket = socket;
   
 socket.on('connect', () => {
